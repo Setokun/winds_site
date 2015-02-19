@@ -1,0 +1,8 @@
+.col-md-offset-3  {margin-left:30%}
+.col-md-6  {width:40%}
+
+.mainbox {margin-top:50px}
+.link {font-weight:bold;color:#31708f}
+.link:hover {text-decoration:underline;cursor:pointer}
+
+#loginbox .input-group {margin-bottom:15px}

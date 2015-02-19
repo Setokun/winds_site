@@ -1,0 +1,4 @@
+span.label-clickme { vertical-align:middle; font-size:11px; font-weight:bold; font-style:italic }
+
+.level {}
+.level:hover { font-weight:bold; background-color:lightskyblue; cursor:pointer }

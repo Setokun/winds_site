@@ -1,0 +1,22 @@
+* { box-sizing: border-box; font-size: 14px }
+
+/*-- banner --*/
+#banner { background-color:lightgreen }
+
+/*-- menu --*/
+#menu, #content { display: inline-block; vertical-align: top }
+#menu { width: 108px; background-color: #BEBEBE }
+#menu * { margin: 1px; color: white; text-align: center }
+#menu hr { margin-top: 2px; margin-bottom: 2px; border-top: 2px solid white }
+#menu a:hover { font-weight: bold; background-color:#DCDCDC; cursor:pointer }
+#menu .active { font-weight: bold }
+#menu #user { color: #337ab7; font-weight: bold }
+#menu #user:hover { background-color: #BEBEBE; cursor: default }
+#menu #logout { color: indianred; font-weight: bold }
+#menu #logout:active { color: white; background-color: indianred }
+
+/*-- content --*/
+#content { width: calc(100% - 130px); background-color: lavender }
+
+/*-- footer --*/
+#footer { height: 80px; width: 100%; background-color: indianred }
