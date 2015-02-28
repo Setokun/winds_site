@@ -7,7 +7,7 @@ require_once "config.php";
 
 /*OK*/abstract class ManagerDB {
     protected $linkDB,
-              $nameDB = "Winds";
+              $nameDB = "winds";
     
     // VARIABLES - MUST BE OVERRIDEN
     protected $nameTable,

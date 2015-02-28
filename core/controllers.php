@@ -96,30 +96,42 @@ class ScoreController {
 }
 class ForumController {
     /*OK*/static function displayLastNews(){
-        $orderByDate  = "ORDER BY date DESC LIMIT ".NB_NEWS_TO_DISPLAY;
-        $subjects = (new ManagerSubject())->get(array("subjectStatus"=>SUBJECT_STATUS::ACTIVE), $orderByDate);
-        $posts    = (new ManagerPost())->get(NULL, $orderByDate);
-        $mgrUser  = new ManagerUser();
-        
+        $orderByDate = "ORDER BY date DESC LIMIT ".NB_NEWS_TO_DISPLAY;
+        $subjects    = (new ManagerSubject())->get(array("subjectStatus"=>SUBJECT_STATUS::ACTIVE), $orderByDate);
+        $posts       = (new ManagerPost())->get(NULL, $orderByDate);
+        $mgrUser     = new ManagerUser();
         $count = NB_NEWS_TO_DISPLAY;
+        
         while($count--){
+            if(empty($subjects)){
+                self::displayNews($mgrUser, $posts[0]);
+                array_shift($posts);
+                continue;
+            }
+            if(empty($posts)){
+                self::displayNews($mgrUser, $subjects[0]);
+                array_shift($subjects);
+                continue;
+            }
+            
             $dateSubject = new DateTime($subjects[0]->getDate());
             $datePost    = new DateTime($posts[0]->getDate());
             
-            $news = NULL; $creator = NULL;
             if($dateSubject >= $datePost){
-                $news    = $subjects[0]->formateAsNews();
-                $creator = $subjects[0]->getIdAuthor();
+                self::displayNews($mgrUser, $subjects[0]);
                 array_shift($subjects);
             }
             if($dateSubject < $datePost){
-                $news    = $posts[0]->formateAsNews();
-                $creator = $posts[0]->getIdAuthor();
+                self::displayNews($mgrUser, $posts[0]);
                 array_shift($posts);
-            }
-            $news->setCreator($mgrUser->getByID($creator));
-            echo $news->getMessage();
+            }            
         }
+    }
+    /*OK*/static private function displayNews($mgrUser,$item){
+        $news    = $item->formateAsNews();
+        $creator = $item->getIdAuthor();
+        $news->setCreator($mgrUser->getByID($creator));
+        echo $news->getMessage();
     }
     /*OK*/static function displaySubjects(){
         $subjects = (new ManagerSubject())->getList();

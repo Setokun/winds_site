@@ -16,9 +16,9 @@ interface Winds_News {
 }
 
 /*OK*/abstract class WindsClass {
-    protected $id;                                  // int : ID used in DB as PK
-    static public $columns;                         // must be in same order like in DB - DON'T FORGET "id" COLUMN
-    static public function _new_(){}                // use this constructor to instanciate an object
+    protected $id;                                      // int : ID used in DB as PK
+    static public $columns;                             // must be in same order like in DB - DON'T FORGET "id" COLUMN
+    // static public function _new_();                  // use this constructor to instanciate an object
     final protected function __construct(){}        // constructor reserved to instanciate from DB
     final public function getId() {
         return $this->id;
@@ -160,7 +160,7 @@ interface Winds_News {
     /*OK*/public function formateAsNews(){
         $isLevel = $this->addonType == ADDON_TYPE::LEVEL;
         $object  = ($isLevel ? "$this->levelType " : NULL)." $this->addonType";
-        return new News($this->creationDate, "available $object");
+        return new News($this->creationDate, "available $object", "shop.php");
     }
     
     /*-- ACCESSORS --*/
@@ -297,7 +297,7 @@ interface Winds_News {
         );
     }
     /*OK*/public function formateAsNews(){
-        return new News($this->date, "subject");
+        return new News($this->date, "subject", "forum.php?id=$this->id");
     }
             
     /*-- ACCESSORS --*/
@@ -349,7 +349,7 @@ interface Winds_News {
         );
     }
     /*OK*/public function formateAsNews(){
-        return new News($this->date, "post");
+        return new News($this->date, "post", "forum.php?id=$this->id");
     }
     
     /*-- ACCESSORS --*/
@@ -371,17 +371,19 @@ interface Winds_News {
 /*OK*/class News {
     private $date,
             $object,
+            $link,
             $creator;
     
     /*-- CONSTRUCTORS --*/
-    /*OK*/public function __construct($date, $object){
+    /*OK*/public function __construct($date, $object, $link){
         $this->date   = (new DateTime($date))->format("d-m-Y");
         $this->object = $object;
+        $this->link   = $link; 
     }
     
     /*-- METHODS --*/
     /*OK*/public function getMessage(){
-        return "<tr><td>$this->date : New $this->object by $this->creator</td></tr>";
+        return "<tr><td><a href='$this->link'>$this->date : New $this->object by $this->creator</a></td></tr>";
     }
     
     /*-- ACCESSORS --*/
