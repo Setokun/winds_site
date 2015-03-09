@@ -17,7 +17,7 @@ abstract class Tools {
             $splitted_params = explode("&",$paramsURL);
             foreach($splitted_params as $param){
                 $parts = explode("=", $param);
-                $params[$parts[0]] = $parts[1];
+                $params[$parts[0]] = @$parts[1];
             }
         }
         return $params;

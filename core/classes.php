@@ -19,12 +19,13 @@ interface Winds_News {
     protected $id;                                      // int : ID used in DB as PK
     static public $columns;                             // must be in same order like in DB - DON'T FORGET "id" COLUMN
     // static public function _new_();                  // use this constructor to instanciate an object
-    final protected function __construct(){}        // constructor reserved to instanciate from DB
+    final protected function __construct(){}            // constructor reserved to instanciate from DB
     final public function getId() {
         return $this->id;
     }
 }
-/*OK*/class User extends WindsClass implements Winds_Insert, Winds_Update {
+/*OK*/class User extends WindsClass
+    implements Winds_Insert, Winds_Update, JsonSerializable {
     static public $columns = ['id','email','password','pseudo','registrationDate','forgotPassword','userType','userStatus'];
     private $email,                 // text : 64 chars, unique
             $password,              // text : 64 chars, MD5 encoding
@@ -34,7 +35,7 @@ interface Winds_News {
             $userType,              // enum : constant of USER_TYPE
             $userStatus;            // enum : constant of USER_STATUS
 
-    /*-- CONSTRUCTORS --*/
+    //-- CONSTRUCTORS --
     /*OK*/static public function _new_($email, $password, $pseudo) {
         $instance = new self();
         $instance->id = NULL;
@@ -48,7 +49,7 @@ interface Winds_News {
         return $instance;
     }
     
-    /*-- METHODS --*/
+    // -- METHODS --
     /*OK*/public function valuesDB_toInsert(){
         return array(
             $this->email,
@@ -72,8 +73,11 @@ interface Winds_News {
         return $this->userType == USER_TYPE::MODERATOR ||
                $this->userType == USER_TYPE::ADMINISTRATOR;
     }
+    /*OK*/public function jsonSerialize() {
+        return (object) get_object_vars($this);
+    }
     
-    /*-- ACCESSORS --*/
+    //-- ACCESSORS --
     public function getEmail() {
         return $this->email;
     }
@@ -109,7 +113,8 @@ interface Winds_News {
     }
 
 }
-/*OK*/class Addon extends WindsClass implements Winds_Insert, Winds_Update, Winds_News {
+/*OK*/class Addon extends WindsClass
+    implements Winds_Insert, Winds_Update, Winds_News, JsonSerializable {
     static public $columns = ['id','name','description','creationDate','uriLogo',
                               'addonType','addonStatus','levelType','idCreator','idTheme'];
     private $name,                  // text : 64 chars, unique
@@ -122,7 +127,7 @@ interface Winds_News {
             $idCreator,             // enum : user ID
             $idTheme;               // int  : addon ID or NULL
     
-    /*-- CONSTRUCTORS --*/
+    // -- CONSTRUCTORS --
     /*OK*/static public function _new_($name, $description, $uriLogo, $addonType, $levelType, $idCreator, $idTheme) {
         $instance = new self();
         $instance->id           = NULL;
@@ -138,7 +143,7 @@ interface Winds_News {
         return $instance;
     }
     
-    /*-- METHODS --*/
+    // -- METHODS --
     /*OK*/public function valuesDB_toInsert(){
         return array(
             $this->name,
@@ -162,8 +167,11 @@ interface Winds_News {
         $object  = ($isLevel ? "$this->levelType " : NULL)." $this->addonType";
         return new News($this->creationDate, "available $object", "shop.php");
     }
+    /*OK*/public function jsonSerialize() {
+        return (object) get_object_vars($this);
+    }
     
-    /*-- ACCESSORS --*/
+    // -- ACCESSORS --
     public function getName() {
         return $this->name;
     }
@@ -196,7 +204,8 @@ interface Winds_News {
     }
 
 }
-/*OK*/class Score extends WindsClass implements Winds_Insert, Winds_Update {
+/*OK*/class Score extends WindsClass
+    implements Winds_Insert, Winds_Update, JsonSerializable {
     static public $columns = ['id','idPlayer','idLevel','time','nbClicks','nbItems'];
     private $idPlayer,              // int : user ID
             $idLevel,               // int : addon ID
@@ -204,7 +213,7 @@ interface Winds_News {
             $nbClicks,              // int
             $nbItems;               // int
     
-    /*-- CONSTRUCTORS --*/
+    // -- CONSTRUCTORS --
     /*OK*/static public function _new_($idPlayer, $idLevel, $time, $nbClicks, $nbItems) {
         $instance = new self();
         $instance->id       = NULL;
@@ -216,7 +225,7 @@ interface Winds_News {
         return $instance;
     }
     
-    /*-- METHODS --*/
+    // -- METHODS --
     /*OK*/public function valuesDB_toInsert(){
         return array(
             $this->idPlayer,
@@ -233,8 +242,11 @@ interface Winds_News {
             'nbItems'   => $this->nbItems
         );
     }
+    /*OK*/public function jsonSerialize() {
+        return (object) get_object_vars($this);
+    }
     
-    /*-- ACCESSORS --*/
+    // -- ACCESSORS --
     public function getIdPlayer() {
         return $this->idPlayer;
     }
@@ -261,7 +273,8 @@ interface Winds_News {
     }
 
 }
-/*OK*/class Subject extends WindsClass implements Winds_Insert, Winds_Update, Winds_News {
+/*OK*/class Subject extends WindsClass
+    implements Winds_Insert, Winds_Update, Winds_News {
     static public $columns = ['id','title','message','date','subjectStatus','idAuthor'];
     private $title,                 // text : 64 chars
             $message,               // text : 512 chars
@@ -269,7 +282,7 @@ interface Winds_News {
             $subjectStatus,         // enum : constant of SUBJECT_STATUS
             $idAuthor;              // int  : user ID
     
-    /*-- CONSTRUCTORS --*/
+    // -- CONSTRUCTORS --
     /*OK*/static public function _new_($title, $message, $idAuthor) {
         $instance = new self();
         $instance->id            = NULL;
@@ -281,7 +294,7 @@ interface Winds_News {
         return $instance;
     }
     
-    /*-- METHODS --*/
+    // -- METHODS --
     /*OK*/public function valuesDB_toInsert(){
         return array(
             $this->title,
@@ -300,7 +313,7 @@ interface Winds_News {
         return new News($this->date, "subject", "forum.php?id=$this->id");
     }
             
-    /*-- ACCESSORS --*/
+    // -- ACCESSORS --
     public function getTitle() {
         return $this->title;
     }
@@ -321,14 +334,15 @@ interface Winds_News {
     }
 
 }
-/*OK*/class Post extends WindsClass implements Winds_Insert, Winds_News {
+/*OK*/class Post extends WindsClass
+    implements Winds_Insert, Winds_News {
     static public $columns = ['id','date','message','idAuthor','idSubject'];
     private $date,                  // datetime
             $message,               // text : 512 chars
             $idAuthor,              // int  : user ID
             $idSubject;             // int  : subject ID
     
-    /*-- CONSTRUCTORS --*/
+    // -- CONSTRUCTORS --
     /*OK*/static public function _new_($message, $idAuthor, $idSubject) {
         $instance = new self();
         $instance->id        = NULL;
@@ -339,7 +353,7 @@ interface Winds_News {
         return $instance;
     }
     
-    /*-- METHODS --*/
+    // -- METHODS --
     /*OK*/public function valuesDB_toInsert(){
         return array(
             $this->date,
@@ -352,7 +366,7 @@ interface Winds_News {
         return new News($this->date, "post", "forum.php?id=$this->id");
     }
     
-    /*-- ACCESSORS --*/
+    // -- ACCESSORS --
     public function getDate() {
         return $this->date;
     }
@@ -374,19 +388,19 @@ interface Winds_News {
             $link,
             $creator;
     
-    /*-- CONSTRUCTORS --*/
+    // -- CONSTRUCTORS --
     /*OK*/public function __construct($date, $object, $link){
         $this->date   = (new DateTime($date))->format("d-m-Y");
         $this->object = $object;
         $this->link   = $link; 
     }
     
-    /*-- METHODS --*/
+    // -- METHODS --
     /*OK*/public function getMessage(){
         return "<tr><td><a href='$this->link'>$this->date : New $this->object by $this->creator</a></td></tr>";
     }
     
-    /*-- ACCESSORS --*/
+    // -- ACCESSORS --
     /*OK*/public function setCreator(User $creator) {
         $this->creator = $creator->getPseudo();
     }

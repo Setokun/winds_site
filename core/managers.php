@@ -181,29 +181,48 @@ require_once "config.php";
         return $this->_select()
                     ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Score");
     }
+    public function getListByPlayer($idPlayer){
+        return $this->_select(array("idPlayer"=>$idPlayer))
+                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Score");
+    }
     public function getByID($id) {
         return $this->_select(array('id'=>$id))
                     ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Score")[0];
     }
     public function get(array $whereClauses=NULL, $queryEnd=NULL){
-	return $this->_select($whereClauses, $queryEnd)
+        return $this->_select($whereClauses, $queryEnd)
                     ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Score");
     }
     public function getRanking($idLevel=NULL){
-        $columns = array_slice(Score::$columns, 3);
+        $order = "time, nbClicks, nbItems DESC";
         
         if(is_null($idLevel)){
             $query = "SELECT idPlayer, SUM(time) AS time, "
                     ."SUM(nbClicks) AS nbClicks, SUM(nbItems) AS nbItems "
-                    ."FROM scores GROUP BY idPlayer ORDER BY ".implode(",",$columns);
+                    ."FROM $this->nameTable GROUP BY idPlayer ORDER BY $order";
             return $this->_execute($query)
                         ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Score");
         }
         else{
             $where = array('idLevel'=>$idLevel);
-            $order = implode(",",$columns);
-            return (new ManagerScore())->get($where, "ORDER BY $order");
+            return $this->get($where, "ORDER BY $order");
         }
+    }
+    public function getRanksByPlayer($idPlayer){
+        $levels = $this->_execute("SELECT DISTINCT idLevel FROM $this->nameTable")->fetchAll();
+        $order = "ORDER BY time, nbClicks, nbItems DESC";
+        $ranks = array();
+        for($i=0; $i<count($levels); $i++){
+            $idLevel = $levels[$i]['idLevel'];
+            $ranking = $this->get(array("idLevel"=>$idLevel),$order);
+            for($j=0; $j<count($ranking); $j++){
+                $score = $ranking[$j];
+                if($score->getIdPlayer() == $idPlayer){
+                    $ranks[$idLevel] = $j+1;
+                }
+            }
+        }
+        return $ranks;
     }
     public function insert(Score $score){
         return $this->_insert($score);
