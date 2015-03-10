@@ -55,9 +55,7 @@ class AddonController {
     }
 }
 class ScoreController {
-    static private $points = array('time'      => 10,
-                                   'nbClicks'  => 10,
-                                   'nbItems'   => 1);
+    
     /*OK*/static function getScores($idPlayer){
         return ;
     }
@@ -190,6 +188,7 @@ class ApiController {
         if($data ){ $response['data']  = $data;  }
         if($error){ $response['error'] = $error; }
         echo json_encode($response);
+        die;
     }
     
     /* Each function must have its name like the value in API_ACTION 
@@ -226,7 +225,6 @@ class ApiController {
     static function downloadTheme(User $user, array $params){
         if(!isset($params['idTheme'])){
             self::displayResponse(NULL, "Missing theme ID");
-            die;
         }
         
         $theme = (new ManagerAddon())->getByID($params['idTheme']);
@@ -235,7 +233,6 @@ class ApiController {
     static function downloadBasicLevel(User $user, array $params){
         if(!isset($params['idBasicLevel'])){
             self::displayResponse(NULL, "Missing basic level ID");
-            die;
         }
         
         $basicLevel = (new ManagerAddon())->getByID($params['idBasicLevel']);
@@ -244,7 +241,6 @@ class ApiController {
     static function downloadCustomLevel(User $user, array $params){
         if(!isset($params['idCustomLevel'])){
             self::displayResponse(NULL, "Missing custom level ID");
-            die;
         }
         
         $customLevel = (new ManagerAddon())->getByID($params['idCustomLevel']);
@@ -253,16 +249,45 @@ class ApiController {
     static function downloadLevelToModerate(User $user, array $params){
         if(!isset($params['idLevelToModerate'])){
             self::displayResponse(NULL, "Missing level-to-moderate ID");
-            die;
         }
         
         $levelToModerate = (new ManagerAddon())->getByID($params['idLevelToModerate']);
         var_dump($levelToModerate);
     }
     static function uploadCustomLevel(User $user, array $params){
-        
+        var_dump($user,$params);
     }
-    static function uploadScores(User $user, array $params){
-        
+    /*totest*/static function uploadScores(User $user, array $params){
+        if(!isset($params['scores'])){
+            self::displayResponse(NULL, "Missing scores to upload");
+        }
+        /*                                                                                                                                                   |                ||                    |||                   ||
+         * http://localhost/Winds/api.php?email=player2@winds.net&password=912af0dff974604f1321254ca8ff38b6&action=uploadScores&scores=%5B%7B%22idLevel%22%3A4%2C%22time%22%3A60%2C%22nbClicks%22%3A100%2C%22nbItems%22%3A80%7D%5D
+         */
+        $scoresSended = json_decode( urldecode($params['scores']), TRUE );
+        $counter = 0;
+        foreach($scoresSended as $value){
+            $uploaded = Score::_new_($user->getId(), $value['idLevel'],
+                    $value['time'], $value['nbClicks'], $value['nbItems']);
+            $scoresDB = (new ManagerScore())->get(array(
+                    "idPlayer" => $user->getId(),
+                    "idLevel"  => $value['idLevel']));
+            if( empty($scoresDB) ){
+                // no score found for this user and level
+                //OK //(new ManagerScore())->insert($uploaded);
+            }
+            else {
+                $current = $scoresDB[0];
+                $needUpdate = $uploaded->compareTo($current) == TRUE;
+                $needUpdate ? $current->updateFrom($uploaded) : NULL;
+                var_dump(intval($needUpdate));
+                //(new ManagerScore())->update($current);
+            }
+            $counter++;
+        }
+        exit;
+        $all = $counter == count($scoresSended);
+        $message = "All of uploaded scores have ".($all ? NULL : "not ")."been inserted into DB";
+        $all ? self::displayResponse($message): self::displayResponse(NULL, $message);
     }
 }

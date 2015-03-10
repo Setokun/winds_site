@@ -115,12 +115,12 @@ interface Winds_News {
 }
 /*OK*/class Addon extends WindsClass
     implements Winds_Insert, Winds_Update, Winds_News, JsonSerializable {
-    static public $columns = ['id','name','description','creationDate','uriLogo',
+    static public $columns = ['id','name','description','creationDate','filePath',
                               'addonType','addonStatus','levelType','idCreator','idTheme'];
     private $name,                  // text : 64 chars, unique
             $description,           // text : 512 chars
             $creationDate,          // datetime
-            $uriLogo,               // text : 200 chars, unique
+            $filePath,              // text : 255 chars, unique
             $addonType,             // enum : constant of ADDON_TYPE
             $addonStatus,           // enum : constant of ADDON_STATUS
             $levelType,             // enum : constant of LEVEL_TYPE
@@ -128,13 +128,13 @@ interface Winds_News {
             $idTheme;               // int  : addon ID or NULL
     
     // -- CONSTRUCTORS --
-    /*OK*/static public function _new_($name, $description, $uriLogo, $addonType, $levelType, $idCreator, $idTheme) {
+    /*OK*/static public function _new_($name, $description, $filePath, $addonType, $levelType, $idCreator, $idTheme) {
         $instance = new self();
         $instance->id           = NULL;
         $instance->name         = $name;
         $instance->description  = $description;
         $instance->creationDate = Tools::now();
-        $instance->uriLogo      = $uriLogo;
+        $instance->filePath      = $filePath;
         $instance->addonType    = $addonType;
         $instance->addonStatus  = ($addonType == ADDON_TYPE::THEME) ? ADDON_STATUS::ACCEPTED : ADDON_STATUS::TOMODERATE;
         $instance->levelType    = ($addonType == ADDON_TYPE::THEME) ? LEVEL_TYPE::NONE : $levelType;
@@ -149,7 +149,7 @@ interface Winds_News {
             $this->name,
             $this->description,
             $this->creationDate,
-            $this->uriLogo,
+            $this->filePath,
             $this->addonType,
             $this->addonStatus,
             $this->levelType,
@@ -181,8 +181,8 @@ interface Winds_News {
     public function getCreationDate() {
         return $this->creationDate;
     }
-    public function getUriLogo(){
-        return $this->uriLogo;
+    public function getFilePath(){
+        return $this->filePath;
     }
     public function getAddonType() {
         return $this->addonType;
@@ -212,6 +212,10 @@ interface Winds_News {
             $time,                  // int : seconds
             $nbClicks,              // int
             $nbItems;               // int
+    static private $points = array(
+        'time'      => -10,
+        'nbClicks'  => -2,
+        'nbItems'   => 1);
     
     // -- CONSTRUCTORS --
     /*OK*/static public function _new_($idPlayer, $idLevel, $time, $nbClicks, $nbItems) {
@@ -244,6 +248,30 @@ interface Winds_News {
     }
     /*OK*/public function jsonSerialize() {
         return (object) get_object_vars($this);
+    }
+    public function compareTo(Score $score){
+        var_dump($this,"compared to",$score);
+        
+        if($this->time     == $score->getTime()
+        && $this->nbClicks == $score->getNbClicks()
+        && $this->nbItems  == $score->getNbItems()){
+            return 0;
+        }
+        
+        $higher = $this->time     < $score->getTime()
+               || $this->nbClicks < $score->getNbClicks()
+               || $this->nbItems  > $score->getNbItems();
+        return $higher ? 1 : -1;
+    }
+    /*OK*/public function updateFrom(Score $score){
+        $this->time     = $score->getTime();
+        $this->nbClicks = $score->getNbClicks();
+        $this->nbItems  = $score->getNbItems();
+    }
+    public function calculate(){
+        $points = $this->time     * self::$points['time']
+                + $this->nbClicks * self::$points['nbClicks']
+                + $this->nbItems  * self::$points['nbItems'];
     }
     
     // -- ACCESSORS --

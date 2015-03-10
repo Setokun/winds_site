@@ -18,7 +18,6 @@ $hasMandatoryParams = isset($params['email']) && isset($params['password']) && i
 // -- Check the presence of mandatory parameters --
 if(!$hasMandatoryParams){
     ApiController::displayResponse(NULL, "Missing mandatory parameters");
-    die;
 }
 
 // -- Check the match between IDs --
@@ -26,14 +25,12 @@ $email	  = $params['email'];
 $password = $params['password'];
 if(AccountController::checkIDs($email,$password) === FALSE){
     ApiController::displayResponse(NULL, "Bad identifiants");
-    die;
 }
 
 // -- Check if the asked action exists --
 $action = $params['action'];
 if( ApiController::existsAction($action) === FALSE){
     ApiController::displayResponse(NULL, "Unknown action");
-    die;
 }
 
 // -- Get the result for the asked action --
