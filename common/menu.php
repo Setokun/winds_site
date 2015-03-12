@@ -2,7 +2,7 @@
             <nav style="background: #ccc; z-index: 1; position:relative" class="col-sm-3 col-md-2">
 		<div id="navigation" style="position:absolute; top: 0px; left: 0px; z-index: 2;"></div>
           <ul id="menu">
-                <a id="user"><li>Hello<br><?php echo $user->pseudo; ?></li></a>
+                <li>Hello<br><?php echo $user->pseudo; ?></li>
                 <hr/>
                 <a id="profile" href="profile.php"><li class="category">Profile</li></a>
                 <a id="logout" href="#"><li>Log out</li></a>
