@@ -43,7 +43,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         $themes = ManagerTheme::init()->get();
         foreach($themes as $theme){
             // mettre l'image
-            echo "[IMAGE] ".Tools::capitalize($theme->getName());
+            echo "<img src='../resources/logo-honey.png' class='theme-image' /> ".Tools::capitalize($theme->getName());
         }
     }
     static function getTheme($id=NULL){
@@ -58,7 +58,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         foreach($customs as $level){
             $creator = ManagerUser::init()->getByID( $level->getIdCreator() );
             // mettre l'image
-            echo "<div class='custom-level'>[IMAGE] ".Tools::capitalize($level->getName())
+            echo "<div class='custom-level'><img src='../resources/logo-ice.png' class='theme-image' /> ".Tools::capitalize($level->getName())
                 ." created by ".$creator->getPseudo()."<br><span class='description'>"
                 .$level->getDescription()."</span></div>";
         }

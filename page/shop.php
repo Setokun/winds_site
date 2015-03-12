@@ -7,7 +7,7 @@ require_once "../core/config.php";
 
 <link type="text/css" rel="stylesheet" href="../css/shop.css">
 <script type="text/javascript" src="../js/shop.js" ></script>
-<div id="shop">
+<section id="shop" style="padding-bottom:20px" class="col-sm-9 col-md-10">
     <div>
         <h4>Available themes</h4>
         <?php ThemeController::displayAll(); ?>
@@ -20,7 +20,7 @@ require_once "../core/config.php";
             <?php LevelController::displayCustomLevels(); ?>
         </div>
     </div>
-</div>
+</section>
 
 <?php
 include "../common/footer.php";

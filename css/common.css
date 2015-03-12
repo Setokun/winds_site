@@ -24,7 +24,7 @@ nav{border-right: 2px solid black; border-bottom: 2px solid black; text-align: c
 nav , nav [class*="col"]{margin:0; padding: 10px 0 10px 0;}
 nav ul {margin:0; padding:0;}
 nav li{list-style-type:none; margin:0px; padding:0px; line-height: 35px; color: #337abb; font-family: bubble; font-size: 22px}
-nav li:hover{border-radius: 6px; /*border-box;*/ background:#fff; color: black}
+nav a:hover li{border-radius: 6px; /*border-box;*/ background:#fff; color: black}
 nav a:hover{cursor: pointer; text-decoration: none;}
 nav .active li{border-radius: 6px; /*border-box;*/ background:#337abb; color:white;}
 
@@ -42,6 +42,11 @@ table{width:100%}
 .button-red, .btn-delete-post{background: red}
 .button-orange{background: orange}
 .button-blue{background: blue}
+
+
+/* shop */
+.theme-image{margin: 15px; width:64px; border: 2px solid #666; border-radius: 10px;}
+
 
 /* forum */
 .forum-post-title{margin-top: 20px; padding: 0px; background: #ccc;}
