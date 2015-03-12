@@ -1,10 +1,10 @@
-* { box-sizing: border-box; font-size: 14px }
+//* { box-sizing: border-box; font-size: 14px }
 
 /*-- banner --*/
-#banner { background-color:lightgreen }
+/*#banner { background-color:lightgreen }*/
 
 /*-- menu --*/
-#menu, #content { display: inline-block; vertical-align: top }
+/*#menu, #content { display: inline-block; vertical-align: top }
 #menu { width: 108px; background-color: #BEBEBE }
 #menu * { margin: 1px; color: white; text-align: center; font-weight: bold }
 #menu hr { margin-top: 2px; margin-bottom: 2px; border-top: 2px solid white }
@@ -14,10 +14,60 @@
 #menu #user:hover { background-color: #BEBEBE; cursor: default }
 #menu #logout { color: indianred; font-weight: bold }
 #menu #logout:hover { color: white }
-#menu #logout:active { color: white; background-color: indianred }
+#menu #logout:active { color: white; background-color: indianred }*/
 
 /*-- content --*/
-#content { width: calc(100% - 130px); background-color: lavender }
+/*#content { width: calc(100% - 130px); background-color: lavender }*/
 
 /*-- footer --*/
-#footer { height: 80px; width: 100%; background-color: indianred }
+/*#footer { height: 80px; width: 100%; background-color: indianred }*/
+
+body{background-image: url(images/subtle_white_mini_waves.png);}
+	
+	@font-face {
+		font-family: 'bubble';
+		src: url('fonts/bubble & soap.ttf') format('truetype');
+		font-weight: normal;
+		font-style: normal;
+	}
+	
+	@media (max-width: 767px) {
+		#menu{display: none;}
+		#navigation{display: initial}
+	}
+	
+        [class*="col"], footer {
+            /*background-color: lightgreen;*/
+            /*border: 2px solid black*/;
+            /*border-radius: 6px;*/
+            line-height: 40px;
+            /*text-align: center;*/
+        }
+
+        header [class*="col"]{margin:0;	padding:0; /*border-radius: 10px 10px 0 0;*/ border-bottom: 5px solid black;}
+        header [class*="col"] img{/*border-radius: 10px 10px 0 0;*/}
+
+        nav{border-right: 2px solid black; border-bottom: 2px solid black; text-align: center;}
+        nav , nav [class*="col"]{margin:0; padding: 10px 0 10px 0;}
+        nav ul {margin:0; padding:0;}
+        nav li{list-style-type:none; margin:0px; padding:0px; line-height: 35px; color: #337abb; font-family: bubble; font-size: 22px}
+        nav li:hover{border-radius: 6px; /*border-box;*/ background:#fff; color: black}
+        nav a:hover{cursor: pointer; text-decoration: none;}
+        nav .active li{border-radius: 6px; /*border-box;*/ background:#337abb; color:white;}
+
+        #logout li{color:red;}
+        #toggle-nav{background: #337abb; border : none; padding: 0px 15px; border-radius: 0 0 5px 5px}
+
+        table{width:100%}
+
+
+        section {background: #fff}
+        section p {margin: 10px 0 0 20px; font-weight: bold;}
+        article {/*border: 2px solid black;*/ margin-bottom: 20px;}
+
+        hr{margin:5px; padding:0;}
+        th{text-align: center; font-family: bubble; font-size: 15px; background: #ccc}
+
+        footer{border-top : 2px solid black; height: 100px; background: #7aacff}
+	
+        img { width: 100%; }

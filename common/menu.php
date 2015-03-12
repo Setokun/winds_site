@@ -1,21 +1,22 @@
-        <div id="menu">
-            <ul class="nav nav-pills nav-stacked">
-                <li><a id="user">Hello<br><?php echo $user->pseudo; ?></a></li>
-                <hr>
-                <li class="category"><a id="profile" href="profile.php">Profile</a></li>
-                <li><a id="logout">Log out</a></li>
-                <hr>
-                <li class="category"><a href="home.php">Home</a></li>
-                <li class="category"><a href="shop.php">Shop</a></li>
-                <li class="category"><a href="score.php">Scores</a></li>
-                <li class="category"><a href="forum.php">Forum</a></li>
+        <div class="row">
+            <nav style="background: #ccc; z-index: 1; position:relative" class="col-sm-3 col-md-2">
+		<div id="navigation" style="position:absolute; top: 0px; left: 0px; z-index: 2;"></div>
+          <ul id="menu">
+                <a id="user"><li>Hello<br><?php echo $user->pseudo; ?></li></a>
+                <hr/>
+                <a id="profile" href="profile.php"><li class="category">Profile</li></a>
+                <a id="logout" href="#"><li>Log out</li></a>
+                <hr/>
+                <a id="home" href="home.php"><li class="category">Home</li></a>
+                <a id="shop" href="shop.php"><li class="category">Shop</li></a>
+                <a id="score" href="score.php"><li class="category">Scores</li></a>
+                <a id="forum" href="forum.php"><li class="category">Forum</li></a>
                 <?php if($user->userType > 0){ ?>
-                <li class="category"><a href="account.php">Accounts</a></li>
-                <li class="category"><a href="moderation.php">Moderation</a></li>
+                <a id="account" href="account.php"><li class="category">Accounts</li></a>
+                <a id="moderation" href="moderation.php"><li class="category">Moderation</li></a>
                 <?php }
                 if($user->userType > 1){ ?>
-                <li class="category"><a href="addon.php">Addons</a></li>
+                <a id="addon" href="addon.php"><li class="category">Addons</li></a>
                 <?php } ?>
             </ul>
-        </div>
-        <div id="content">
+        </nav>
