@@ -383,6 +383,9 @@ interface Winds_News {
     public function formateAsNews(){
         return new News($this->date, "subject", "forum.php?id=$this->id");
     }
+    public function isActive(){
+        return $this->subjectStatus == SUBJECT_STATUS::ACTIVE;
+    }
             
     // -- ACCESSORS --
     public function getTitle() {

@@ -202,8 +202,8 @@ define("NB_NEWS_TO_DISPLAY", 5);
                 ."</td></tr>";
         }
     }
-    static function displayInfosSubject($idSubject){
-        $subject = ManagerSubject::init()->getByID($idSubject);
+    static function displayInfosSubject(Subject $subject){
+        if(is_null($subject)){ return; }
         echo "<div><b><em>Title  : ".Tools::capitalize($subject->getTitle())
             ."<br>Status : ".$subject->getSubjectStatus()."</em></b></div>";
     }
@@ -214,7 +214,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
             $date   = (new DateTime($post->getDate()))->format("d-m-Y");
             echo "<div>$date by $author :<br>".$post->getMessage()
                 .($isSuperUser ? "<button id='".$post->getId()
-                ."' class='btn-delete'>Delete</button>" : NULL)."</div>";
+                ."' class='btn-delete-post'>Delete</button>" : NULL)."</div>";
         }
     }
 }
