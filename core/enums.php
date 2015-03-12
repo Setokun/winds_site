@@ -21,19 +21,18 @@ abstract class USER_STATUS extends Enumeration {
           DELETING  = 'deleting',
           BANISHED  = 'banished';
 }
-abstract class ADDON_TYPE extends Enumeration {
-    const THEME = 'theme',
-          LEVEL = 'level';
+abstract class LEVEL_TYPE extends Enumeration {
+    const BASIC  = 'basic',
+          CUSTOM = 'custom';
 }
-abstract class ADDON_STATUS extends Enumeration {
+abstract class LEVEL_STATUS extends Enumeration {
     const ACCEPTED   = 'accepted',
           REFUSED    = 'refused',
           TOMODERATE = 'tomoderate';
 }
-abstract class LEVEL_TYPE extends Enumeration {
-    const NONE   = 'none',
-          BASIC  = 'basic',
-          CUSTOM = 'custom';
+abstract class LEVEL_MODE extends Enumeration {
+    const STANDARD = 'standard',
+          BOSS     = 'boss';
 }
 abstract class SUBJECT_STATUS extends Enumeration {
     const ACTIVE = 'active',

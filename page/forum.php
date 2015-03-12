@@ -4,7 +4,7 @@ include_once "../common/banner.php";
 include_once "../common/menu.php";
 require_once "../core/config.php";
 
-$_SESSION['user'] = (new ManagerUser())->getList()[0];
+$_SESSION['user'] = ManagerUser::init()->getList()[0];
 
 
 $params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );

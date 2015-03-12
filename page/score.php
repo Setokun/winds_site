@@ -24,18 +24,18 @@ $params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
         </h3>
         <h4>Basic levels</h4>
         <div>
-            <?php ScoreController::displayBasicLevels(); ?>
+            <?php ScoreController::displayScoredBasicLevels(); ?>
         </div>
         <h4>Custom levels</h4>
         <div>
-            <?php ScoreController::displayCustomLevels(); ?>
+            <?php ScoreController::displayScoredCustomLevels(); ?>
         </div>
     </div>
     <?php }else{ ?>
     <button class="btn-back">Back</button>
     <h4>Ranking</h4>
 	<table>
-            <?php ScoreController::displayHeaders(); ?>
+            <?php ScoreController::displayHeaders($params['id']); ?>
             <?php ScoreController::displayRanking($params['id']); ?>
 	</table>
     <?php } ?>

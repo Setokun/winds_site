@@ -18,39 +18,89 @@ interface Winds_News {
 /*OK*/abstract class WindsClass {
     protected $id;                                      // int : ID used in DB as PK
     static public $columns;                             // must be in same order like in DB - DON'T FORGET "id" COLUMN
-    // static public function _new_();                  // use this constructor to instanciate an object
+    // static public function init();                   // use this constructor to instanciate an object
     final protected function __construct(){}            // constructor reserved to instanciate from DB
     final public function getId() {
         return $this->id;
     }
 }
+/*OK*/abstract class Addon extends WindsClass
+        implements Winds_Insert, Winds_News, JsonSerializable {
+    
+    static public $columns = ['id','name','description','creationDate','filePath','idCreator'];
+    protected $name,                  // text : 64 chars, unique
+              $description,           // text : 512 chars
+              $creationDate,          // datetime
+              $filePath,              // text : 255 chars, unique
+              $idCreator;             // int  : user ID
+    
+    // -- CONSTRUCTORS --
+    // static public function init()    // to define in derived classes
+    
+    // -- METHODS --
+    public function valuesDB_toInsert(){
+        return array(
+            $this->name,
+            $this->description,
+            $this->creationDate,
+            $this->filePath,
+            $this->idCreator
+        );
+    }
+    public function jsonSerialize() {
+        return (object) get_object_vars($this);
+    }
+    public function compareCreationDateTo(Addon $addon){
+        $currentDate = new DateTime($this->creationDate);
+        $addonDate   = new DateTime($addon->creationDate);;
+        return $currentDate->getTimestamp() - $addonDate->getTimestamp();
+    }
+    
+    // -- ACCESSORS --
+    public function getName() {
+        return $this->name;
+    }
+    public function getDescription() {
+        return $this->description;
+    }
+    public function getCreationDate() {
+        return $this->creationDate;
+    }
+    public function getFilePath(){
+        return $this->filePath;
+    }
+    public function getIdCreator() {
+        return $this->idCreator;
+    }
+
+}
 /*OK*/class User extends WindsClass
-    implements Winds_Insert, Winds_Update, JsonSerializable {
+        implements Winds_Insert, Winds_Update, JsonSerializable {
     static public $columns = ['id','email','password','pseudo','registrationDate','forgotPassword','userType','userStatus'];
     private $email,                 // text : 64 chars, unique
             $password,              // text : 64 chars, MD5 encoding
             $pseudo,                // text : 64 chars, unique
             $registrationDate,      // datetime
             $forgotPassword,        // datetime
-            $userType,              // enum : constant of USER_TYPE
-            $userStatus;            // enum : constant of USER_STATUS
+            $userType,              // text : 64 chars - use constant of USER_TYPE
+            $userStatus;            // text : 64 chars - use constant of USER_STATUS
 
     //-- CONSTRUCTORS --
-    /*OK*/static public function _new_($email, $password, $pseudo) {
-        $instance = new self();
-        $instance->id = NULL;
-        $instance->email = $email;
-        $instance->password = md5($password);
-        $instance->pseudo = $pseudo;
-        $instance->registrationDate = Tools::now();
-        $instance->forgotPassword = NULL;
-        $instance->userType = USER_TYPE::PLAYER;
-        $instance->userStatus = USER_STATUS::CREATED;
-        return $instance;
+    static public function init($email, $password, $pseudo) {
+        $user = new self();
+        $user->id               = NULL;
+        $user->email            = $email;
+        $user->password         = md5($password);
+        $user->pseudo           = $pseudo;
+        $user->registrationDate = Tools::now();
+        $user->forgotPassword   = NULL;
+        $user->userType         = USER_TYPE::PLAYER;
+        $user->userStatus       = USER_STATUS::CREATED;
+        return $user;
     }
     
     // -- METHODS --
-    /*OK*/public function valuesDB_toInsert(){
+    public function valuesDB_toInsert(){
         return array(
             $this->email,
             $this->password,
@@ -61,7 +111,7 @@ interface Winds_News {
             $this->userStatus
         );
     }
-    /*OK*/public function valuesDB_toUpdate(){
+    public function valuesDB_toUpdate(){
         return array(
             'password'       => $this->password,
             'forgotPassword' => $this->forgotPassword,
@@ -69,11 +119,11 @@ interface Winds_News {
             'userStatus'     => $this->userStatus
         );
     }
-    /*OK*/public function isSuperUser(){
+    public function isSuperUser(){
         return $this->userType == USER_TYPE::MODERATOR ||
                $this->userType == USER_TYPE::ADMINISTRATOR;
     }
-    /*OK*/public function jsonSerialize() {
+    public function jsonSerialize() {
         return (object) get_object_vars($this);
     }
     
@@ -113,112 +163,113 @@ interface Winds_News {
     }
 
 }
-/*OK*/class Addon extends WindsClass
-    implements Winds_Insert, Winds_Update, Winds_News, JsonSerializable {
-    static public $columns = ['id','name','description','creationDate','filePath',
-                              'addonType','addonStatus','levelType','idCreator','idTheme'];
-    private $name,                  // text : 64 chars, unique
-            $description,           // text : 512 chars
-            $creationDate,          // datetime
-            $filePath,              // text : 255 chars, unique
-            $addonType,             // enum : constant of ADDON_TYPE
-            $addonStatus,           // enum : constant of ADDON_STATUS
-            $levelType,             // enum : constant of LEVEL_TYPE
-            $idCreator,             // enum : user ID
-            $idTheme;               // int  : addon ID or NULL
+/*OK*/class Theme extends Addon {
+    static public function init($name, $description, $filePath, $idCreator) {
+        $addon = new self();
+        $addon->id           = NULL;
+        $addon->name         = $name;
+        $addon->description  = $description;
+        $addon->creationDate = Tools::now();
+        $addon->filePath     = $filePath;
+        $addon->idCreator    = $idCreator;
+        return $addon;
+    }
+    public function formateAsNews() {
+        return new News($this->creationDate, "available theme", "shop.php");
+    }
+}
+
+/*OK*/class Level extends Addon
+        implements Winds_Update {
+    static public $columns = ['id','name','description','creationDate','filePath','timeMax',
+                              'levelType','levelStatus','levelMode','idCreator','idTheme'];
+    private $timeMax,               // int  : number of second
+            $levelType,             // text : 20 char - use constant of LEVEL_TYPE
+            $levelStatus,           // text : 20 char - use constant of LEVEL_STATUS
+            $levelMode,             // text : 20 char - use constant of LEVEL_MODE
+            $idTheme;               // int  : theme ID
     
     // -- CONSTRUCTORS --
-    /*OK*/static public function _new_($name, $description, $filePath, $addonType, $levelType, $idCreator, $idTheme) {
-        $instance = new self();
-        $instance->id           = NULL;
-        $instance->name         = $name;
-        $instance->description  = $description;
-        $instance->creationDate = Tools::now();
-        $instance->filePath      = $filePath;
-        $instance->addonType    = $addonType;
-        $instance->addonStatus  = ($addonType == ADDON_TYPE::THEME) ? ADDON_STATUS::ACCEPTED : ADDON_STATUS::TOMODERATE;
-        $instance->levelType    = ($addonType == ADDON_TYPE::THEME) ? LEVEL_TYPE::NONE : $levelType;
-        $instance->idCreator    = $idCreator;
-        $instance->idTheme      = ($addonType == ADDON_TYPE::THEME) ? NULL : $idTheme;
-        return $instance;
+    static public function init($name, $description, $filePath, $timeMax, $idCreator, $idTheme) {
+        $level = new self();
+        $level->id           = NULL;
+        $level->name         = $name;
+        $level->description  = $description;
+        $level->creationDate = Tools::now();
+        $level->filePath     = $filePath;
+        $level->timeMax      = $timeMax;
+        $level->levelType    = LEVEL_TYPE::CUSTOM;
+        $level->levelStatus  = LEVEL_STATUS::TOMODERATE;
+        $level->levelMode    = LEVEL_MODE::STANDARD;
+        $level->idCreator    = $idCreator;
+        $level->idTheme      = $idTheme;
+        return $level;
     }
     
     // -- METHODS --
-    /*OK*/public function valuesDB_toInsert(){
+    public function valuesDB_toInsert(){
         return array(
             $this->name,
             $this->description,
             $this->creationDate,
             $this->filePath,
-            $this->addonType,
-            $this->addonStatus,
+            $this->timeMax,
             $this->levelType,
+            $this->levelStatus,
+            $this->levelMode,
             $this->idCreator,
             $this->idTheme
         );
     }
-    /*OK*/public function valuesDB_toUpdate(){
+    public function valuesDB_toUpdate(){
         return array(
-            'addonStatus' => $this->addonStatus
+            'levelStatus' => $this->levelStatus
         );
     }
-    /*OK*/public function formateAsNews(){
-        $isLevel = $this->addonType == ADDON_TYPE::LEVEL;
-        $object  = ($isLevel ? "$this->levelType " : NULL)." $this->addonType";
-        return new News($this->creationDate, "available $object", "shop.php");
+    public function formateAsNews(){
+        $type = $this->levelType == LEVEL_TYPE::CUSTOM ? "$this->levelType " : NULL;
+        return new News($this->creationDate, "available $type level", "shop.php");
     }
-    /*OK*/public function jsonSerialize() {
+    public function jsonSerialize() {
         return (object) get_object_vars($this);
     }
     
     // -- ACCESSORS --
-    public function getName() {
-        return $this->name;
-    }
-    public function getDescription() {
-        return $this->description;
-    }
-    public function getCreationDate() {
-        return $this->creationDate;
-    }
-    public function getFilePath(){
-        return $this->filePath;
-    }
-    public function getAddonType() {
-        return $this->addonType;
-    }
-    public function getAddonStatus() {
-        return $this->addonStatus;
+    public function getTimeMax(){
+        return $this->timeMax;
     }
     public function getLevelType() {
         return $this->levelType;
     }
-    public function getIdCreator() {
-        return $this->idCreator;
+    public function getLevelStatus() {
+        return $this->levelStatus;
+    }
+    public function getLevelMode() {
+        return $this->levelMode;
     }
     public function getIdTheme() {
         return $this->idTheme;
     }
-    public function setAddonStatus($addonStatus) {
-        $this->addonStatus = $addonStatus;
+    public function setLevelStatus($levelStatus) {
+        $this->levelStatus = $levelStatus;
     }
 
 }
 /*OK*/class Score extends WindsClass
-    implements Winds_Insert, Winds_Update, JsonSerializable {
+        implements Winds_Insert, Winds_Update, JsonSerializable {
     static public $columns = ['id','idPlayer','idLevel','time','nbClicks','nbItems'];
     private $idPlayer,              // int : user ID
-            $idLevel,               // int : addon ID
+            $idLevel,               // int : level ID
             $time,                  // int : seconds
             $nbClicks,              // int
             $nbItems;               // int
     static private $points = array(
-        'time'      => -10,
-        'nbClicks'  => -2,
+        'time'      => 10,
+        'nbClicks'  => 2,
         'nbItems'   => 1);
     
     // -- CONSTRUCTORS --
-    /*OK*/static public function _new_($idPlayer, $idLevel, $time, $nbClicks, $nbItems) {
+    static public function init($idPlayer, $idLevel, $time, $nbClicks, $nbItems) {
         $instance = new self();
         $instance->id       = NULL;
         $instance->idPlayer = $idPlayer;
@@ -230,7 +281,7 @@ interface Winds_News {
     }
     
     // -- METHODS --
-    /*OK*/public function valuesDB_toInsert(){
+    public function valuesDB_toInsert(){
         return array(
             $this->idPlayer,
             $this->idLevel,
@@ -239,39 +290,31 @@ interface Winds_News {
             $this->nbItems
         );
     }
-    /*OK*/public function valuesDB_toUpdate(){
+    public function valuesDB_toUpdate(){
         return array(
             'time'      => $this->time,
             'nbClicks'  => $this->nbClicks,
             'nbItems'   => $this->nbItems
         );
     }
-    /*OK*/public function jsonSerialize() {
+    public function jsonSerialize() {
         return (object) get_object_vars($this);
     }
     public function compareTo(Score $score){
-        var_dump($this,"compared to",$score);
-        
-        if($this->time     == $score->getTime()
-        && $this->nbClicks == $score->getNbClicks()
-        && $this->nbItems  == $score->getNbItems()){
-            return 0;
-        }
-        
-        $higher = $this->time     < $score->getTime()
-               || $this->nbClicks < $score->getNbClicks()
-               || $this->nbItems  > $score->getNbItems();
-        return $higher ? 1 : -1;
+        return $this->calculate() - $score->calculate();
     }
-    /*OK*/public function updateFrom(Score $score){
+    public function calculate(){
+        $level = ManagerLevel::init()->getByID($this->idLevel);
+        $time  = $level->getTimeMax() - $this->time;
+        $points = $time           * self::$points['time']
+                + $this->nbClicks * self::$points['nbClicks']
+                + $this->nbItems  * self::$points['nbItems'];
+        return $points;
+    }
+    public function updateDataDFrom(Score $score){
         $this->time     = $score->getTime();
         $this->nbClicks = $score->getNbClicks();
         $this->nbItems  = $score->getNbItems();
-    }
-    public function calculate(){
-        $points = $this->time     * self::$points['time']
-                + $this->nbClicks * self::$points['nbClicks']
-                + $this->nbItems  * self::$points['nbItems'];
     }
     
     // -- ACCESSORS --
@@ -302,28 +345,28 @@ interface Winds_News {
 
 }
 /*OK*/class Subject extends WindsClass
-    implements Winds_Insert, Winds_Update, Winds_News {
+        implements Winds_Insert, Winds_Update, Winds_News {
     static public $columns = ['id','title','message','date','subjectStatus','idAuthor'];
     private $title,                 // text : 64 chars
             $message,               // text : 512 chars
             $date,                  // datetime
-            $subjectStatus,         // enum : constant of SUBJECT_STATUS
+            $subjectStatus,         // text : 20 chars - use constant of SUBJECT_STATUS
             $idAuthor;              // int  : user ID
     
     // -- CONSTRUCTORS --
-    /*OK*/static public function _new_($title, $message, $idAuthor) {
-        $instance = new self();
-        $instance->id            = NULL;
-        $instance->title         = $title;
-        $instance->message       = $message;
-        $instance->date          = Tools::now();
-        $instance->subjectStatus = SUBJECT_STATUS::ACTIVE;
-        $instance->idAuthor      = $idAuthor;
-        return $instance;
+    static public function init($title, $message, $idAuthor) {
+        $subject = new self();
+        $subject->id            = NULL;
+        $subject->title         = $title;
+        $subject->message       = $message;
+        $subject->date          = Tools::now();
+        $subject->subjectStatus = SUBJECT_STATUS::ACTIVE;
+        $subject->idAuthor      = $idAuthor;
+        return $subject;
     }
     
     // -- METHODS --
-    /*OK*/public function valuesDB_toInsert(){
+    public function valuesDB_toInsert(){
         return array(
             $this->title,
             $this->message,
@@ -332,12 +375,12 @@ interface Winds_News {
             $this->idAuthor
         );
     }
-    /*OK*/public function valuesDB_toUpdate(){
+    public function valuesDB_toUpdate(){
         return array(
             'subjectStatus' => $this->subjectStatus
         );
     }
-    /*OK*/public function formateAsNews(){
+    public function formateAsNews(){
         return new News($this->date, "subject", "forum.php?id=$this->id");
     }
             
@@ -363,7 +406,7 @@ interface Winds_News {
 
 }
 /*OK*/class Post extends WindsClass
-    implements Winds_Insert, Winds_News {
+        implements Winds_Insert, Winds_News {
     static public $columns = ['id','date','message','idAuthor','idSubject'];
     private $date,                  // datetime
             $message,               // text : 512 chars
@@ -371,18 +414,18 @@ interface Winds_News {
             $idSubject;             // int  : subject ID
     
     // -- CONSTRUCTORS --
-    /*OK*/static public function _new_($message, $idAuthor, $idSubject) {
-        $instance = new self();
-        $instance->id        = NULL;
-        $instance->date      = Tools::now();
-        $instance->message   = $message;
-        $instance->idAuthor  = $idAuthor;
-        $instance->idSubject = $idSubject;
-        return $instance;
+    static public function init($message, $idAuthor, $idSubject) {
+        $post = new self();
+        $post->id        = NULL;
+        $post->date      = Tools::now();
+        $post->message   = $message;
+        $post->idAuthor  = $idAuthor;
+        $post->idSubject = $idSubject;
+        return $post;
     }
     
     // -- METHODS --
-    /*OK*/public function valuesDB_toInsert(){
+    public function valuesDB_toInsert(){
         return array(
             $this->date,
             $this->message,
@@ -390,7 +433,7 @@ interface Winds_News {
             $this->idSubject
         );
     }
-    /*OK*/public function formateAsNews(){
+    public function formateAsNews(){
         return new News($this->date, "post", "forum.php?id=$this->id");
     }
     
@@ -413,23 +456,23 @@ interface Winds_News {
 /*OK*/class News {
     private $date,
             $object,
-            $link,
+            $url,
             $creator;
     
     // -- CONSTRUCTORS --
-    /*OK*/public function __construct($date, $object, $link){
+    public function __construct($date, $object, $url){
         $this->date   = (new DateTime($date))->format("d-m-Y");
         $this->object = $object;
-        $this->link   = $link; 
+        $this->url    = $url; 
     }
     
     // -- METHODS --
-    /*OK*/public function getMessage(){
-        return "<tr><td><a href='$this->link'>$this->date : New $this->object by $this->creator</a></td></tr>";
+    public function getMessage(){
+        return "<tr><td><a href='$this->url'>$this->date : New $this->object by $this->creator</a></td></tr>";
     }
     
     // -- ACCESSORS --
-    /*OK*/public function setCreator(User $creator) {
+    public function setCreator(User $creator) {
         $this->creator = $creator->getPseudo();
     }
 }

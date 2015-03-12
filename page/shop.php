@@ -10,14 +10,14 @@ require_once "../core/config.php";
 <div id="shop">
     <div>
         <h4>Available themes</h4>
-        <?php AddonController::displayThemes(); ?>
+        <?php ThemeController::displayAll(); ?>
     </div>
     <div>
         <h4>Available custom levels
             <span class="label-clickme">(Click on one item to show more details)</span>
         </h4>
         <div>
-            <?php AddonController::displayCustomLevels(); ?>
+            <?php LevelController::displayCustomLevels(); ?>
         </div>
     </div>
 </div>

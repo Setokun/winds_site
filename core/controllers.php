@@ -2,113 +2,144 @@
 require_once "config.php";
 define("NB_NEWS_TO_DISPLAY", 5);
 
-class AccountController {
-    /*OK*/static function checkIDs($email,$password){
-        return !empty((new ManagerUser())->get(['email'=>$email,'password'=>$password]));
+/*OK*/class AccountController {
+    static function checkIDs($email,$password){
+        return !empty(ManagerUser::init()->get(['email'=>$email,'password'=>$password]));
     }
-    /*OK*/static function getUserProfile($email){
-        return (new ManagerUser())->get(['email'=>$email])[0];
+    static function getUserProfile($email){
+        return ManagerUser::init()->get(['email'=>$email])[0];
     }
 }
-class AddonController {
-    /*OK*/static function displayLastNews(){
-        $addons = (new ManagerAddon())->get(
-                    array("addonStatus"=>ADDON_STATUS::ACCEPTED),
-                    "ORDER BY creationDate DESC LIMIT ".NB_NEWS_TO_DISPLAY);
+/*OK*/class AddonController {
+    static function displayLastNews(){
+        $criterias = "ORDER BY creationDate DESC LIMIT ".NB_NEWS_TO_DISPLAY;
+        $themes = ManagerTheme::init()->get(NULL, $criterias);
+        $levels = ManagerLevel::init()->get(["levelStatus"=>LEVEL_STATUS::ACCEPTED],$criterias);
+        
+        $addons = array_merge($themes, $levels);
+        usort($addons, function($addon1,$addon2){
+            $addon1->compareCreationDateTo($addon2);
+        });
+        
         foreach($addons as $addon){
-            $creator = (new ManagerUser())->getByID( $addon->getIdCreator() );
+            $creator = ManagerUser::init()->getByID($addon->getIdCreator());
             $news    = $addon->formateAsNews();
             $news->setCreator($creator);
             echo $news->getMessage();
         }
     }
-    /*OK*/static function displayThemes(){
-        $themes = (new ManagerAddon())->get(array(
-                    "addonStatus"   => ADDON_STATUS::ACCEPTED,
-                    "addonType"     => ADDON_TYPE::THEME));
+}
+/*OK*/class ThemeController {
+    static function displayAll(){
+        $themes = ManagerTheme::init()->get();
         foreach($themes as $theme){
             // mettre l'image
             echo "[IMAGE] ".Tools::capitalize($theme->getName());
         }
     }
-    /*OK*/static function displayCustomLevels(){
+    static function getTheme($id=NULL){
+        $params = array();
+        if( !is_null($id) ){ $params["id"] = $id; }
+        return (new ManagerAddon())->get($params);
+    }
+}
+/*OK*/class LevelController {
+    static function displayCustomLevels(){
         $customs = self::getLevel(NULL, LEVEL_TYPE::CUSTOM);
         foreach($customs as $level){
-            $creator = (new ManagerUser())->getByID( $level->getIdCreator() );
+            $creator = ManagerUser::init()->getByID( $level->getIdCreator() );
             // mettre l'image
             echo "<div class='custom-level'>[IMAGE] ".Tools::capitalize($level->getName())
                 ." created by ".$creator->getPseudo()."<br><span class='description'>"
                 .$level->getDescription()."</span></div>";
         }
     }
-    /*OK*/static function getTheme($id=NULL){
-        $params = array("addonType" => ADDON_TYPE::THEME);
-        if( !is_null($id) ){ $params["id"] = $id; }
-        return (new ManagerAddon())->get($params);
-    }
-    /*OK*/static function getLevel($id=NULL, $levelType=NULL, $addonStatus=ADDON_STATUS::ACCEPTED){
-        $params = !is_null($id) ? array("id"=>$id) : array(
-                "addonStatus"   => $addonStatus,
-                "addonType"     => ADDON_TYPE::LEVEL,
-                "levelType"     => $levelType);
-        return (new ManagerAddon())->get($params);
+    static function getLevel($id=NULL, $levelType=NULL, $levelStatus=LEVEL_STATUS::ACCEPTED, $levelMode=LEVEL_MODE::STANDARD){
+        if( !is_null($id) ){
+            return ManagerLevel::init()->get(["id" => $id]);
+        }
+        
+        $params = array();
+        if( !is_null($levelType) ){
+            $params['levelType'] = $levelType;
+        }
+        array_merge($params,array(
+            "levelStatus" => $levelStatus,
+            "levelMode"   => $levelMode));
+        return ManagerLevel::init()->get($params);        
     }
 }
-class ScoreController {
-    
-    /*OK*/static function getScores($idPlayer){
+/*OK*/class ScoreController {
+    /*todo*/static function getScores($idPlayer){
         return ;
     }
-    static public function getRanksByPlayer($idPlayer){
-        
+    /*todo*/static function getRanksByPlayer($idPlayer){
+        return ;
     }
-    /*OK*/static function displayHeaders(){
-        ?><tr>
+    static function displayHeaders($idLevel=NULL){
+        if(is_null($idLevel)){ ?><tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Points</th>
+        </tr><?php
+        }else{ ?>
             <th>Rank</th>
             <th>Player</th>
             <th>Points</th>
             <th>Time</th>
             <th>Number of<br>clicks</th>
             <th>Number of<br>gathered items</th>
-        </tr><?php
+        <?php }
     }
-    /*OK*/static function displayRanking($idLevel=NULL){
-        $i = 1;
-        $scores = (new ManagerScore())->getRanking($idLevel);
-        foreach($scores as $score){
-            $player = (new ManagerUser())->getByID($score->getIdPlayer())->getPseudo();
-            $total = $score->getTime()      * self::$points['time']
-                    + $score->getNbClicks() * self::$points['nbClicks']
-                    + $score->getNbItems()  * self::$points['nbItems'];
-            echo "<tr><td>".$i++."</td><td>$player</td><td>$total</td><td>"
-                .$score->getTime()."</td><td>".$score->getNbClicks()."</td><td>"
-                .$score->getNbItems()."</td></tr>";
+    static function displayRanking($idLevel=NULL){
+        $ranks = ManagerScore::init()->getRanking($idLevel);
+        if( is_null($idLevel) ){
+            $i = 1;
+            foreach($ranks as $data){
+                echo "<tr><td>".$i++."</td><td>".$data['player']
+                    ."</td><td>".$data['points']."</td></tr>";
+            }
+        }else{
+            $i = 1;
+            foreach($ranks as $data){
+                $player = $data['player'];
+                $points = $data['points'];
+                $score  = $data['score'];
+                echo "<tr><td>".$i++."</td><td>$player</td><td>$points</td><td>"
+                    .$score->getTime()."</td><td>".$score->getNbClicks()."</td><td>"
+                    .$score->getNbItems()."</td></tr>";
+            }
         }
     }
-    /*OK*/static function displayBasicLevels(){
-        $basics = AddonController::getLevel(NULL, LEVEL_TYPE::BASIC);
+    static function displayScoredBasicLevels(){
+        $basics = ManagerLevel::init()->getLevelHavingScores(LEVEL_TYPE::BASIC);
         self::formateLevels($basics);
     }
-    /*OK*/static function displayCustomLevels(){
-        $customs = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM);
+    static function displayScoredCustomLevels(){
+        $customs = ManagerLevel::init()->getLevelHavingScores(LEVEL_TYPE::CUSTOM);
         self::formateLevels($customs);
     }
-    /*OK*/static private function formateLevels(array $levels){
+    static private function formateLevels(array $levels){
+        if(empty($levels)){
+            echo "<div>No level with scores</div>";
+            return;
+        }
+        
         foreach($levels as $level){
             // mettre l'image
-            echo "<div class='level' data-idlevel='".$level->getId()
-                ."'>[IMAGE] ".Tools::capitalize($level->getName())."</div>";
+            echo "<div class='level' data-idlevel='".$level['id']
+                ."'>[IMAGE] ".Tools::capitalize($level['name'])."</div>";
         }
     }
 
 }
-class ForumController {
-    /*OK*/static function displayLastNews(){
+/*OK*/class ForumController {
+    static function displayLastNews(){
         $orderByDate = "ORDER BY date DESC LIMIT ".NB_NEWS_TO_DISPLAY;
-        $subjects    = (new ManagerSubject())->get(array("subjectStatus"=>SUBJECT_STATUS::ACTIVE), $orderByDate);
-        $posts       = (new ManagerPost())->get(NULL, $orderByDate);
-        $mgrUser     = new ManagerUser();
-        $count = NB_NEWS_TO_DISPLAY;
+        $subjects    = ManagerSubject::init()->get(["subjectStatus"=>SUBJECT_STATUS::ACTIVE], $orderByDate);
+        $posts       = ManagerPost::init()->get(NULL, $orderByDate);
+        $mgrUser     = ManagerUser::init();
+        $count       = NB_NEWS_TO_DISPLAY;
         
         while($count--){
             if(empty($subjects)){
@@ -135,16 +166,16 @@ class ForumController {
             }            
         }
     }
-    /*OK*/static private function displayNews($mgrUser,$item){
+    static private function displayNews($mgrUser,$item){
         $news    = $item->formateAsNews();
         $creator = $item->getIdAuthor();
         $news->setCreator($mgrUser->getByID($creator));
         echo $news->getMessage();
     }
-    /*OK*/static function displaySubjects(){
-        $subjects = (new ManagerSubject())->getList();
+    static function displaySubjects(){
+        $subjects = ManagerSubject::init()->getList();
         foreach($subjects as $subject){
-            $lastPost = (new ManagerPost())->get(
+            $lastPost = ManagerPost::init()->get(
                     ["idSubject" => $subject->getId()],
                     "ORDER BY date DESC LIMIT 1");
             $isPostMoreRecent = empty($lastPost) ? FALSE :
@@ -152,7 +183,7 @@ class ForumController {
             $date = (new DateTime($isPostMoreRecent ? 
                         $lastPost[0]->getDate() : $subject->getDate())
                     )->format("d-m-Y");;
-            $author = (new ManagerUser())->getById($isPostMoreRecent ?
+            $author = ManagerUser::init()->getById($isPostMoreRecent ?
                         $lastPost[0]->getIdAuthor() : $subject->getIdAuthor()
                     )->getPseudo();
             echo "<tr class='subject' data-idsubject='".$subject->getId()
@@ -162,15 +193,15 @@ class ForumController {
                 ."</td></tr>";
         }
     }
-    /*OK*/static function displayInfosSubject($idSubject){
-        $subject = (new ManagerSubject())->getByID($idSubject);
+    static function displayInfosSubject($idSubject){
+        $subject = ManagerSubject::init()->getByID($idSubject);
         echo "<div><b><em>Title  : ".Tools::capitalize($subject->getTitle())
             ."<br>Status : ".$subject->getSubjectStatus()."</em></b></div>";
     }
-    /*OK*/static function displayPosts($idSubject, $isSuperUser){
-        $posts = (new ManagerPost())->get(['idSubject'=>$idSubject],"ORDER BY date DESC");
+    static function displayPosts($idSubject, $isSuperUser){
+        $posts = ManagerPost::init()->get(['idSubject'=>$idSubject],"ORDER BY date DESC");
         foreach($posts as $post){
-            $author = (new ManagerUser())->getByID($post->getIdAuthor())->getPseudo();
+            $author = ManagerUser::init()->getByID($post->getIdAuthor())->getPseudo();
             $date   = (new DateTime($post->getDate()))->format("d-m-Y");
             echo "<div>$date by $author :<br>".$post->getMessage()
                 .($isSuperUser ? "<button id='".$post->getId()
@@ -196,27 +227,27 @@ class ApiController {
      *     - $user   : the user account
      *     - $params : the array of parameters sent in URL   */
     /*OK*/static function getThemes(User $user, array $params){
-        $themes = AddonController::getTheme();
+        $themes = ThemeController::getTheme();
         self::displayResponse( json_encode($themes) );
     }
     /*OK*/static function getBasicLevels(User $user, array $params){
-        $basics = AddonController::getLevel(NULL, LEVEL_TYPE::BASIC);
+        $basics = LevelController::getLevel(NULL, LEVEL_TYPE::BASIC);
         self::displayResponse( json_encode($basics) );
     }
     /*OK*/static function getCustomLevels(User $user, array $params){
-        $customs = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM);
+        $customs = LevelController::getLevel(NULL, LEVEL_TYPE::CUSTOM);
         self::displayResponse( json_encode($customs) );
     }
     /*OK*/static function getLevelsToModerate(User $user, array $params){
-        $toModerates = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM,  ADDON_STATUS::TOMODERATE);
+        $toModerates = LevelController::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_STATUS::TOMODERATE);
         self::displayResponse( json_encode($toModerates) );
     }
     /*OK*/static function getScores(User $user, array $params){
-        $scores = (new ManagerScore())->getListByPlayer($user->getId());
+        $scores = ManagerScore::init()->getListByPlayer($user->getId());
         self::displayResponse( json_encode($scores) );
     }
     /*OK*/static function getRanks(User $user, array $params){
-        $ranks = (new ManagerScore())->getRanksByPlayer($user->getId());
+        $ranks = ManagerScore::init()->getRanksByPlayer($user->getId());
         self::displayResponse( json_encode($ranks) );
     }
     /*OK*/static function downloadProfile(User $user, array $params){
@@ -227,7 +258,7 @@ class ApiController {
             self::displayResponse(NULL, "Missing theme ID");
         }
         
-        $theme = (new ManagerAddon())->getByID($params['idTheme']);
+        $theme = ManagerTheme::init()->getByID($params['idTheme']);
         var_dump($theme);
     }
     static function downloadBasicLevel(User $user, array $params){
@@ -235,7 +266,7 @@ class ApiController {
             self::displayResponse(NULL, "Missing basic level ID");
         }
         
-        $basicLevel = (new ManagerAddon())->getByID($params['idBasicLevel']);
+        $basicLevel = ManagerLevel::init()->getByID($params['idBasicLevel']);
         var_dump($basicLevel);
     }
     static function downloadCustomLevel(User $user, array $params){
@@ -243,7 +274,7 @@ class ApiController {
             self::displayResponse(NULL, "Missing custom level ID");
         }
         
-        $customLevel = (new ManagerAddon())->getByID($params['idCustomLevel']);
+        $customLevel = ManagerLevel::init()->getByID($params['idCustomLevel']);
         var_dump($customLevel);
     }
     static function downloadLevelToModerate(User $user, array $params){
@@ -251,7 +282,7 @@ class ApiController {
             self::displayResponse(NULL, "Missing level-to-moderate ID");
         }
         
-        $levelToModerate = (new ManagerAddon())->getByID($params['idLevelToModerate']);
+        $levelToModerate = ManagerLevel::init()->getByID($params['idLevelToModerate']);
         var_dump($levelToModerate);
     }
     static function uploadCustomLevel(User $user, array $params){
@@ -267,7 +298,7 @@ class ApiController {
         $scoresSended = json_decode( urldecode($params['scores']), TRUE );
         $counter = 0;
         foreach($scoresSended as $value){
-            $uploaded = Score::_new_($user->getId(), $value['idLevel'],
+            $uploaded = Score::init($user->getId(), $value['idLevel'],
                     $value['time'], $value['nbClicks'], $value['nbItems']);
             $scoresDB = (new ManagerScore())->get(array(
                     "idPlayer" => $user->getId(),
