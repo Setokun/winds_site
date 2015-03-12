@@ -21,8 +21,17 @@ define("NB_NEWS_TO_DISPLAY", 5);
             $addon1->compareCreationDateTo($addon2);
         });
         
+        $creators = array();
         foreach($addons as $addon){
-            $creator = ManagerUser::init()->getByID($addon->getIdCreator());
+            $creators[$addon->getIdCreator()] = NULL;
+        }
+        $users = ManagerUser::init()->get(NULL,"WHERE id IN (".  implode(',', array_keys($creators)).")");
+        foreach($users as $user){
+            $creators[$user->getId()] = $user;
+        }
+       
+        foreach($addons as $addon){
+            $creator = $creators[$addon->getIdCreator()];
             $news    = $addon->formateAsNews();
             $news->setCreator($creator);
             echo $news->getMessage();

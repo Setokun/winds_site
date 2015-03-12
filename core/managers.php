@@ -265,7 +265,6 @@ require_once "config.php";
                 array_push($ranks,["player"=>$player, "points"=>$points, "score"=>$score]);
             }
         }
-        //if($nullID){ arsort($ranks); }
         return $ranks;
     }
     public function getRanksByPlayer($idPlayer){
