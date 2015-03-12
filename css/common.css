@@ -1,6 +1,6 @@
 /* généralités */
 
-body{background-image: url(images/subtle_white_mini_waves.png);}
+body{background-image: url(../resources/subtle_white_mini_waves.png); max-width:97%; margin:auto;}
 	
 @font-face {
         font-family: 'bubble';
@@ -29,17 +29,23 @@ nav a:hover{cursor: pointer; text-decoration: none;}
 nav .active li{border-radius: 6px; /*border-box;*/ background:#337abb; color:white;}
 
 #logout li{color:red;}
-#toggle-nav{background: #337abb; border : none; padding: 0px 15px; border-radius: 0 0 5px 5px}
+#navigation{position:absolute; top: 0px; left: 0px; z-index: 2;}
+#toggle-nav{background: #337abb; border : none; margin-left: 15px; padding: 10px 15px; border-radius: 0 0 5px 5px}
 
 table{width:100%}
 .account{border-top: 2px solid #ccc; padding-bottom: 10px;}
 .choice-center{text-align: center}
 
-.button-valid-rights, .button-delete-account, .button-banish-account{
+.button-green, .button-red, .button-orange, .button-blue, .btn-delete-post{
     width: 80px; border-radius: 10px; padding: 0px; border: 2px solid grey; color:white;}
-.button-valid-rights{background: green}
-.button-delete-account{background: red}
-.button-banish-account{background: orange}
+.button-green{background: green}
+.button-red, .btn-delete-post{background: red}
+.button-orange{background: orange}
+.button-blue{background: blue}
+
+/* forum */
+.forum-post-title{margin-top: 20px; padding: 0px; background: #ccc;}
+.forum-post-title p{font-family: bubble; margin:0 0 0 20px; padding: 0px;}
 
 
 section {background: #fff}

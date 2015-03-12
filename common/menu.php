@@ -1,6 +1,6 @@
         <div class="row">
             <nav style="background: #ccc; z-index: 1; position:relative" class="col-sm-3 col-md-2">
-		<div id="navigation" style="position:absolute; top: 0px; left: 0px; z-index: 2;"></div>
+		<div id="navigation" style=""></div>
           <ul id="menu">
                 <li>Hello<br><?php echo $user->pseudo; ?></li>
                 <hr/>

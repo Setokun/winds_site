@@ -204,16 +204,16 @@ define("NB_NEWS_TO_DISPLAY", 5);
     }
     static function displayInfosSubject(Subject $subject){
         if(is_null($subject)){ return; }
-        echo "<div><b><em>Title  : ".Tools::capitalize($subject->getTitle())
-            ."<br>Status : ".$subject->getSubjectStatus()."</em></b></div>";
+        echo "<div><div class='forum-post-title'><p>Title  : ".Tools::capitalize($subject->getTitle())
+            ."<p></div><p>Status : ".$subject->getSubjectStatus()."</p></div>";
     }
     static function displayPosts($idSubject, $isSuperUser){
         $posts = ManagerPost::init()->get(['idSubject'=>$idSubject],"ORDER BY date DESC");
         foreach($posts as $post){
             $author = ManagerUser::init()->getByID($post->getIdAuthor())->getPseudo();
             $date   = (new DateTime($post->getDate()))->format("d-m-Y");
-            echo "<div>$date by $author :<br>".$post->getMessage()
-                .($isSuperUser ? "<button id='".$post->getId()
+            echo "<div><div class='col-xs-8 col-sm-9 col-md-10' style='border-top: 2px solid #aaa; padding-top:10px;'>$date by $author :<br>".$post->getMessage()
+                .($isSuperUser ? "</div><div class='col-xs-4 col-sm-3 col-md-2'><button id='".$post->getId()
                 ."' class='btn-delete-post'>Delete</button>" : NULL)."</div>";
         }
     }

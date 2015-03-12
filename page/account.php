@@ -21,9 +21,9 @@ require_once "../core/config.php";
                     </form>
                     <div class="row">
                         <div class="col-xs-3">Actions :</div>
-                        <div class="col-xs-3"><input class="button-valid-rights" type="button" value="Valid rights" /></div>
-                        <div class="col-xs-3"><input class="button-delete-account" type="button" value="Delete" /></div>
-                        <div class="col-xs-3"><input class="button-banish-account" type="button" value="Banish" /></div>
+                        <div class="col-xs-3"><input class="button-green" type="button" value="Valid rights" /></div>
+                        <div class="col-xs-3"><input class="button-red" type="button" value="Delete" /></div>
+                        <div class="col-xs-3"><input class="button-orange" type="button" value="Banish" /></div>
                     </div>
                 </div>
             </div>
@@ -40,9 +40,9 @@ require_once "../core/config.php";
                     </form>
                     <div class="row">
                         <div class="col-xs-3">Actions :</div>
-                        <div class="col-xs-3"><input class="button-valid-rights" type="button" value="Valid rights" /></div>
-                        <div class="col-xs-3"><input class="button-delete-account" type="button" value="Delete" /></div>
-                        <div class="col-xs-3"><input class="button-banish-account" type="button" value="Banish" /></div>
+                        <div class="col-xs-3"><input class="button-green" type="button" value="Valid rights" /></div>
+                        <div class="col-xs-3"><input class="button-red" type="button" value="Delete" /></div>
+                        <div class="col-xs-3"><input class="button-orange" type="button" value="Banish" /></div>
                     </div>
                 </div>
             </div>
@@ -59,9 +59,9 @@ require_once "../core/config.php";
                     </form>
                     <div class="row">
                         <div class="col-xs-3">Actions :</div>
-                        <div class="col-xs-3"><input name="player3" class="button-valid-rights" type="button" value="Valid rights" /></div>
-                        <div class="col-xs-3"><input class="button-delete-account" type="button" value="Delete" /></div>
-                        <div class="col-xs-3"><input class="button-banish-account" type="button" value="Banish" /></div>
+                        <div class="col-xs-3"><input class="button-green" type="button" value="Valid rights" /></div>
+                        <div class="col-xs-3"><input class="button-red" type="button" value="Delete" /></div>
+                        <div class="col-xs-3"><input class="button-orange" type="button" value="Banish" /></div>
                     </div>
                 </div>
             </div>
@@ -78,9 +78,9 @@ require_once "../core/config.php";
                     </form>
                     <div class="row">
                         <div class="col-xs-3">Actions :</div>
-                        <div class="col-xs-3"><input name="player4" class="button-valid-rights" type="button" value="Valid rights" /></div>
-                        <div class="col-xs-3"><input class="button-delete-account" type="button" value="Delete" /></div>
-                        <div class="col-xs-3"><input class="button-banish-account" type="button" value="Banish" /></div>
+                        <div class="col-xs-3"><input class="button-green" type="button" value="Valid rights" /></div>
+                        <div class="col-xs-3"><input class="button-red" type="button" value="Delete" /></div>
+                        <div class="col-xs-3"><input class="button-orange" type="button" value="Banish" /></div>
                     </div>
                 </div>
             </div>
@@ -97,9 +97,9 @@ require_once "../core/config.php";
                     </form>
                     <div class="row">
                         <div class="col-xs-3">Actions :</div>
-                        <div class="col-xs-3"><input name="player5" class="button-valid-rights" type="button" value="Valid rights" /></div>
-                        <div class="col-xs-3"><input class="button-delete-account" type="button" value="Delete" /></div>
-                        <div class="col-xs-3"><input class="button-banish-account" type="button" value="Banish" /></div>
+                        <div class="col-xs-3"><input class="button-green" type="button" value="Valid rights" /></div>
+                        <div class="col-xs-3"><input class="button-red" type="button" value="Delete" /></div>
+                        <div class="col-xs-3"><input class="button-orange" type="button" value="Banish" /></div>
                     </div>
                 </div>
             </div>

@@ -13,72 +13,75 @@ $user   = $_SESSION['user'];
 
 <link type="text/css" rel="stylesheet" href="../css/forum.css">
 <script type="text/javascript" src="../js/forum.js" ></script>
-<div id="forum">
-    <?php if(empty($params)){ ?>
-    <!--
-        Display the subjects
-    -->
-    <div id="subject">
-        <div id="new-subject" style="display:none" >
-            <h3>New subject to create</h3>
-            <div>
-                <label for="title-new-subject">Title :</label>
-                <input id="title-new-subject" type="text" placeholder="Type the title here" ><br/>
-                <label for="message-new-subject">Message :</label>
-                <input id="message-new-subject" type="text" placeholder="Type the message here" >
-            </div>
-            <div>
-                <button id="create-subject">Create</button>
-                <button id="cancel-subject">Cancel</button>
-            </div>
-        </div>
-        <div id="display-subject">
-            <button id="btn-new-subject">Create a new subject</button>
-            <table id="table-subjects">
-                <tr>
-                    <th>Subjects</th>
-                    <th>Status</th>
-                    <th>Last update</th>
-                <tr>
-                <?php ForumController::displaySubjects(); ?>
-            </table>
-        </div>
-    </div>
-    <?php }else
-          if(isset($params['id'])){
-              $subject = ManagerSubject::init()->getByID($params['id']); ?>
+<section style="padding-bottom:20px; padding-top:20px" class="col-sm-9 col-md-10">
+    <div id="forum">
+        <?php if(empty($params)){ ?>
         <!--
-            Display the posts of the specified subject
+            Display the subjects
         -->
-        <div id="post">
-            <div id="new-post" style="display:none" >
-                <h3>New post to create</h3>
+        <div id="subject">
+            <div id="new-subject" style="display:none" >
+                <h3>New subject to create</h3>
                 <div>
-                    <label for="message-new-post">Message :</label>
-                    <input id="message-new-post" type="text" placeholder="Message" >
+                    <label for="title-new-subject">Title :</label>
+                    <input id="title-new-subject" type="text" placeholder="Type the title here" ><br/>
+                    <label for="message-new-subject">Message :</label>
+                    <input id="message-new-subject" type="text" placeholder="Type the message here" >
                 </div>
                 <div>
-                    <button id="create-post">Create</button>
-                    <button id="cancel-post">Cancel</button>
+                    <button id="create-subject" class="button-green">Create</button>
+                    <button id="cancel-subject" class="button-red">Cancel</button>
                 </div>
             </div>
-            <div id="display-post">
-                <?php if($subject->isActive()){ ?>
-                <button id="btn-new-post">Create a new post</button>
-                    <?php if($user->isSuperUser()){ ?>
-                    <button id="btn-close-subject">Close this subject</button>
-                <?php }} if($user->isSuperUser()){ ?>
-                <button id="btn-delete-subject">Delete this subject</button>
-                <?php } ?>
-                <button id="btn-back">Back</button>
-                 <?php ForumController::displayInfosSubject($subject);
-                       ForumController::displayPosts($params['id'],$user->isSuperUser()); ?>
+            <div id="display-subject">
+                <button id="btn-new-subject" class="button-green" style="width:150px; margin-bottom: 20px">Create a new subject</button>
+                <table id="table-subjects" class="table table-bordered">
+                    <tr>
+                        <th>Subjects</th>
+                        <th>Status</th>
+                        <th>Last update</th>
+                    <tr>
+                    <?php ForumController::displaySubjects(); ?>
+                </table>
             </div>
         </div>
-    <?php }else {
-        // afficher un message d'erreur
-    } ?>
-</div>
+        <?php }else
+              if(isset($params['id'])){
+                  $subject = ManagerSubject::init()->getByID($params['id']); ?>
+            <!--
+                Display the posts of the specified subject
+            -->
+            <div id="post">
+                <div id="new-post" style="display:none" >
+                    <h3>New post to create</h3>
+                    <div>
+                        <label for="message-new-post">Message :</label>
+                        <input id="message-new-post" type="text" placeholder="Message" >
+                    </div>
+                    <div>
+                        <button id="create-post" class="button-green">Create</button>
+                        <button id="cancel-post" class="button-red">Cancel</button>
+                    </div>
+                </div>
+                <div id="display-post">
+                    <div class="col-xs-6 col-sm-3"><?php if($subject->isActive()){ ?>
+                        <button class="button-green" style="width:135px;" id="btn-new-post">Create a new post</button></div>
+                    <div class="col-xs-6 col-sm-3"><?php if($user->isSuperUser()){ ?>
+                        <button class="button-orange" style="width:135px;" id="btn-close-subject">Close this subject</button></div>
+                    <div class="col-xs-8 col-sm-4"><?php }} if($user->isSuperUser()){ ?>
+                        <button class="button-red" style="width:135px;" id="btn-delete-subject">Delete this subject</button></div>
+                    <div class="col-xs-4 col-sm-2"><?php } ?>
+                        <button class="button-blue" id="btn-back">Back</button></div>
+                    <div class="col-xs-12">    <?php ForumController::displayInfosSubject($subject);
+                              ForumController::displayPosts($params['id'],$user->isSuperUser()); ?>
+                    </div>
+                </div>
+            </div>
+        <?php }else {
+            // afficher un message d'erreur
+        } ?>
+    </div>
+</section>
 
 <?php
 include "../common/footer.php";
