@@ -105,7 +105,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         if( is_null($idLevel) ){
             $i = 1;
             foreach($ranks as $data){
-                echo "<tr><td>".$i++."</td><td>".$data['player']
+                echo "<tr class='score-data'><td>".$i++."</td><td>".$data['player']
                     ."</td><td>".$data['points']."</td></tr>";
             }
         }else{
@@ -114,7 +114,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
                 $player = $data['player'];
                 $points = $data['points'];
                 $score  = $data['score'];
-                echo "<tr><td>".$i++."</td><td>$player</td><td>$points</td><td>"
+                echo "<tr class='score-data'><td>".$i++."</td><td>$player</td><td>$points</td><td>"
                     .$score->getTime()."</td><td>".$score->getNbClicks()."</td><td>"
                     .$score->getNbItems()."</td></tr>";
             }

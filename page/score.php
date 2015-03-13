@@ -9,11 +9,11 @@ $params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
 
 <link type="text/css" rel="stylesheet" href="../css/score.css">
 <script type="text/javascript" src="../js/score.js" ></script>
-<div id="score">
+<section id="score" style="padding-bottom:20px" class="col-sm-9 col-md-10">
     <?php if( empty($params) ){ ?>
     <div>
         <h3>Main ranking</h3>
-        <table>
+        <table class="table table-bordered">
             <?php ScoreController::displayHeaders(); ?>
             <?php ScoreController::displayRanking(); ?>
         </table>
@@ -32,14 +32,14 @@ $params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
         </div>
     </div>
     <?php }else{ ?>
-    <button class="btn-back">Back</button>
+    <button class="btn-back button-blue">Back</button>
     <h4>Ranking</h4>
-	<table>
+	<table class="table table-bordered">
             <?php ScoreController::displayHeaders($params['id']); ?>
             <?php ScoreController::displayRanking($params['id']); ?>
 	</table>
     <?php } ?>
-</div>
+</section>
 
 <?php
 include "../common/footer.php";
