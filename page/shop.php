@@ -12,13 +12,13 @@ require_once "../core/config.php";
         <button id="download-game" href="#">Click me to download the Winds game</button>
     </div>
     <div>
-        <h4>Available themes</h4>
+        <h3>Available themes</h3>
         <?php ThemeController::displayAll(); ?>
     </div>
     <div>
-        <h4>Available custom levels
+        <h3>Available custom levels
             <span class="label-clickme">(Click on one item to show more details)</span>
-        </h4>
+        </h3>
         <div>
             <?php LevelController::displayCustomLevels(); ?>
         </div>

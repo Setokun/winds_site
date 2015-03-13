@@ -43,7 +43,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         $themes = ManagerTheme::init()->get();
         foreach($themes as $theme){
             // mettre l'image
-            echo "<img src='../resources/logo-honey.png' class='theme-image' /> ".Tools::capitalize($theme->getName());
+            echo "<div class='col-xs-3'><img src='../resources/logo-honey.png' class='theme-image' /><span style='margin-left:10px'> ".Tools::capitalize($theme->getName())."</span></div>";
         }
     }
     static function getTheme($id=NULL){

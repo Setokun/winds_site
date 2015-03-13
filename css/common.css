@@ -45,7 +45,9 @@ table{width:100%}
 
 
 /* shop */
-.theme-image{margin: 15px; width:64px; border: 2px solid #666; border-radius: 10px;}
+.theme-image{margin: 15px; width:48px; border: 2px solid #666; border-radius: 10px;}
+.custom-level{margin-left: 15px;}
+.description{margin-left: 50px;}
 #download-game{width:100%; background: #337abb; color: #fff;}
 
 /* scores */
@@ -62,6 +64,7 @@ article {/*border: 2px solid black;*/ margin-bottom: 20px;}
 
 hr{margin:5px; padding:0;}
 th{text-align: center; font-family: bubble; font-size: 15px; background: #ccc}
+td{background: #fff}
 
 footer{border-top : 2px solid black; height: 100px; background: #7aacff}
 
