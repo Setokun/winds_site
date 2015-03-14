@@ -5,52 +5,44 @@
  */
 require_once "config.php";
 
-/*OK*/abstract class ManagerDB {
-    protected $linkDB,
+interface ManagerInit {
+    static function init();
+}
+
+/*OK*/abstract class ManagerDB implements ManagerInit {
+    protected $PDO,
               $nameDB = "winds";
     
     // VARIABLES - MUST BE OVERRIDEN IN CONSTRUCTOR OF THE DERIVED CLASS
-    protected $nameTable,
+    protected $nameTable,           // the name of the table in DB and of the class to use to instanciate objects 
               $columns;             // must be in same order like in DB
     
-    // static public function init();       // to define in derived classes
-    
-    protected function __construct(){}
-    protected function connectDB() {
+    /*OK*/protected function __construct(){}
+    /*OK*/protected function connectDB() {
         try {
-            $this->linkDB = new PDO('mysql:host=localhost;dbname='.$this->nameDB, 'root', ''); // local
-            $this->linkDB->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING);
+            $this->PDO = new PDO('mysql:host=localhost;dbname='.$this->nameDB, 'root', ''); // local
+            $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
         catch (Exception $e) {
             die('Erreur : ' . $e->getMessage());
             exit;
         }
     }
-    protected function filterClauses(array $clauses=NULL){
-        $filteredClauses = array();
-        if( !is_null($clauses) ){
-            $columnMatches = array_intersect(array_keys($clauses), $this->columns);
-            foreach($columnMatches as $column){
-                $filteredClauses[$column] = $clauses[$column];
-            }
-        }
-        return $filteredClauses;
+    
+    /*OK*/public function getAll($clauses=NULL){
+        return $this->parent_select("SELECT * FROM $this->nameTable $clauses")
+                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $this->nameTable);
     }
-
-    final protected function query_select(array $whereClauses){
-        $select = "SELECT * FROM $this->nameTable";
-        if( !empty($whereClauses) ){
-            $clauseFields = array_keys($whereClauses);
-            $select .= " WHERE ";
-            $nbClauses = count($clauseFields);
-            for($i=0; $i<count($clauseFields); $i++){
-                $select .= $clauseFields[$i].'=?';
-                $select .= (--$nbClauses) ? ' AND ' : NULL;
-            }
-        }
-        return $select;
+    /*OK*/public function getByID($id){
+        $query = "SELECT * FROM $this->nameTable WHERE id=$id";
+        return $this->parent_select($query)
+                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $this->nameTable)[0];
     }
-    final protected function query_insert(){
+    /*OK*/public function get($query){
+        return $this->parent_select($query)->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    /*OK*/protected function query_insert(){
         $columns = $this->columns;
         array_shift($columns);    // delete the 'id' column
         $valuesPlaces = implode(',',  array_fill(0, count($columns), '?'));
@@ -59,298 +51,245 @@ require_once "config.php";
                 implode(',', $columns).
                 ") VALUES ($valuesPlaces)";
     }
-    final protected function query_update(WindsClass $item){
-        $id = $item->getId();
+    /*OK*/protected function query_update(WindsClass $item){
         $fields = array_keys($item->valuesDB_toUpdate());
-        
         $update = "UPDATE $this->nameTable SET ";
         $nbFields = count($fields);
         for($i=0; $i<count($fields); $i++){
             $update .= $fields[$i].'=?';
             $update .= (--$nbFields) ? ' , ' : NULL;
         }
-        
-        return $update." WHERE id=$id";
-    }
-    final protected function query_delete(WindsClass $item){
-        return "DELETE FROM $this->nameTable WHERE id=".$item->getId();
+        return $update." WHERE id=".$item->getId();
     }
     
-    final protected function parent_select(array $whereClauses=NULL, $queryEnd=NULL){
-        $clauses = $this->filterClauses($whereClauses);
-        $values  = array_values($clauses);
-        $query   = $this->query_select($clauses)." ".$queryEnd;
-        
-        $request = $this->linkDB->prepare($query);
-        empty($values) ? $request->execute() : $request->execute($values);
+    /*OK*/protected function parent_select($query){
+        $request = $this->PDO->prepare($query);
+        $request->execute();
         return $request;
     }
-    final protected function parent_insert(WindsClass $item){
-        return $this->linkDB
-                ->prepare($this->query_insert())
-                ->execute($item->valuesDB_toInsert());
+    /*OK*/protected function parent_insert(WindsClass $item){
+        $this->PDO->prepare($this->query_insert())
+                  ->execute($item->valuesDB_toInsert());
+        return $this->PDO->lastInsertId();
     }
-    final protected function parent_update(WindsClass $item){
-        $values = array_values($item->valuesDB_toUpdate());
-        return $this->linkDB
-                    ->prepare($this->query_update($item))
-                    ->execute($values);
+    /*OK*/protected function parent_update(WindsClass $item){
+        $values  = array_values($item->valuesDB_toUpdate());
+        $query   = $this->query_update($item);
+        $request = $this->PDO->prepare($query);
+        $request->execute($values);
+        return $request->rowCount();
+                         
     }
-    final protected function parent_delete(WindsClass $item){
-        return $this->linkDB
-                ->prepare($this->query_delete($item))
-                ->execute();
-    }
-    final protected function parent_execute($query){
-        $request = $this->linkDB->prepare($query);
+    /*OK*/protected function parent_delete(WindsClass $item){
+        $query   = "DELETE FROM $this->nameTable WHERE id=".$item->getId();
+        $request = $this->PDO->prepare($query);
         $request->execute();
-        return $request->fetchAll();
+        return $request->rowCount();                    
     }
 }
-/*OK*/class ManagerUser extends ManagerDB {
-    static public function init(){
+/*OK*/class UserManager extends ManagerDB {
+    /*OK*/static public function init(){
         $mgr = new self();
-        $mgr->nameTable = "users";
+        $mgr->nameTable = "User";
         $mgr->columns   = User::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    public function getList(){
-        return $this->parent_select()
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "User");
-    }
-    public function getByID($id){
-        return $this->parent_select(array('id'=>$id))
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "User")[0];
-    }
-    public function get(array $whereClauses=NULL, $queryEnd=NULL){
-        return $this->parent_select($whereClauses, $queryEnd)
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "User");
-    }
-    public function insert(User $user){
+    /*OK*/public function insert(User $user){
         return $this->parent_insert($user);
     }
-    public function update(User $user){
+    /*OK*/public function update(User $user){
         if(is_null($user->getId())){  return FALSE;  }
         return $this->parent_update($user);
     }
-    public function delete(User $user){
+    /*OK*/public function delete(User $user){
         if(is_null($user->getId())){  return FALSE;  }
         return $this->parent_delete($user);
     }
 }
-/*OK*/class ManagerTheme extends ManagerDB {
-    static public function init(){
+/*OK*/class ThemeManager extends ManagerDB {
+    /*OK*/static public function init(){
         $mgr = new self();
-        $mgr->nameTable = "themes";
+        $mgr->nameTable = "Theme";
         $mgr->columns   = Theme::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    public function getList(){
-        return $this->parent_select()
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Theme");
-    }
-    public function getByID($id){
-        return $this->parent_select(array('id'=>$id))
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Theme")[0];
-    }
-    public function get(array $whereClauses=NULL, $queryEnd=NULL){
-        return $this->parent_select($whereClauses, $queryEnd)
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Theme");
-    }
-    public function insert(Theme $theme){
+    /*OK*/public function insert(Theme $theme){
         return $this->parent_insert($theme);
     }
-    public function update(Theme $theme){
-        if(is_null($theme->getId())){  return FALSE;  }
-        return $this->parent_update($theme);
-    }
-    public function delete(Theme $theme){
+    /*OK*/public function delete(Theme $theme){
         if(is_null($theme->getId())){  return FALSE;  }
         return $this->parent_delete($theme);
     }
 }
-/*OK*/class ManagerLevel extends ManagerDB {
-    static public function init(){
+/*OK*/class LevelManager extends ManagerDB {
+    /*OK*/static public function init(){
         $mgr = new self();
-        $mgr->nameTable = "levels";
+        $mgr->nameTable = "Level";
         $mgr->columns   = Level::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    public function getList(){
-        return $this->parent_select()
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Level");
+    /*OK*/public function insert(Level $level){
+        return $this->parent_insert($level);
     }
-    public function getByID($id){
-        return $this->parent_select(array('id'=>$id))
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Level")[0];
+    /*OK*/public function update(Level $level){
+        if(is_null($level->getId())){  return FALSE;  }
+        return $this->parent_update($level);
     }
-    public function get(array $whereClauses=NULL, $queryEnd=NULL){
-        return $this->parent_select($whereClauses, $queryEnd)
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Level");
+    /*OK*/public function delete(Level $level){
+        if(is_null($level->getId())){  return FALSE;  }
+        return $this->parent_delete($level);
     }
-    public function getLevelHavingScores($levelType=NULL){
-        $query = "SELECT DISTINCT levels.* FROM levels JOIN scores "
-                ."WHERE scores.idLevel=levels.id "
+    
+    /*OK*/public function getLevelsHavingScores($levelType=NULL){
+        $query = "SELECT DISTINCT level.* FROM level JOIN score "
+                ."WHERE score.idLevel=level.id "
                 ."AND levelStatus='".LEVEL_STATUS::ACCEPTED."' "
                 ."AND levelMode='".LEVEL_MODE::STANDARD."'";
         $query .= is_null($levelType) ? NULL : " AND levelType='$levelType'";
+        return $this->get($query);
+    }
+    /*OK*/public function getLevelsTimeMax(){
+        $dataDB = $this->get("SELECT id, timeMax FROM level ORDER BY id");
+        $times  = array();
+        foreach($dataDB as $data){
+            $times[$data['id']] = $data['timeMax'];
+        }        
+        return $times;
+    }
+    /*OK*/public function getCreators(){
+        $query  = "SELECT level.id AS idLevel, pseudo FROM level "
+                 ."JOIN user WHERE level.idCreator=user.id ";
+        $values = $this->get($query);
         
-        $levels = $this->parent_execute($query);
-        $assoc = array();
-        foreach($levels as $level){
-            $assoc[$level['id']] = $level;
+        $data = array();
+        foreach($values as $value){
+            $data[$value['idLevel']] = $value['pseudo'];
         }
-        return $assoc;
-    }
-    public function insert(Theme $theme){
-        return $this->parent_insert($theme);
-    }
-    public function update(Theme $theme){
-        if(is_null($theme->getId())){  return FALSE;  }
-        return $this->parent_update($theme);
-    }
-    public function delete(Theme $theme){
-        if(is_null($theme->getId())){  return FALSE;  }
-        return $this->parent_delete($theme);
+        return $data;
     }
 }
-/*OK*/class ManagerScore extends ManagerDB {
-    static public function init() {
+/*OK*/class ScoreManager extends ManagerDB {
+    /*OK*/static public function init() {
         $score = new self();
-        $score->nameTable = "scores";
+        $score->nameTable = "Score";
         $score->columns   = Score::$columns;
         $score->connectDB();
         return $score;
     }
-    public function getList() {
-        return $this->parent_select()
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Score");
-    }
-    public function getListByPlayer($idPlayer){
-        return $this->parent_select(array("idPlayer"=>$idPlayer))
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Score");
-    }
-    public function getByID($id) {
-        return $this->parent_select(array('id'=>$id))
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Score")[0];
-    }
-    public function get(array $whereClauses=NULL, $queryEnd=NULL){
-        return $this->parent_select($whereClauses, $queryEnd)
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Score");
-    }
-    public function getRanking($idLevel=NULL){
-        $nullID = is_null($idLevel);
-        $query = "SELECT pseudo, scores.* "
-                ."FROM scores JOIN users, levels "
-                ."WHERE scores.idPlayer=users.id AND scores.idLevel=levels.id "
-                ."AND levelStatus='".LEVEL_STATUS::ACCEPTED."' "
-                ."AND levelMode='".LEVEL_MODE::STANDARD."'";
-        $query .= $nullID ? NULL : " AND idLevel=$idLevel";
-        $dataDB = $this->parent_execute($query);
-        
-        $ranks = array();
-        foreach($dataDB as $data){
-            $player   = $data['pseudo'];
-            $idPlayer = $data['idPlayer'];
-            $score    = Score::init( $idPlayer, $data['idLevel'], $data['time'],
-                                     $data['nbClicks'], $data['nbItems'] );
-            $points   = $score->calculate();
-            if($nullID){
-                $exPoints = isset($ranks[$idPlayer]) ? $ranks[$idPlayer] : 0;
-                $ranks[$idPlayer] = ["player"=>$player, "points"=>$exPoints + $points];
-            }else{
-                array_push($ranks,["player"=>$player, "points"=>$points, "score"=>$score]);
-            }
-        }
-        return $ranks;
-    }
-    public function getRanksByPlayer($idPlayer){
-        $levels = $this->parent_execute("SELECT DISTINCT idLevel FROM $this->nameTable")->fetchAll();
-        $order = "ORDER BY time ASC, nbClicks ASC, nbItems DESC";
-        $ranks = array();
-        for($i=0; $i<count($levels); $i++){
-            $idLevel = $levels[$i]['idLevel'];
-            $ranking = $this->get(array("idLevel"=>$idLevel),$order);
-            for($j=0; $j<count($ranking); $j++){
-                $score = $ranking[$j];
-                if($score->getIdPlayer() == $idPlayer){
-                    $ranks[$idLevel] = $j+1;
-                }
-            }
-        }
-        return $ranks;
-    }
-    public function insert(Score $score){
+    /*OK*/public function insert(Score $score){
         return $this->parent_insert($score);
     }
-    public function update(Score $score){
+    /*OK*/public function update(Score $score){
         if(is_null($score->getId())){  return FALSE;  }
         return $this->parent_update($score);
     }
-    public function delete(Score $score){
+    /*OK*/public function delete(Score $score){
         if(is_null($score->getId())){  return FALSE;  }
         return $this->parent_delete($score);
     }
+    
+    /*OK*/public function getAllByPlayer($idPlayer){
+        return $this->getAll("WHERE idPlayer=$idPlayer");
+    }
+    /*OK*/public function getRanksByPlayer($idPlayer){
+        $dataDB = $this->get("SELECT DISTINCT idLevel FROM $this->nameTable");
+        $idsLevel = array_map(function($value){ return $value['idLevel']; },$dataDB);
+
+        $playerRanks = array();
+        foreach($idsLevel as $idLevel){
+            $ranking = $this->getRanking($idLevel);
+            $nbRanks = count($ranking);
+            
+            for($i=0; $i<$nbRanks; $i++){
+                if($ranking[$i]['idPlayer'] == $idPlayer){
+                    array_push($playerRanks, array(
+                        'idLevel'   => $idLevel,
+                        'points'    => $ranking[$i]['points'],
+                        'rank'      => $i +1,
+                        'nbPlayers' => $nbRanks
+                    ));
+                }
+            }
+        }
+        return $playerRanks;
+    }
+    /*OK*/public function getRanking($idLevel=NULL){
+        $query = "SELECT pseudo, score.* FROM score JOIN user, level "
+                ."WHERE score.idPlayer=user.id AND score.idLevel=level.id "
+                ."AND levelStatus='".LEVEL_STATUS::ACCEPTED."' "
+                ."AND levelMode='".LEVEL_MODE::STANDARD."' "
+                .(is_null($idLevel) ? NULL : "AND idLevel=$idLevel ");
+        $dataDB = $this->get($query);
+        return $this->formateRanking($dataDB, is_null($idLevel));
+    }
+    /*OK*/private function formateRanking($dataDB, $nullIdLevel){
+        $times = LevelManager::init()->getLevelsTimeMax();
+        $ranks = array();
+        foreach($dataDB as $data){
+            $idPlayer = $data['idPlayer'];
+            $score    = Score::init($idPlayer, $data['idLevel'], $data['time'],
+                                    $data['nbClicks'],$data['nbItems'] );
+            $points   = $score->calculate($times[ $data['idLevel'] ]);
+            $exPoints = isset($ranks[$idPlayer]) ? $ranks[$idPlayer]['points'] : 0;
+            $ranks[$idPlayer] = array("idPlayer" => $idPlayer,
+                                      "player"   => $data['pseudo'],
+                                      "points"   => $exPoints + $points);
+            if(!$nullIdLevel){ $ranks[$idPlayer]["score"] = $score; }
+        }
+        
+        $sorted = array_values($ranks);
+        usort($sorted, function($a,$b){
+            return ($a['points'] == $b['points']) ? 0 :
+                   ($a['points'] < $b['points']) ? 1 : -1;
+        });
+        return $sorted;
+    }
 }
-/*OK*/class ManagerSubject extends ManagerDB {
-    static public function init() {
+/*OK*/class SubjectManager extends ManagerDB {
+    /*OK*/static public function init() {
         $mgr = new self();
-        $mgr->nameTable = "subjects";
+        $mgr->nameTable = "Subject";
         $mgr->columns   = Subject::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    public function getList() {
-        return $this->parent_select()
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Subject");
-    }
-    public function getByID($id) {
-        return $this->parent_select(array('id'=>$id))
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Subject")[0];
-    }
-    public function get(array $whereClauses=NULL, $queryEnd=NULL){
-	return $this->parent_select($whereClauses, $queryEnd)
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Subject");
-    }
-    public function insert(Subject $subject){
+    /*OK*/public function insert(Subject $subject){
         return $this->parent_insert($subject);
     }
-    public function update(Subject $subject){
+    /*OK*/public function update(Subject $subject){
         if(is_null($subject->getId())){  return FALSE;  }
         return $this->parent_update($subject);
     }
-    public function delete(Subject $subject){
+    /*OK*/public function delete(Subject $subject){
         if(is_null($subject->getId())){  return FALSE;  }
         return $this->parent_delete($subject);
     }
+    
+    /*OK*/public function getAuthors(){
+        $values = $this->get("SELECT DISTINCT idAuthor, pseudo FROM subject "
+                            ."JOIN user WHERE subject.idAuthor=user.id");
+        $data = array();
+        foreach($values as $value){
+            $data[$value['idAuthor']] = $value['pseudo'];
+        }
+        return $data;
+    }
 }
-/*OK*/class ManagerPost extends ManagerDB {
-    static public function init() {
+/*OK*/class PostManager extends ManagerDB {
+    /*OK*/static public function init() {
         $mgr = new self();
-        $mgr->nameTable = "posts";
+        $mgr->nameTable = "Post";
         $mgr->columns = Post::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    public function getList(){
-        return $this->parent_select()
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Post");
-    }
-    public function getByID($id){
-        return $this->parent_select(array('id'=>$id))
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Post")[0];
-    }
-    public function get(array $whereClauses=NULL, $queryEnd=NULL){
-	return $this->parent_select($whereClauses, $queryEnd)
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "Post");
-    }
-    public function insert(Post $post){
+    /*OK*/public function insert(Post $post){
         return $this->parent_insert($post);
     }
-    public function delete(Post $post){
+    /*OK*/public function delete(Post $post){
          if(is_null($post->getId())){  return FALSE;  }
         return $this->parent_delete($post);
     }

@@ -263,10 +263,7 @@ interface Winds_News {
             $time,                  // int : seconds
             $nbClicks,              // int
             $nbItems;               // int
-    static private $points = array(
-        'time'      => 10,
-        'nbClicks'  => 2,
-        'nbItems'   => 1);
+    static private $points = ['time'=> 10, 'nbClicks'=> 2, 'nbItems'=> 1];
     
     // -- CONSTRUCTORS --
     static public function init($idPlayer, $idLevel, $time, $nbClicks, $nbItems) {
@@ -300,12 +297,11 @@ interface Winds_News {
     public function jsonSerialize() {
         return (object) get_object_vars($this);
     }
-    public function compareTo(Score $score){
-        return $this->calculate() - $score->calculate();
+    public function compareTo(Score $score, $timeMaxLevel){
+        return $this->calculate($timeMaxLevel) - $score->calculate($timeMaxLevel);
     }
-    public function calculate(){
-        $level = ManagerLevel::init()->getByID($this->idLevel);
-        $time  = $level->getTimeMax() - $this->time;
+    public function calculate($timeMaxLevel){
+        $time   = $timeMaxLevel - $this->time;
         $points = $time           * self::$points['time']
                 + $this->nbClicks * self::$points['nbClicks']
                 + $this->nbItems  * self::$points['nbItems'];
@@ -402,6 +398,9 @@ interface Winds_News {
     }
     public function getIdAuthor() {
         return $this->idAuthor;
+    }
+    public function setId($id){
+        $this->id = $id;
     }
     public function setSubjectStatus($subjectStatus) {
         $this->subjectStatus = $subjectStatus;
