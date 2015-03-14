@@ -1,3 +1,8 @@
+// -- Common --
+var idUser,
+    loader,
+    error;
+
 // -- DIV subject --
 var div_newSubject, title_newSubject, msg_newSubject,
     btn_createSubject, btn_cancelSubject;
@@ -7,7 +12,17 @@ var div_subject, btn_newSubject, table_subjects,subject;
 var div_newPost, msg_newPost, btn_createPost, btn_cancelPost;
 var div_post, btn_newPost, btn_closeSubject,
     btn_deleteSubject, btn_back, btn_deletePost;
-
+    
+function commonControls(){
+    // -- affectations --
+    idUser = $("#forum #common #idUser");
+    loader = $("#forum #common #loader");
+    error  = $("#forum #common #error");
+    
+    // -- events --
+    $(document).ajaxStart(function(){ loader.css("display","initial"); });
+    $(document).ajaxStop(function(){ loader.css("display","none"); })
+}
 function subjectControls(){
     // -- affectations --
     div_newSubject    = $("#forum #subject #new-subject");
@@ -31,9 +46,23 @@ function subjectControls(){
             msg_newSubject.val(undefined);
         });
     });
-    btn_createSubject.click(function(){
-        alert("create subject");
-        //btn_newSubject.click();
+    // todo: add class "error" in css to style error message
+    /*OK*/btn_createSubject.click(function(){
+        var data = {
+            action  : "createSubject",
+            idUser  : idUser.val(),
+            title   : title_newSubject.val(),
+            message : msg_newSubject.val()
+        };
+        var success = function(response){
+            table_subjects.append(response);
+            btn_newSubject.click();
+        };
+        var failure = function(){
+            error.html("<h4>Internal error</h4><p>Unable to save"
+                      +"this new subject into the database.</p>");
+        };
+        ajaxOperator(data,success,failure);
     });
     /*OK*/btn_cancelSubject.click(function(){
         btn_newSubject.click();
@@ -65,12 +94,37 @@ function postControls(){
             msg_newPost.val(undefined);
         });
     });
-    btn_createPost.click(function(){ alert("create post"); });
+    btn_createPost.click(function(){
+        var data = {
+            action  : "addPost",
+            idUser  : idUser.val(),
+            message : msg_newPost.val()
+        };
+        var success = function(response){
+            table_subjects.append(response);
+            btn_newSubject.click();
+        };
+        var failure = function(){
+            error.html("<h4>Internal error</h4><p>Unable to save"
+                      +"this new subject into the database.</p>");
+        };
+        ajaxOperator(data,success,failure);
+    });
     /*OK*/btn_cancelPost.click(function(){
         btn_newPost.click();
     });
 }
+
+function ajaxOperator(data, success, failure){
+    $.ajax({
+        url: "ajax.php",
+        data: data,
+        datatype: "json",
+        method: "post",
+    }).then(success,failure);
+}
 $(document).ready(function(){
+    commonControls();
     subjectControls();
     postControls();
 });
