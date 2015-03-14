@@ -13,14 +13,14 @@ require_once "../core/config.php";
     </div>
     <div>
         <h3>Available themes</h3>
-        <?php ThemeController::displayAll(); ?>
+        <?php AddonController::displayAll(); ?>
     </div>
     <div>
         <h3>Available custom levels
             <span class="label-clickme">(Click on one item to show more details)</span>
         </h3>
         <div>
-            <?php LevelController::displayCustomLevels(); ?>
+            <?php AddonController::displayCustomLevels(); ?>
         </div>
     </div>
 </section>

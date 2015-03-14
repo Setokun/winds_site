@@ -4,7 +4,7 @@ include_once "../common/banner.php";
 include_once "../common/menu.php";
 require_once "../core/config.php";
 
-$_SESSION['user'] = ManagerUser::init()->getByID(8);
+$_SESSION['user'] = UserManager::init()->getByID(8);
 
 
 $params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
@@ -14,8 +14,50 @@ $user   = $_SESSION['user'];
 <link type="text/css" rel="stylesheet" href="../css/forum.css">
 <script type="text/javascript" src="../js/forum.js" ></script>
 <section style="padding-bottom:20px; padding-top:20px" class="col-sm-9 col-md-10">
-    <div id="forum">
-        <?php if(empty($params)){ ?>
+<div id="forum">
+    <div id="common">
+        <input id="idUser" type="hidden" value="<?php echo $user->getId(); ?>" >
+        <div id="loader" style="display: none" >
+            <h4>Action in progress</h4>
+            <img src="..\resources\loader.gif" style="height: 32px; width: 32px" >
+            <h5>Please, wait.</h5>        
+        </div>
+        <div id="error"></div>
+    </div>
+    
+    <?php if(empty($params)){ ?>
+    <!--
+        Display the subjects
+    -->
+    <div id="subject">
+        <div id="new-subject" style="display:none" >
+            <h3>New subject to create</h3>
+            <div>
+                <label for="title-new-subject">Title :</label>
+                <input id="title-new-subject" type="text" placeholder="Type the title here" ><br/>
+                <label for="message-new-subject">Message :</label>
+                <input id="message-new-subject" type="text" placeholder="Type the message here" >
+            </div>
+            <div>
+                <button id="create-subject">Create</button>
+                <button id="cancel-subject">Cancel</button>
+            </div>
+        </div>
+        <div id="display-subject">
+            <button id="btn-new-subject">Create a new subject</button>
+            <table id="table-subjects">
+                <tr>
+                    <th>Subjects</th>
+                    <th>Status</th>
+                    <th>Last update</th>
+                <tr>
+                <?php ForumController::displaySubjects(); ?>
+            </table>
+        </div>
+    </div>
+    <?php }else
+          if(isset($params['id'])){
+              $subject = SubjectManager::init()->getByID($params['id']); ?>
         <!--
             Display the subjects
         -->
