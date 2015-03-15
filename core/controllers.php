@@ -174,18 +174,17 @@ class ScoreController {
     }
     /*OK*/static function displaySubjects(){
         $subjects = SubjectManager::init()->getAll();
-        $authors  = SubjectManager::init()->getAuthors();
-        
         foreach($subjects as $subject){
-            echo self::formateSubject($subject,$authors[$subject->getIdAuthor()]);
+            echo self::formateSubject($subject);
         }
     }
-    /*OK*/static function formateSubject(Subject $subject, $author){
-        $date = (new DateTime($subject->getDate()))->format("d-m-Y");
+    /*OK*/static function formateSubject(Subject $subject){
+        $last = SubjectManager::init()->getLastUpdate($subject);
+        $date = (new DateTime($last['date']))->format("d-m-Y");
         return "<tr class='subject' data-idsubject='".$subject->getId()."'>"
               ."<td>".$subject->getTitle()."</td>"
               ."<td>".$subject->getSubjectStatus()."</td>"
-              ."<td>$date by ".Tools::capitalize($author)."</td>"
+              ."<td>$date by ".Tools::capitalize($last['author'])."</td>"
               ."</tr>";
     }
     /*OK*/static function displayInfosSubject(Subject $subject){
@@ -193,9 +192,9 @@ class ScoreController {
         echo "<div><div class='forum-post-title'><p>Title  : ".Tools::capitalize($subject->getTitle())
             ."<p></div><p>Status : ".$subject->getSubjectStatus()."</p></div>";
     }
-    static function displayPosts($idSubject, $isSuperUser){
+    /*OK*/static function displayPosts($idSubject, $isSuperUser){
         $posts   = PostManager::init()->getAll("WHERE idSubject=$idSubject ORDER BY date DESC");
-        $authors = PostManager::init()->getAuthors();
+        $authors = USerManager::init()->getPseudos();
         
         foreach($posts as $post){
             $date = (new DateTime($post->getDate()))->format("d-m-Y");

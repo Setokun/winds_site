@@ -35,8 +35,7 @@ class AjaxOperator {
                 $this->user->getId());
         $inserted = SubjectManager::init()->insert($subject);
         var_dump($inserted);
-        $this->response['subjectRow'] = ForumController::formateSubject(
-                $subject, $this->user->getPseudo());
+        $this->response['subjectRow'] = ForumController::formateSubject($subject);
     }
     private function closeSubject(){
 

@@ -26,9 +26,7 @@ $user   = $_SESSION['user'];
     </div>
     
     <?php if(empty($params)){ ?>
-    <!--
-        Display the subjects
-    -->
+    <!--  Display the subjects  -->
     <div id="subject">
         <div id="new-subject" style="display:none" >
             <h3>New subject to create</h3>
@@ -58,9 +56,7 @@ $user   = $_SESSION['user'];
     <?php }else
           if(isset($params['id'])){
               $subject = SubjectManager::init()->getByID($params['id']); ?>
-            <!--
-                Display the posts of the specified subject
-            -->
+            <!--  Display the posts of the specified subject  -->
             <div id="post">
                 <div id="new-post" style="display:none" >
                     <h3>New post to create</h3>

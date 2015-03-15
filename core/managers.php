@@ -106,6 +106,15 @@ interface ManagerInit {
         if(is_null($user->getId())){  return FALSE;  }
         return $this->parent_delete($user);
     }
+    
+    public function getPseudos(){
+        $values = $this->get("SELECT id, pseudo FROM user");
+        $data = array();
+        foreach($values as $value){
+            $data[ $value['id'] ] = $value['pseudo'];
+        }
+        return $data;
+    }
 }
 /*OK*/class ThemeManager extends ManagerDB {
     /*OK*/static public function init(){
@@ -268,14 +277,12 @@ interface ManagerInit {
         return $this->parent_delete($subject);
     }
     
-    /*OK*/public function getAuthors(){
-        $values = $this->get("SELECT DISTINCT idAuthor, pseudo FROM subject "
-                            ."JOIN user WHERE subject.idAuthor=user.id");
-        $data = array();
-        foreach($values as $value){
-            $data[$value['idAuthor']] = $value['pseudo'];
-        }
-        return $data;
+    public function getLastUpdate(Subject $subject){
+        $posts   = PostManager::init()->getAll("WHERE idSubject=".$subject->getId()." ORDER BY date DESC");
+        $authors = UserManager::init()->getPseudos();
+        return empty($posts) ?
+               array("date"=> $subject->getDate() ,"author"=> $authors[ $subject->getIdAuthor() ]) :
+               array("date"=> $posts[0]->getDate(),"author"=> $authors[ $posts[0]->getIdAuthor() ]);
     }
 }
 /*OK*/class PostManager extends ManagerDB {
@@ -292,15 +299,5 @@ interface ManagerInit {
     /*OK*/public function delete(Post $post){
          if(is_null($post->getId())){  return FALSE;  }
         return $this->parent_delete($post);
-    }
-    
-    public function getAuthors(){
-        $values = $this->get("SELECT DISTINCT idAuthor, pseudo FROM post "
-                            ."JOIN user WHERE post.idAuthor=user.id");
-        $data = array();
-        foreach($values as $value){
-            $data[$value['idAuthor']] = $value['pseudo'];
-        }
-        return $data;
     }
 }
