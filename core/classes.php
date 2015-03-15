@@ -436,7 +436,7 @@ interface Winds_News {
         );
     }
     public function formateAsNews(){
-        return new News($this->date, "post", "forum.php?id=$this->id");
+        return new News($this->date, "post", "forum.php?id=$this->idSubject");
     }
     
     // -- ACCESSORS --
@@ -459,7 +459,7 @@ interface Winds_News {
     private $date,
             $object,
             $url,
-            $creator;
+            $author;
     
     // -- CONSTRUCTORS --
     public function __construct($date, $object, $url){
@@ -470,11 +470,11 @@ interface Winds_News {
     
     // -- METHODS --
     public function getMessage(){
-        return "<tr><td><a href='$this->url'>$this->date : New $this->object by $this->creator</a></td></tr>";
+        return "<tr><td><a href='$this->url'>$this->date : New $this->object by $this->author</a></td></tr>";
     }
     
     // -- ACCESSORS --
-    public function setCreator(User $creator) {
-        $this->creator = $creator->getPseudo();
+    public function setAuthor($author) {
+        $this->author = $author;
     }
 }

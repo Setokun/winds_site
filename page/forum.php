@@ -78,8 +78,9 @@ $user   = $_SESSION['user'];
                         <button class="button-red" style="width:135px;" id="btn-delete-subject">Delete this subject</button></div>
                     <div class="col-xs-4 col-sm-2"><?php } ?>
                         <button class="button-blue" id="btn-back">Back</button></div>
-                    <div class="col-xs-12">    <?php ForumController::displayInfosSubject($subject);
-                              ForumController::displayPosts($params['id'],$user->isSuperUser()); ?>
+                    <div class="col-xs-12">
+                    <?php ForumController::displayInfosSubject($subject);
+                          ForumController::displayPosts($subject,$user->isSuperUser()); ?>
                     </div>
                 </div>
             </div>

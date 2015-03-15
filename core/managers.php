@@ -107,7 +107,7 @@ interface ManagerInit {
         return $this->parent_delete($user);
     }
     
-    public function getPseudos(){
+    /*OK*/public function getPseudos(){
         $values = $this->get("SELECT id, pseudo FROM user");
         $data = array();
         foreach($values as $value){
@@ -277,7 +277,7 @@ interface ManagerInit {
         return $this->parent_delete($subject);
     }
     
-    public function getLastUpdate(Subject $subject){
+    /*OK*/public function getLastUpdate(Subject $subject){
         $posts   = PostManager::init()->getAll("WHERE idSubject=".$subject->getId()." ORDER BY date DESC");
         $authors = UserManager::init()->getPseudos();
         return empty($posts) ?

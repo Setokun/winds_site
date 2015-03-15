@@ -15,7 +15,8 @@ define("NB_NEWS_TO_DISPLAY", 5);
         $criterias = "ORDER BY creationDate DESC LIMIT ".NB_NEWS_TO_DISPLAY;
         $themes = ThemeManager::init()->getAll($criterias);
         $levels = LevelManager::init()->getAll("WHERE levelStatus='".LEVEL_STATUS::ACCEPTED."' $criterias");
-
+        $authors = UserManager::init()->getPseudos();
+        
         // extract the 5 recent addons (theme or level)
         $merge = array_merge($themes, $levels);
         usort($merge, function($addon1,$addon2){
@@ -23,18 +24,11 @@ define("NB_NEWS_TO_DISPLAY", 5);
         });
         $addons = array_slice($merge, 0, NB_NEWS_TO_DISPLAY);
         
-        // get the list of the authors
-        $users = UserManager::init()->getAll("WHERE id IN (".implode(',', array_map(function($addon){
-                return $addon->getIdCreator(); }, $addons)).")");
-        foreach($users as $user){
-            $creators[$user->getId()] = $user;
-        }
-        
         // formate the news
         foreach($addons as $addon){
-            $news    = $addon->formateAsNews();
-            $creator = $creators[$addon->getIdCreator()];
-            $news->setCreator($creator);
+            $news   = $addon->formateAsNews();
+            $author = $authors[ $addon->getIdCreator() ];
+            $news->setAuthor($author);
             echo $news->getMessage();
         }
     }
@@ -135,20 +129,20 @@ class ScoreController {
 }
 /*OK*/class ForumController {
     /*OK*/static function displayLastNews(){
-        $orderByDate = "ORDER BY date DESC LIMIT ".NB_NEWS_TO_DISPLAY;
-        $subjects    = SubjectManager::init()->getAll("WHERE subjectStatus='".SUBJECT_STATUS::ACTIVE."' $orderByDate");
+        $orderByDate = "ORDER BY date DESC, id DESC LIMIT ".NB_NEWS_TO_DISPLAY;
+        $subjects    = SubjectManager::init()->getAll($orderByDate);
         $posts       = PostManager::init()->getAll($orderByDate);
-        $mgrUser     = UserManager::init();
+        $authors     = UserManager::init()->getPseudos();
         $count       = NB_NEWS_TO_DISPLAY;
-        
+
         while($count--){
             if(empty($subjects)){
-                self::displayNews($mgrUser, $posts[0]);
+                self::displayNews($posts[0],$authors);
                 array_shift($posts);
                 continue;
             }
             if(empty($posts)){
-                self::displayNews($mgrUser, $subjects[0]);
+                self::displayNews($subjects[0],$authors);
                 array_shift($subjects);
                 continue;
             }
@@ -157,19 +151,19 @@ class ScoreController {
             $datePost    = new DateTime($posts[0]->getDate());
             
             if($dateSubject >= $datePost){
-                self::displayNews($mgrUser, $subjects[0]);
+                self::displayNews($subjects[0],$authors);
                 array_shift($subjects);
             }
             if($dateSubject < $datePost){
-                self::displayNews($mgrUser, $posts[0]);
+                self::displayNews($posts[0],$authors);
                 array_shift($posts);
             }            
         }
     }
-    /*OK*/static private function displayNews($mgrUser,$item){
-        $news    = $item->formateAsNews();
-        $creator = $item->getIdAuthor();
-        $news->setCreator($mgrUser->getByID($creator));
+    /*OK*/static private function displayNews($item, $authors){
+        $news   = $item->formateAsNews();
+        $author = $authors[ $item->getIdAuthor() ];
+        $news->setAuthor($author);
         echo $news->getMessage();
     }
     /*OK*/static function displaySubjects(){
@@ -192,17 +186,21 @@ class ScoreController {
         echo "<div><div class='forum-post-title'><p>Title  : ".Tools::capitalize($subject->getTitle())
             ."<p></div><p>Status : ".$subject->getSubjectStatus()."</p></div>";
     }
-    /*OK*/static function displayPosts($idSubject, $isSuperUser){
-        $posts   = PostManager::init()->getAll("WHERE idSubject=$idSubject ORDER BY date DESC");
+    /*OK*/static function displayPosts(Subject $subject, $isSuperUser){
         $authors = USerManager::init()->getPseudos();
-        
+        $posts   = PostManager::init()->getAll("WHERE idSubject=".$subject->getId()." ORDER BY date ASC");
+        array_unshift($posts, $subject);
+
         foreach($posts as $post){
-            $date = (new DateTime($post->getDate()))->format("d-m-Y");
+            $date = (new DateTime($post->getDate()))->format("d-m-Y H:i:s");
             echo "<div><div class='col-xs-8 col-sm-9 col-md-10' style='border-top: 2px solid #aaa; padding-top:10px;'>"
-                ."$date by ".$authors[ $post->getIdAuthor() ]." :<br>".$post->getMessage()
-                .($isSuperUser ? "</div><div class='col-xs-4 col-sm-3 col-md-2'><button id='".$post->getId()
-                ."' class='btn-delete-post'>Delete</button>" : NULL)."</div>";
+                ."$date by ".$authors[ $post->getIdAuthor() ]." :<br>".$post->getMessage()."</div>";
+            if($isSuperUser && !$post instanceof Subject){
+                echo "<div class='col-xs-4 col-sm-3 col-md-2'><button id='".$post->getId()
+                    ."' class='btn-delete-post'>Delete</button></div>";
+            }
         }
+        
     }
 }
 class ApiController {
