@@ -58,38 +58,6 @@ $user   = $_SESSION['user'];
     <?php }else
           if(isset($params['id'])){
               $subject = SubjectManager::init()->getByID($params['id']); ?>
-        <!--
-            Display the subjects
-        -->
-        <div id="subject">
-            <div id="new-subject" style="display:none" >
-                <h3>New subject to create</h3>
-                <div>
-                    <label for="title-new-subject">Title :</label>
-                    <input id="title-new-subject" type="text" placeholder="Type the title here" ><br/>
-                    <label for="message-new-subject">Message :</label>
-                    <input id="message-new-subject" type="text" placeholder="Type the message here" >
-                </div>
-                <div>
-                    <button id="create-subject" class="button-green">Create</button>
-                    <button id="cancel-subject" class="button-red">Cancel</button>
-                </div>
-            </div>
-            <div id="display-subject">
-                <button id="btn-new-subject" class="button-green" style="width:150px; margin-bottom: 20px">Create a new subject</button>
-                <table id="table-subjects" class="table table-bordered">
-                    <tr>
-                        <th>Subjects</th>
-                        <th>Status</th>
-                        <th>Last update</th>
-                    <tr>
-                    <?php ForumController::displaySubjects(); ?>
-                </table>
-            </div>
-        </div>
-        <?php }else
-              if(isset($params['id'])){
-                  $subject = ManagerSubject::init()->getByID($params['id']); ?>
             <!--
                 Display the posts of the specified subject
             -->

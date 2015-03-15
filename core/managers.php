@@ -293,4 +293,14 @@ interface ManagerInit {
          if(is_null($post->getId())){  return FALSE;  }
         return $this->parent_delete($post);
     }
+    
+    public function getAuthors(){
+        $values = $this->get("SELECT DISTINCT idAuthor, pseudo FROM post "
+                            ."JOIN user WHERE post.idAuthor=user.id");
+        $data = array();
+        foreach($values as $value){
+            $data[$value['idAuthor']] = $value['pseudo'];
+        }
+        return $data;
+    }
 }

@@ -194,20 +194,17 @@ class ScoreController {
             ."<p></div><p>Status : ".$subject->getSubjectStatus()."</p></div>";
     }
     static function displayPosts($idSubject, $isSuperUser){
-        $posts = PostManager::init()->get(['idSubject'=>$idSubject],"ORDER BY date DESC");
-        
-        //$authors = getAuthors
+        $posts   = PostManager::init()->getAll("WHERE idSubject=$idSubject ORDER BY date DESC");
+        $authors = PostManager::init()->getAuthors();
         
         foreach($posts as $post){
-            $author = UserManager::init()->getByID($post->getIdAuthor())->getPseudo();
-            $date   = (new DateTime($post->getDate()))->format("d-m-Y");
-            echo "<div><div class='col-xs-8 col-sm-9 col-md-10' style='border-top: 2px solid #aaa; padding-top:10px;'>$date by $author :<br>".$post->getMessage()
+            $date = (new DateTime($post->getDate()))->format("d-m-Y");
+            echo "<div><div class='col-xs-8 col-sm-9 col-md-10' style='border-top: 2px solid #aaa; padding-top:10px;'>"
+                ."$date by ".$authors[ $post->getIdAuthor() ]." :<br>".$post->getMessage()
                 .($isSuperUser ? "</div><div class='col-xs-4 col-sm-3 col-md-2'><button id='".$post->getId()
                 ."' class='btn-delete-post'>Delete</button>" : NULL)."</div>";
         }
     }
-    
-    //static function formatePost(Post $post )
 }
 class ApiController {
     /*OK*/static function existsAction($action){
