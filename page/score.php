@@ -31,13 +31,14 @@ $params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
             <?php ScoreController::displayScoredCustomLevels(); ?>
         </div>
     </div>
-    <?php }else{ ?>
+    <?php }else{
+    $level = LevelManager::init()->getByID($params['id']); ?>
     <button class="btn-back button-blue">Back</button>
-    <h4>Ranking</h4>
-	<table class="table table-bordered">
-            <?php ScoreController::displayHeaders($params['id']); ?>
-            <?php ScoreController::displayRanking($params['id']); ?>
-	</table>
+    <?php ScoreController::displayInfosScore($level); ?>
+    <table class="table table-bordered">
+        <?php ScoreController::displayHeaders($level); ?>
+        <?php ScoreController::displayRanking($level); ?>
+    </table>
     <?php } ?>
 </section>
 

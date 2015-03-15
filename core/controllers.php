@@ -74,8 +74,8 @@ class ScoreController {
     /*todo*/static function getRanksByPlayer($idPlayer){
         return ;
     }
-    /*OK*/static function displayHeaders($idLevel=NULL){
-        if(is_null($idLevel)){ ?><tr>
+    /*OK*/static function displayHeaders(Level $level=NULL){
+        if(is_null($level)){ ?><tr>
             <th>Rank</th>
             <th>Player</th>
             <th>Points</th>
@@ -89,22 +89,27 @@ class ScoreController {
             <th>Number of<br>gathered items</th>
         <?php }
     }
-    /*OK*/static function displayRanking($idLevel=NULL){
-        $ranks = ScoreManager::init()->getRanking($idLevel);
+    /*OK*/static function displayRanking(Level $level=NULL){
+        $ranks = ScoreManager::init()->getRanking(is_null($level) ? NULL : $level->getId());
         $i = 1;
         foreach($ranks as $data){
-            if( is_null($idLevel) ){
+            if( is_null($level) ){
                 echo "<tr class='score-data'><td>".$i++."</td><td>".$data['player']
                 ."</td><td>".$data['points']."</td></tr>";
             }else{
                 $score  = $data['score'];
                 echo "<tr class='score-data'><td>".$i++."</td><td>".$data['player']
-                	."</td><td>".$data['points']."</td><td>".$score->getTime()
-                	."</td><td>".$score->getNbClicks()."</td><td>".$score->getNbItems()
-                	."</td></tr>";
+                    ."</td><td>".$data['points']."</td><td>".$score->getTime()
+                    ."</td><td>".$score->getNbClicks()."</td><td>".$score->getNbItems()
+                    ."</td></tr>";
 
             }
         }
+    }
+    /*OK*/static function displayInfosScore(Level $level){
+        $creator = UserManager::init()->getByID($level->getIdCreator())->getPseudo();
+        echo "<h4>[image] Ranking of \"".Tools::capitalize($level->getName())
+            ."\" created by ".Tools::capitalize($creator)."</h4>";
     }
     /*OK*/static function displayScoredBasicLevels(){
         $basics = LevelManager::init()->getLevelsHavingScores(LEVEL_TYPE::BASIC);
