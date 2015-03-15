@@ -13,8 +13,8 @@ define("NB_NEWS_TO_DISPLAY", 5);
 /*OK*/class AddonController {
     /*OK*/static function displayLastNews(){
         $criterias = "ORDER BY creationDate DESC LIMIT ".NB_NEWS_TO_DISPLAY;
-        $themes = ThemeManager::init()->getAll($criterias);
-        $levels = LevelManager::init()->getAll("WHERE levelStatus='".LEVEL_STATUS::ACCEPTED."' $criterias");
+        $themes  = ThemeManager::init()->getAll($criterias);
+        $levels  = LevelManager::init()->getAll("WHERE levelStatus='".LEVEL_STATUS::ACCEPTED."' $criterias");
         $authors = UserManager::init()->getPseudos();
         
         // extract the 5 recent addons (theme or level)
@@ -32,21 +32,47 @@ define("NB_NEWS_TO_DISPLAY", 5);
             echo $news->getMessage();
         }
     }
-    /*a finir*/static function displayThemes(){
+    /*todo*/static function displayThemes(){
         $themes = ThemeManager::init()->getAll();
         foreach($themes as $theme){
-            // mettre l'image
-            echo "<div class='col-xs-3'><img src='../resources/logo-honey.png' class='theme-image' /><span style='margin-left:10px'> ".Tools::capitalize($theme->getName())."</span></div>";
+            echo "<div class='col-xs-3'><img src='".
+                    
+                 "../resources/logo-honey.png"  // mettre l'image
+                
+                ."' class='theme-image' />"
+            ."<span style='margin-left:10px'> ".Tools::capitalize($theme->getName())."</span></div>";
         }
     }
-    /*OK*/static function displayCustomLevels(){
+    /*todo*/static function displayCustomLevels(){
         $customs  = self::getLevel(NULL, LEVEL_TYPE::CUSTOM);
         $creators = LevelManager::init()->getCreators();
         
         foreach($customs as $level){
-            echo "<div class='custom-level'><img src='../resources/logo-ice.png' class='theme-image' /> ".Tools::capitalize($level->getName())
-                ." created by ".$creators[ $level->getId() ]."<br><span class='description'>"
-                .$level->getDescription()."</span></div>";
+            echo "<div class='custom-level'><img src='".
+                    
+                 "../resources/logo-ice.png"    // mettre l'image
+                    
+                ."' class='theme-image' /> "
+                .Tools::capitalize($level->getName())." created by ".$creators[ $level->getId() ]
+                ."<br><span class='description'>".$level->getDescription()."</span></div>";
+        }
+    }
+    /*todo*/static function displayLevelsToModerate(){
+        $tomoderates = self::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_STATUS::TOMODERATE);
+        $creators    = LevelManager::init()->getCreators();
+        
+        foreach($tomoderates as $level){
+            echo "<tr><td class='col-xs-10'><img src='".
+                    
+                 "../resources/logo-honey.png"  // mettre l'image
+                    
+                 ."' class='theme-image' />"
+                 ."<span>".Tools::capitalize($level->getName())." by "
+                 .Tools::capitalize($creators[ $level->getIdCreator() ])."</span></td><td class='col-xs-1'>"
+                 ."<button class='button-green moderation-button' data-idLevel='".$level->getId()
+                 ."'>Accept</button></td><td class='col-xs-1'>"
+                 ."<button class='button-red moderation-button' data-idLevel='".$level->getId()."'>"
+                 ."Refuse</button></td></tr>";
         }
     }
     /*OK*/static function getTheme($id=NULL){
@@ -106,7 +132,7 @@ class ScoreController {
             }
         }
     }
-    /*OK*/static function displayInfosScore(Level $level){
+    /*todo*/static function displayInfosScore(Level $level){
         $creator = UserManager::init()->getByID($level->getIdCreator())->getPseudo();
         echo "<h4>[image] Ranking of \"".Tools::capitalize($level->getName())
             ."\" created by ".Tools::capitalize($creator)."</h4>";
