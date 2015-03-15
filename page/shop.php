@@ -13,7 +13,7 @@ require_once "../core/config.php";
     </div>
     <div>
         <h3>Available themes</h3>
-        <?php AddonController::displayAll(); ?>
+        <?php AddonController::displayThemes(); ?>
     </div>
     <div>
         <h3>Available custom levels
