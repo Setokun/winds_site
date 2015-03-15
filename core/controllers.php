@@ -9,12 +9,39 @@ define("NB_NEWS_TO_DISPLAY", 5);
     /*OK*/static function getUserProfile($email){
         return UserManager::init()->getAll("WHERE email='$email'")[0];
     }
+    
+    static function displayList(User $current){
+        $users = UserManager::init()->getAll("WHERE id<>".$current->getId());
+        foreach($users as $user){
+            echo "<div class='account col-xs-12'><div class='col-xs-12 bold'><h4>"
+                .Tools::capitalize($user->getPseudo())."</h4></div><div id='player5' "
+                ."style='display:none'><div class='row'><div class='col-xs-3'>Rights</div>";
+            foreach(USER_TYPE::getConstants() as $type){
+                echo "<div class='col-xs-3'><input type='radio' name='".$user->getPseudo()
+                    ."' value='$type' />".Tools::capitalize($type)."</div>";
+            }
+            echo "</div><div class='row'><div class='col-xs-3'>Actions :</div>"
+                ."<div class='col-xs-3'><input class='button-green' type='button' value='Valid rights' /></div>"
+                ."<div class='col-xs-3'><input class='button-red' type='button' value='Delete' /></div>"
+                ."<div class='col-xs-3'><input class='button-orange' type='button' value='Banish' /></div>"
+                ."</div></div></div>";
+        }
+    }
+    /*OK*/static function displayDeletionList(User $current){
+        $users = UserManager::init()->getAll("WHERE id<>".$current->getId()
+                            ." AND userStatus='".USER_STATUS::DELETING."'");
+        foreach($users as $user){
+            echo "<div class='col-xs-12 bold'><h5 id='".$user->getId()
+                ."'>".Tools::capitalize($user->getPseudo())."</h5></div>";
+        }
+    }
 }
-/*OK*/class AddonController {
+class AddonController {
     /*OK*/static function displayLastNews(){
         $criterias = "ORDER BY creationDate DESC LIMIT ".NB_NEWS_TO_DISPLAY;
         $themes  = ThemeManager::init()->getAll($criterias);
-        $levels  = LevelManager::init()->getAll("WHERE levelStatus='".LEVEL_STATUS::ACCEPTED."' $criterias");
+        $levels  = LevelManager::init()->getAll("WHERE levelStatus='"
+                                .LEVEL_STATUS::ACCEPTED."' $criterias");
         $authors = UserManager::init()->getPseudos();
         
         // extract the 5 recent addons (theme or level)
@@ -134,6 +161,7 @@ class ScoreController {
     }
     /*todo*/static function displayInfosScore(Level $level){
         $creator = UserManager::init()->getByID($level->getIdCreator())->getPseudo();
+        // mettre l'image
         echo "<h4>[image] Ranking of \"".Tools::capitalize($level->getName())
             ."\" created by ".Tools::capitalize($creator)."</h4>";
     }
@@ -153,8 +181,8 @@ class ScoreController {
         
         foreach($levels as $level){
             // mettre l'image
-            echo "<div class='level' data-idlevel='".$level['id']
-                ."'>[IMAGE] ".Tools::capitalize($level['name'])."</div>";
+            echo "<div class='level' data-idlevel='".$level['id']."'>[IMAGE] "
+                .Tools::capitalize($level['name'])."</div>";
         }
     }
 }
