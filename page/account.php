@@ -5,15 +5,14 @@ include_once "../common/menu.php";
 require_once "../core/config.php";
 
 $_SESSION['user'] = UserManager::init()->getByID(8);
-
 $user = $_SESSION['user'];
 ?>
+
 <section style="padding:20px" class="col-sm-9 col-md-10">
     <article class="table-bordered col-xs-12">
         <p>Winds accounts</p>
         <div class="col-xs-12">
             <?php AccountController::displayList($user); ?>
-            
         </div>
     </article>
     <article class="table-bordered col-xs-12">
@@ -23,6 +22,7 @@ $user = $_SESSION['user'];
         </div>
     </article>
 </section>
+
 <?php
 include "../common/footer.php";
 ?>

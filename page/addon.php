@@ -35,8 +35,8 @@ require_once "../core/config.php";
                                 <div class="col-xs-8 col-sm-9">
                                     <select id="addon-type">
                                         <option value="-1">Type of addon</option>
-                                        <option value="theme">theme</option>
-                                        <option value="level">level</option>
+                                        <option value="theme">Theme</option>
+                                        <option value="level">Level</option>
                                     </select>
                                 </div>
                             </div>
@@ -67,21 +67,7 @@ require_once "../core/config.php";
         <article class="col-xs-12">
             <table id="news-forum" class="table table-bordered">
                 <tr><th colspan="3">Available custom levels</th></tr>
-                <tr>
-                    <td style="vertical-align: middle" width="25"><input disabled type="checkbox" name="checkbox1" checked="checked" value="checkbox"></td>
-                    <td style="vertical-align: middle" width="50"><img src="../resources/logo-honey.png" class="theme-image" /></td>
-                    <td style="vertical-align: middle">Custom level 1 by Anonymus</td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: middle" width="25"><input disabled type="checkbox" name="checkbox1" checked="checked" value="checkbox"></td>
-                    <td style="vertical-align: middle" width="50"><img src="../resources/logo-ronces.png" class="theme-image" /></td>
-                    <td style="vertical-align: middle">Custom level 2 by Invisible Man</td>
-                </tr>
-                <tr>
-                    <td style="vertical-align: middle" width="25"><input disabled type="checkbox" name="checkbox1" value="checkbox"></td>
-                    <td style="vertical-align: middle" width="50"><img src="../resources/logo-ice.png" class="theme-image" /></td>
-                    <td style="vertical-align: middle">Custom level 3 by Roger Rabbit</td>
-                </tr>
+                <?php AddonController::displayCustomLevels("addon"); ?>
             </table>
         </article>
     </div>

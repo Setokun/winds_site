@@ -9,7 +9,7 @@ require_once "../core/config.php";
 <script type="text/javascript" src="../js/shop.js" ></script>
 <section id="shop" style="padding-bottom:20px" class="col-sm-9 col-md-10">
     <div class="row">
-        <button id="download-game" href="#">Click me to download the Winds game</button>
+        <button id="download-game" >Click me to download the Winds game</button>
     </div>
     <div>
         <h3>Available themes</h3>
@@ -17,10 +17,10 @@ require_once "../core/config.php";
     </div>
     <div>
         <h3>Available custom levels
-            <span class="label-clickme">(Click on one item to show more details)</span>
+            <span class="label-clickme" >(Click on one item to show more details)</span>
         </h3>
         <div>
-            <?php AddonController::displayCustomLevels(); ?>
+            <?php AddonController::displayCustomLevels("shop"); ?>
         </div>
     </div>
 </section>

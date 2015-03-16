@@ -9,8 +9,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
     /*OK*/static function getUserProfile($email){
         return UserManager::init()->getAll("WHERE email='$email'")[0];
     }
-    
-    static function displayList(User $current){
+    /*OK*/static function displayList(User $current){
         $users = UserManager::init()->getAll("WHERE id<>".$current->getId());
         foreach($users as $user){
             echo "<div class='account col-xs-12'><div class='col-xs-12 bold'><h4>"
@@ -70,18 +69,27 @@ class AddonController {
             ."<span style='margin-left:10px'> ".Tools::capitalize($theme->getName())."</span></div>";
         }
     }
-    /*todo*/static function displayCustomLevels(){
+    /*todo*/static function displayCustomLevels($source){
         $customs  = self::getLevel(NULL, LEVEL_TYPE::CUSTOM);
         $creators = LevelManager::init()->getCreators();
         
         foreach($customs as $level){
-            echo "<div class='custom-level'><img src='".
-                    
-                 "../resources/logo-ice.png"    // mettre l'image
-                    
-                ."' class='theme-image' /> "
-                .Tools::capitalize($level->getName())." created by ".$creators[ $level->getId() ]
-                ."<br><span class='description'>".$level->getDescription()."</span></div>";
+            if($source == "shop"){
+                echo "<div class='custom-level'><img src='"
+                    ."../resources/logo-ice.png"    // mettre l'image
+                    ."' class='theme-image' /> ".Tools::capitalize($level->getName())
+                    ." created by ".$creators[ $level->getId() ]
+                    ."<br><span class='description'>".$level->getDescription()."</span></div>";
+            }
+            if($source == "addon"){
+                echo "<tr><td style='vertical-align: middle' width='25'>"
+                    ."<input type='checkbox' id='".$level->getId()."'>"
+                    ."</td><td style='vertical-align: middle' width='50'><img src='"
+                    ."../resources/logo-honey.png"  // mettre l'image
+                    ."' class='theme-image' /></td>"
+                    ."<td style='vertical-align: middle'>".Tools::capitalize($level->getName())
+                    ." created by ".$creators[ $level->getId() ]."</td></tr>";
+            }
         }
     }
     /*todo*/static function displayLevelsToModerate(){
