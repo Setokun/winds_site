@@ -1,6 +1,6 @@
-        <div class="row">
-            <nav style="background: #ccc; z-index: 1; position:relative" class="col-sm-3 col-md-2">
-		<div id="navigation" style=""></div>
+        <div class="row"><script src="../js/jquery-2.1.1.js">alert();</script>
+            <nav id="navigation" style="background: #ccc; z-index: 1; position:relative" class="col-sm-3 col-md-2">
+		
           <ul id="menu">
                 <li>Hello<br><?php echo $user->pseudo; ?></li>
                 <hr/>
@@ -20,3 +20,26 @@
                 <?php } ?>
             </ul>
         </nav>
+            <div id="menu-small" class="btn-group"> 
+			<button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Menu <span class="caret"></span></button>
+			<ul class="dropdown-menu">
+                            <li class="dropdown-header">Hello <?php echo $user->pseudo; ?></li>
+                            <li><a href="#"></a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
+                            <li><a id="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-home"></span> Home</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-shopping-cart"></span> Shop</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-screenshot"></span> Scores</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-book"></span> Forum</a></li>
+                            <?php if($user->userType > 0){ ?>
+                            <li class="divider"></li>
+                            <li class="dropdown-header"> Management</li>
+                            <li><a href="#"><span class="glyphicon glyphicon-user"></span> Accounts</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-check"></span> Moderation</a></li>
+                            <?php }
+                            if($user->userType > 1){ ?>
+                            <li><a href="#"><span class="glyphicon glyphicon-plus-sign"></span> Addons</a></li>
+                            <?php } ?>
+			</ul>
+		</div>

@@ -6,7 +6,7 @@ require_once "../core/config.php";
 ?>
 
 <!--<link type='text/css' rel='stylesheet' href='../css/home.css' />-->
-<section style="padding-bottom:20px" class="col-sm-9 col-md-10">
+<section style="padding-bottom:20px" class="col-sm-12 col-md-10">
           <p>Welcome to your home page</p>
 
     <div id="news">

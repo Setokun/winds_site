@@ -9,9 +9,17 @@ body{background-image: url(../resources/subtle_white_mini_waves.png); max-width:
         font-style: normal;
 }
 
-@media (max-width: 767px) {
-        #menu{display: none;}
-        #navigation{display: initial}
+#menu-small{z-index: 2}
+
+@media (min-width: 992px) {
+    #menu-small{display: none;}
+    #navigation{display: initial}
+}
+
+@media (max-width: 991px) {
+    #menu-small{display: initial;}
+    #navigation{display: none}
+        
 }
 
 [class*="col"], footer {
