@@ -251,7 +251,7 @@ class ScoreController {
     /*OK*/static function displayInfosSubject(Subject $subject){
         if(is_null($subject)){ return; }
         echo "<div><div class='forum-post-title'><p>Title  : ".Tools::capitalize($subject->getTitle())
-            ."<p></div><p>Status : ".$subject->getSubjectStatus()."</p></div>";
+            ."<p></div><p id='status-subject'>Status : ".$subject->getSubjectStatus()."</p></div>";
     }
     /*OK*/static function displayPosts(Subject $subject, $isSuperUser){
         $authors = USerManager::init()->getPseudos();

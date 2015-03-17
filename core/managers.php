@@ -41,6 +41,11 @@ interface ManagerInit {
     /*OK*/public function get($query){
         return $this->parent_select($query)->fetchAll(PDO::FETCH_ASSOC);
     }
+    /*OK*/public function execute($query){
+        $request = $this->PDO->prepare($query);
+        $request->execute();
+        return $request;
+    }
     
     /*OK*/protected function query_insert(){
         $columns = $this->columns;

@@ -7,15 +7,15 @@ class AjaxOperator {
             $user,
             $response = array();
     
-    static function init(array $data){
+    /*OK*/static function init(array $data){
         $operator = new self();
         $operator->params = $data;
         $operator->action = $data['action'];
         $operator->user   = UserManager::init()->getByID($data['idUser']);
         return $operator;
     }
-    private function __construct(){}
-    public function treat(){
+    /*OK*/private function __construct(){}
+    /*OK*/public function treat(){
         if(empty($this->params)){
             $this->response['error'] = "Missing parameters";
             return $this;
@@ -25,33 +25,48 @@ class AjaxOperator {
         $this->$action();
         return $this;
     }
-    public function getResponse(){
+    /*OK*/public function getResponse(){
         return json_encode($this->response,JSON_UNESCAPED_SLASHES);
     }
-    private function createSubject(){
-        $subject = Subject::init(
-                $this->params['title'],
-                $this->params['message'],
-                $this->user->getId());
+    /*OK*/private function createSubject(){
+        $subject = Subject::init( $this->params['title'],
+                                  $this->params['message'],
+                                  $this->user->getId());
         $inserted = SubjectManager::init()->insert($subject);
-        var_dump($inserted);
-        $this->response['subjectRow'] = ForumController::formateSubject($subject);
+        if($inserted){
+            $subject->setId($inserted);
+            $this->response['subjectRow'] = ForumController::formateSubject($subject);
+        }
+        else{
+            $this->response['error'] = "Subject insertion failed";
+        }
     }
-    private function closeSubject(){
-
+    /*OK*/private function closeSubject(){
+        $subject = SubjectManager::init()->getByID($this->params['idSubject']);
+        $subject->setSubjectStatus(SUBJECT_STATUS::CLOSED);
+        $updated = SubjectManager::init()->update($subject);
+        if($updated){
+            $this->response['updated'] = TRUE;
+        }
+        else{
+            $this->response['error'] = "Subject closing failed";
+        }
     }
     private function deleteSubject(){
-
+        /*$subject  = SubjectManager::init()->getByID($this->params['idSubject']);
+        $posts    = PostManager::init()->getAll("WHERE idSubject=".$subject->getId());
+        $delPosts = PostManager::init()->execute("DELETE FROM post WHERE id IN (".implode(
+                    ',', array_map(function($post){ return $post->getId(); }, $posts)).")");
+        $delSubj  = SubjectManager::init()->delete($subject);*/
+        if(FALSE){//$delPosts && $delSubj){
+            $this->response['deleted'] = TRUE;
+        }
+        else{
+            $this->response['error'] = "Subject deletion failed";
+        }
     }
     
 }
-
-//sleep(4);
-$_POST['idUser'] = 8;
-$_POST['action'] = "createSubject";
-$_POST['title'] = "title test";
-$_POST['message'] = "message test";
-var_dump($_POST);
 
 echo AjaxOperator::init($_POST)->treat()->getResponse();
 
