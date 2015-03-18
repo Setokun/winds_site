@@ -11,7 +11,7 @@ var div_newPost, msg_newPost, btn_createPost, btn_cancelPost;
 var div_post, p_statusSubject, btn_newPost, btn_closeSubject,
     btn_deleteSubject, btn_back, btn_deletePost;
 
-function backToForum(){
+/*OK*/function backToForum(){
     document.location = "forum.php";
 }
 /*OK*/function Infos(classCss, message){

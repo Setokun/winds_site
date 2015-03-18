@@ -12,12 +12,14 @@ define("NB_NEWS_TO_DISPLAY", 5);
     /*OK*/static function displayList(User $current){
         $users = UserManager::init()->getAll("WHERE id<>".$current->getId());
         foreach($users as $user){
-            echo "<div class='account col-xs-12'><div class='col-xs-12 bold'><h4>"
-                .Tools::capitalize($user->getPseudo())."</h4></div><div id='player5' "
+            echo "<div data-iduser='".$user->getId()."' class='account col-xs-12'><div class='col-xs-12 bold'><h4>"
+                .Tools::capitalize($user->getPseudo())."</h4></div><div "
                 ."style='display:none'><div class='row'><div class='col-xs-3'>Rights</div>";
             foreach(USER_TYPE::getConstants() as $type){
-                echo "<div class='col-xs-3'><input type='radio' name='".$user->getPseudo()
-                    ."' value='$type' />".Tools::capitalize($type)."</div>";
+                echo "<div class='col-xs-3'><input type='radio' name='"
+                    .$user->getPseudo()."' value='$type' "
+                    .($type === $user->getUserType() ? "checked" : NULL)
+                    ."/>".Tools::capitalize($type)."</div>";
             }
             echo "</div><div class='row'><div class='col-xs-3'>Actions :</div>"
                 ."<div class='col-xs-3'><input class='button-green' type='button' value='Valid rights' /></div>"
@@ -30,7 +32,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         $users = UserManager::init()->getAll("WHERE id<>".$current->getId()
                             ." AND userStatus='".USER_STATUS::DELETING."'");
         foreach($users as $user){
-            echo "<div class='col-xs-12 bold'><h5 id='".$user->getId()
+            echo "<div class='col-xs-12 bold'><h5 data-idUser='".$user->getId()
                 ."'>".Tools::capitalize($user->getPseudo())."</h5></div>";
         }
     }
