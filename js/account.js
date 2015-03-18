@@ -2,7 +2,7 @@
 var idUser, loader, infos;
 
 // -- Users list --
-var userList;
+var userList, accounts;
 
 // -- Deletions list --
 var deletionList;
@@ -21,7 +21,7 @@ var deletionList;
     }
 }
 /*OK*/function focusAccount(item){
-    account.each(function(){
+    accounts.each(function(){
         $(this).children().last().css('display','none');
         $(this).css('background-color','transparent');
     });
@@ -43,6 +43,7 @@ function commonControls(){
 function userControls(){
     // -- affectations --
     userList = $("section #list-user");
+    accounts = userList.find(".account");
 
     // -- events --
     /*OK*/userList.on("click",".account",function(){
@@ -56,7 +57,7 @@ function deletionControls(){
     // -- events --
     /*OK*/deletionList.on("click","h5",function(){
         var idUser = $(this).data('iduser');
-        var userAccount = account.filter("[data-iduser='"+idUser+"']");
+        var userAccount = accounts.filter("[data-iduser='"+idUser+"']");
         focusAccount(userAccount);
     });
 }
