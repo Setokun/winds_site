@@ -28,6 +28,8 @@ class AjaxOperator {
     /*OK*/public function getResponse(){
         return json_encode($this->response,JSON_UNESCAPED_SLASHES);
     }
+    
+    // -- FORUM --
     /*OK*/private function createSubject(){
         $subject = Subject::init( $this->params['title'],
                                   $this->params['message'],
@@ -66,6 +68,30 @@ class AjaxOperator {
         }
     }
     
+    // -- ACCOUNT --
+    /*OK*/private function updateRights(){
+        $this->user->setUserType($this->params['userType']);
+        $updated = UserManager::init()->update($this->user);
+        if($updated){
+            $this->response['updated'] = TRUE;
+        }
+        else{
+            $this->response['error'] = "Right updating failed";
+        }
+    }
+    private function deleteAccount(){
+        
+    }
+    /*OK*/private function banishAccount(){
+        $this->user->setUserStatus(USER_STATUS::BANISHED);
+        $banished = UserManager::init()->update($this->user);
+        if($banished){
+            $this->response['banished'] = TRUE;
+        }
+        else{
+            $this->response['error'] = "Right updating failed";
+        }
+    }
 }
 
 echo AjaxOperator::init($_POST)->treat()->getResponse();

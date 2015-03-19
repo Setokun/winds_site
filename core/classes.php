@@ -121,6 +121,9 @@ interface Winds_News {
         return $this->userType == USER_TYPE::MODERATOR ||
                $this->userType == USER_TYPE::ADMINISTRATOR;
     }
+    public function isBanished(){
+        return $this->userStatus === USER_STATUS::BANISHED;
+    }
     public function jsonSerialize() {
         return (object) get_object_vars($this);
     }

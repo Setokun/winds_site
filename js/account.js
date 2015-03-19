@@ -2,7 +2,7 @@
 var idUser, loader, infos;
 
 // -- Users list --
-var userList, accounts;
+var userList, accounts, btn_valid, btn_delete, btn_banish;
 
 // -- Deletions list --
 var deletionList;
@@ -18,18 +18,31 @@ var deletionList;
             infos.removeClass(Infos.class);
             afterCallback();
         });
-    }
+}
 }
 /*OK*/function focusAccount(item){
-    accounts.each(function(){
-        $(this).children().last().css('display','none');
-        $(this).css('background-color','transparent');
-    });
+    // leave focus of the previous account
+    var exFocus = accounts.filter(function(){ return $(this).data("focused"); });
+    exFocus.children().last().css('display','none');
+    exFocus.css('background-color','transparent');
+    exFocus.removeData("focused");
+    
+    // focus the current account
+    item.data("focused", true);
     item.children().last().css('display','initial');
     item.css('background-color','lightskyblue');
-    $('body').animate({ scrollTop: item.offset().top }, 800);
+    
+    // reset the radiobutton of the current account
+    var radios = item.find("input[type='radio']");
+    radios.filter(":checked").removeAttr("checked");
+    radios.filter("[value='"+ item.data('usertype') +"']").prop("checked",true);
+    
+    // animate it
+    $('body').animate({ scrollTop: item.offset().top -50 }, 800);
 }
-
+function scrollTo(position){
+    $('body').animate({scrollTop: position});
+}
 function commonControls(){
     // -- affectations --
     idUser = $("section #common #idUser");
@@ -37,20 +50,78 @@ function commonControls(){
     infos  = $("section #common #infos");
     
     // -- events --
-    $(document).ajaxStart(function(){ loader.css("display","initial"); });
-    $(document).ajaxStop(function(){ loader.css("display","none"); })
+    var animatedLoader;
+    $(document).ajaxStart(function(){
+        position = $(document).scrollTop();
+        loader.css("display","initial");
+        animatedLoader = $('body').animate({scrollTop: 0}, 400);
+    });
+    $(document).ajaxStop(function(){
+        $.when(animatedLoader, animation).done(function(){
+            loader.css("display","none");
+            $('body').animate({scrollTop: position}, 400);
+        });
+    });
 }
 function userControls(){
     // -- affectations --
-    userList = $("section #list-user");
-    accounts = userList.find(".account");
+    userList   = $("section #list-user");
+    accounts   = userList.find(".account");
+    btn_valid  = userList.find(".btn-valid");
+    btn_delete = userList.find(".btn-delete");
+    btn_banish = userList.find(".btn-banish");
 
     // -- events --
-    /*OK*/userList.on("click",".account",function(){
-        focusAccount( $(this) );
+    /*OK*/userList.on("click",".account h4",function(){
+        focusAccount( $(this).parents(".account") );
+    });
+    /*OK*/btn_valid.click(function(){
+        var account     = $(this).parents(".account");
+        var newUserType = account.find(":checked").val();
+        
+        var data = {
+            action   : "updateRights",
+            idUser   : account.data('iduser'),
+            userType : newUserType
+        };
+        var callback = function(data){
+            var response = $.parseJSON(data);
+            if(response.updated){
+                account.data('usertype', newUserType);
+            }
+            var info = response.updated ?
+                       new Infos("success", "<h4>Account updated</h4>") :
+                       new Infos("error", "<h4>Internal error</h4><p>Unable"
+                                +" to update the type of this account.</p>");
+            info.show();
+        };
+        ajaxOperator(data, callback);
+    });
+    btn_delete.click(function(){});
+    btn_banish.click(function(){
+        var account = $(this).parents(".account");
+        
+        var data = {
+            action   : "banishAccount",
+            idUser   : account.data('iduser')
+        };
+        var callback = function(data){
+            var response = $.parseJSON(data);console.log(response);
+            if(response.banished){
+                account.find("input[type='radio']").attr("disabled","");
+                account.find("input.btn-valid").parent().css("display","none");
+                account.find("input.btn-banish").parent().css("display","none");
+            }
+            var info = response.banished ?
+                       new Infos("success", "<h4>Account banished</h4>") :
+                       new Infos("error", "<h4>Internal error</h4><p>Unable"
+                                +" to banish this account.</p>");
+            info.show();
+        };
+        ajaxOperator(data, callback);
     });
 }
-function deletionControls(){
+/*OK*/function deletionControls(){
     // -- affectations --
     deletionList = $("section #list-deletion");
     

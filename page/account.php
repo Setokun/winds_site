@@ -17,7 +17,7 @@ $user = $_SESSION['user'];
             <img src="..\resources\loader.gif" style="height: 32px; width: 32px" >
             <h5>Please, wait.</h5>        
         </div>
-        <div id="infos" style="display:none"/>
+        <div id="infos" style="display:none" ></div>
     </article>
     <article class="table-bordered col-xs-12">
         <p>Winds accounts</p>
