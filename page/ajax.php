@@ -57,8 +57,10 @@ class AjaxOperator {
     /*OK*/private function deleteSubject(){
         $subject  = SubjectManager::init()->getByID($this->params['idSubject']);
         $posts    = PostManager::init()->getAll("WHERE idSubject=".$subject->getId());
-        $delPosts = PostManager::init()->execute("DELETE FROM post WHERE id IN (".implode(
-                    ',', array_map(function($post){ return $post->getId(); }, $posts)).")");
+        $delPosts = empty($posts) ? TRUE : PostManager::init()->execute(
+                    "DELETE FROM post WHERE id IN (".implode(',',
+                    array_map(function($post){ return $post->getId(); },
+                    $posts)).")");
         $delSubj  = SubjectManager::init()->delete($subject);
         if($delPosts && $delSubj){
             $this->response['deleted'] = TRUE;
