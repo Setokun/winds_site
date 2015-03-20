@@ -39,10 +39,10 @@ var deletionList;
     // animate it
     $('body').animate({ scrollTop: item.offset().top -50 }, 800);
 }
-function scrollTo(position){
+/*OK*/function scrollTo(position){
     $('body').animate({scrollTop: position});
 }
-function commonControls(){
+/*OK*/function commonControls(){
     // -- affectations --
     idUser = $("section #common #idUser");
     loader = $("section #common #loader");
@@ -96,16 +96,33 @@ function userControls(){
         };
         ajaxOperator(data, callback);
     });
-    btn_delete.click(function(){});
-    btn_banish.click(function(){
+    btn_delete.click(function(){
         var account = $(this).parents(".account");
-        
+        var data = {
+            action   : "deleteAccount",
+            idUser   : account.data('iduser')
+        };
+        var callback = function(data){
+            var response = $.parseJSON(data);
+            if(response.deleted){
+                account.remove();
+            }
+            var info = response.deleted ?
+                       new Infos("success", "<h4>Account deleted</h4>") :
+                       new Infos("error", "<h4>Internal error</h4><p>Unable"
+                                +" to delete this account.</p>");
+            info.show();
+        };
+        ajaxOperator(data, callback);
+    });
+    /*OK*/btn_banish.click(function(){
+        var account = $(this).parents(".account");
         var data = {
             action   : "banishAccount",
             idUser   : account.data('iduser')
         };
         var callback = function(data){
-            var response = $.parseJSON(data);console.log(response);
+            var response = $.parseJSON(data);
             if(response.banished){
                 account.find("input[type='radio']").attr("disabled","");
                 account.find("input.btn-valid").parent().css("display","none");

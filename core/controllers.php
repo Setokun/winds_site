@@ -11,7 +11,8 @@ define("NB_NEWS_TO_DISPLAY", 5);
         return UserManager::init()->getAll("WHERE email='$email'")[0];
     }
     /*OK*/static function displayList(User $current){
-        $users = UserManager::init()->getAll("WHERE id<>".$current->getId());
+        $users = UserManager::init()->getAll("WHERE id<>".$current->getId()
+                ." AND userStatus<>'".USER_STATUS::DELETED."'");
         foreach($users as $user){
             echo "<div data-iduser='".$user->getId()."' class='account col-xs-12' "
                 ."data-usertype='".$user->getUserType()."'><div class='col-xs-12 bold'><h4>"

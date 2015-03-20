@@ -79,8 +79,21 @@ class AjaxOperator {
             $this->response['error'] = "Right updating failed";
         }
     }
-    private function deleteAccount(){
-        
+    /*OK*/private function deleteAccount(){
+        $scores    = ScoreManager::init()->getAll("WHERE idPlayer="
+                     .$this->user->getID());
+        $delScores = empty($scores) ? TRUE : PostManager::init()->execute(
+                     "DELETE FROM score WHERE id IN (".implode(',',
+                     array_map(function($score){ return $score->getId(); },
+                     $scores)).")");
+        $this->user->setUserStatus(USER_STATUS::DELETED);
+        $delAccount = UserManager::init()->update($this->user);
+        if($delScores && $delAccount){
+            $this->response['deleted'] = TRUE;
+        }
+        else{
+            $this->response['error'] = "Deletion failed";
+        }
     }
     /*OK*/private function banishAccount(){
         $this->user->setUserStatus(USER_STATUS::BANISHED);
@@ -89,7 +102,7 @@ class AjaxOperator {
             $this->response['banished'] = TRUE;
         }
         else{
-            $this->response['error'] = "Right updating failed";
+            $this->response['error'] = "Banishment failed";
         }
     }
 }
