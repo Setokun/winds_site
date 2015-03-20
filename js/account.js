@@ -10,13 +10,12 @@ var deletionList;
 /*OK*/function Infos(classCss, message){
     this.class = classCss;
     this.msg   = message;
-    this.show  = function(afterCallback){
+    this.show  = function(){
         infos.addClass(this.class);
         infos.html(this.msg);
         infos.slideDown("slow").delay(5000).slideUp("slow", function(){
             infos.html(undefined);
             infos.removeClass(Infos.class);
-            afterCallback();
         });
 }
 }
@@ -57,7 +56,7 @@ function commonControls(){
         animatedLoader = $('body').animate({scrollTop: 0}, 400);
     });
     $(document).ajaxStop(function(){
-        $.when(animatedLoader, animation).done(function(){
+        $.when(animatedLoader).done(function(){
             loader.css("display","none");
             $('body').animate({scrollTop: position}, 400);
         });
