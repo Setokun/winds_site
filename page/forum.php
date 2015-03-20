@@ -58,6 +58,7 @@ $user   = $_SESSION['user'];
               $subject = SubjectManager::init()->getByID($params['id']);
               /* Display the posts of the specified subject */ ?>
             <div id="post">
+                <input id="idSubject" type="hidden" value="<?php echo $subject->getId(); ?>" >
                 <div id="new-post" style="display:none" >
                     <h3>New post to create</h3>
                     <div>
@@ -70,22 +71,25 @@ $user   = $_SESSION['user'];
                     </div>
                 </div>
                 <div id="display-post">
-                    <div class="col-xs-6 col-sm-3"><?php if($subject->isActive()){ ?>
-                        <button class="button-green" style="width:135px;" id="btn-new-post">
-                                Create a new post</button></div>
-                    <div class="col-xs-6 col-sm-3"><?php if($user->isSuperUser()){ ?>
-                        <button class="button-orange" style="width:135px;" id="btn-close-subject"
-                                data-idSubject="<?php echo $subject->getId(); ?>">
-                                Close this subject</button></div>
-                    <div class="col-xs-8 col-sm-4"><?php }} if($user->isSuperUser()){ ?>
-                        <button class="button-red" style="width:135px;" id="btn-delete-subject"
-                                data-idSubject="<?php echo $subject->getId(); ?>">
-                                Delete this subject</button></div>
-                    <div class="col-xs-4 col-sm-2"><?php } ?>
-                        <button class="button-blue" id="btn-back">Back</button></div>
-                    <div class="col-xs-12">
-                    <?php ForumController::displayInfosSubject($subject);
-                          ForumController::displayPosts($subject,$user->isSuperUser()); ?>
+                    <div>
+                        <div class="col-xs-6 col-sm-3"><?php if($subject->isActive()){ ?>
+                            <button class="button-green" style="width:135px;"
+                                    id="btn-new-post">Create a new post
+                            </button></div>
+                        <div class="col-xs-6 col-sm-3"><?php if($user->isSuperUser()){ ?>
+                            <button class="button-orange" style="width:135px;"
+                                    id="btn-close-subject">Close this subject
+                            </button></div>
+                        <div class="col-xs-8 col-sm-4"><?php }} if($user->isSuperUser()){ ?>
+                            <button class="button-red" style="width:135px;"
+                                    id="btn-delete-subject">Delete this subject
+                            </button></div>
+                        <div class="col-xs-4 col-sm-2"><?php } ?>
+                            <button class="button-blue" id="btn-back">Back</button></div>
+                    </div>
+                    <div id="table-posts" class="col-xs-12">
+                        <?php ForumController::displayInfosSubject($subject);
+                              ForumController::displayPosts($subject, $user); ?>
                     </div>
                 </div>
             </div>

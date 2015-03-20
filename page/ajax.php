@@ -33,11 +33,11 @@ class AjaxOperator {
     /*OK*/private function createSubject(){
         $subject = Subject::init( $this->params['title'],
                                   $this->params['message'],
-                                  $this->user->getId());
+                                  $this->user->getId() );
         $inserted = SubjectManager::init()->insert($subject);
         if($inserted){
             $subject->setId($inserted);
-            $this->response['subjectRow'] = ForumController::formateSubject($subject);
+            $this->response['added'] = ForumController::formateSubject($subject);
         }
         else{
             $this->response['error'] = "Subject insertion failed";
@@ -67,6 +67,35 @@ class AjaxOperator {
         }
         else{
             $this->response['error'] = "Subject deletion failed";
+        }
+    }
+    /*OK*/private function createPost(){
+        $post = Post::init( $this->params['message'],
+                            $this->user->getId(),
+                            $this->params['idSubject'] );
+        $inserted = PostManager::init()->insert($post);
+        if($inserted){
+            $post->setId($inserted);
+            $this->response['added'] = ForumController::formatePost($post,
+                    $this->user->getPseudo(), $this->user->isSuperUser());
+        }
+        else{
+            $this->response['error'] = "Post insertion failed";
+        }
+    }
+    /*OK*/private function deletePost(){
+        $subject  = SubjectManager::init()->getByID($this->params['idSubject']);
+        $posts    = PostManager::init()->getAll("WHERE idSubject=".$subject->getId());
+        $delPosts = empty($posts) ? TRUE : PostManager::init()->execute(
+                    "DELETE FROM post WHERE id IN (".implode(',',
+                    array_map(function($post){ return $post->getId(); },
+                    $posts)).")");
+        $delSubj  = SubjectManager::init()->delete($subject);
+        if($delPosts && $delSubj){
+            $this->response['deleted'] = TRUE;
+        }
+        else{
+            $this->response['error'] = "Post deletion failed";
         }
     }
     

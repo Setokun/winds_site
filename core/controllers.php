@@ -265,20 +265,26 @@ define("NB_NEWS_TO_DISPLAY", 5);
             ."<p></div><p id='status-subject'>Status : ".$subject->getSubjectStatus()."</p></div>";
     }
     /*OK*/static function displayPosts(Subject $subject, $isSuperUser){
-        $authors = USerManager::init()->getPseudos();
+        $authors = UserManager::init()->getPseudos();
         $posts   = PostManager::init()->getAll("WHERE idSubject=".$subject->getId()." ORDER BY date ASC");
         array_unshift($posts, $subject);
 
         foreach($posts as $post){
-            $date = (new DateTime($post->getDate()))->format("d-m-Y H:i:s");
-            echo "<div><div class='col-xs-8 col-sm-9 col-md-10' style='border-top: 2px solid #aaa; padding-top:10px;'>"
-                ."$date by ".$authors[ $post->getIdAuthor() ]." :<br>".$post->getMessage()."</div>";
-            if($isSuperUser && !$post instanceof Subject){
-                echo "<div class='col-xs-4 col-sm-3 col-md-2'><button id='".$post->getId()
-                    ."' class='btn-delete-post'>Delete</button></div>";
-            }
+            echo self::formatePost($post, $authors[$post->getIdAuthor()], $isSuperUser);
         }
-        
+    }
+    static function formatePost($post, $author, $isSuperUser){
+        $date = (new DateTime($post->getDate()))->format("d-m-Y H:i:s");
+        $echo = "<div class='row-post'><div class='col-xs-8 col-sm-9 col-md-10' "
+              . "style='border-top: 2px solid #aaa; padding-top:10px;'>"
+              . "$date by $author :<br>".$post->getMessage()."</div>";
+        if($isSuperUser && !$post instanceof Subject){
+            $echo .= "<div class='col-xs-4 col-sm-3 col-md-2'><button id='"
+                   . $post->getId()."' class='btn-delete-post'>"
+                   . "Delete</button></div>";
+        }
+        $echo .= "</div>";
+        return $echo;
     }
 }
 class ApiController {

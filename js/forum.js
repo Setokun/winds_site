@@ -8,8 +8,9 @@ var div_subject, btn_newSubject, table_subjects;
 
 // -- DIV post --
 var div_newPost, msg_newPost, btn_createPost, btn_cancelPost;
-var div_post, p_statusSubject, btn_newPost, btn_closeSubject,
-    btn_deleteSubject, btn_back, btn_deletePost;
+var div_post, p_statusSubject, btn_newPost,
+    btn_closeSubject, btn_deleteSubject, btn_back,
+    table_posts, btn_deletePost, idSubject;
 
 /*OK*/function backToForum(){
     document.location = "forum.php";
@@ -65,11 +66,11 @@ var div_post, p_statusSubject, btn_newPost, btn_closeSubject,
         };
         var callback = function(data){
             var response = $.parseJSON(data);
-            if(response.subjectRow){
-                table_subjects.append(response.subjectRow);
+            if(response.added){
+                table_subjects.append(response.added);
                 btn_newSubject.click();
             }
-            var info = response.subjectRow ?
+            var info = response.added ?
                        new Infos("success", "<h4>Insertion succeeded</h4>") :
                        new Infos("error", "<h4>Internal error</h4><p>Unable"
                                 +" to save this new subject.</p>");
@@ -96,16 +97,17 @@ function postControls(){
     btn_closeSubject  = div_post.find("#btn-close-subject");
     btn_deleteSubject = div_post.find("#btn-delete-subject");
     btn_back          = div_post.find("#btn-back");
+    table_posts       = div_post.find("#table-posts");
     btn_deletePost    = div_post.find(".btn-delete-post");
+    idSubject         = $("#forum #post #idSubject");
     
     // -- events --
     /*OK*/btn_back.click(function(){ backToForum(); });
-    btn_deletePost.click(function(){ alert("delete post"); });
     /*OK*/btn_closeSubject.click(function(){
         var data = {
             action   : "closeSubject",
             idUser   : idUser.val(),
-            idSubject: $(this).data("idsubject")
+            idSubject: idSubject.val()
         };
         var callback = function(data){
             var response = $.parseJSON(data);
@@ -125,7 +127,7 @@ function postControls(){
         var data = {
             action   : "deleteSubject",
             idUser   : idUser.val(),
-            idSubject: $(this).data("idsubject")
+            idSubject: idSubject.val()
         };
         var callback = function(data){
             var response = $.parseJSON(data);
@@ -146,24 +148,48 @@ function postControls(){
             msg_newPost.val(undefined);
         });
     });
-    btn_createPost.click(function(){
+    /*OK*/btn_createPost.click(function(){
         var data = {
-            action  : "addPost",
-            idUser  : idUser.val(),
-            message : msg_newPost.val()
+            action   : "createPost",
+            idUser   : idUser.val(),
+            idSubject: idSubject.val(),
+            message  : msg_newPost.val()
         };
-        var success = function(response){
-            table_subjects.append(response);
-            btn_newSubject.click();
+        var callback = function(data){
+            var response = $.parseJSON(data);
+            if(response.added){
+                table_posts.append(response.added);
+                btn_newPost.click();
+            }
+            var info = response.added ?
+                       new Infos("success", "<h4>Insertion succeeded</h4>") :
+                       new Infos("error", "<h4>Internal error</h4><p>Unable"
+                                +" to save this new post.</p>");
+            info.show();
         };
-        var failure = function(){
-            error.html("<h4>Internal error</h4><p>Unable to save"
-                      +"this new subject into the database.</p>");
-        };
-        ajaxOperator(data,success,failure);
+        ajaxOperator(data, callback);
     });
     /*OK*/btn_cancelPost.click(function(){
         btn_newPost.click();
+    });
+    /*OK*/btn_deletePost.click(function(){
+        var data = {
+            action : "deletePost",
+            idUser : idUser.val(),
+            idPost : $(this).attr('id')
+        };
+        var callback = function(data){
+            var response = $.parseJSON(data);
+            if(response.deleted){
+                $(this).parents(".row-post").remove();
+            }
+            var info = response.deleted ?
+                       new Infos("success", "<h4>Post deletion succeeded</h4>") :
+                       new Infos("error", "<h4>Internal error</h4>"
+                                 +"<p>Unable to delete this post.</p>");
+            info.show();
+        };
+        ajaxOperator(data,callback);
     });
 }
 
