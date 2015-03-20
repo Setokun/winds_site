@@ -62,7 +62,7 @@ var deletionList;
         });
     });
 }
-function userControls(){
+/*OK*/function userControls(){
     // -- affectations --
     userList   = $("section #list-user");
     accounts   = userList.find(".account");
@@ -96,7 +96,7 @@ function userControls(){
         };
         ajaxOperator(data, callback);
     });
-    btn_delete.click(function(){
+    /*OK*/btn_delete.click(function(){
         var account = $(this).parents(".account");
         var data = {
             action   : "deleteAccount",
@@ -106,6 +106,9 @@ function userControls(){
             var response = $.parseJSON(data);
             if(response.deleted){
                 account.remove();
+                var accountDel = deletionList.find("h5[data-iduser='"
+                               + account.data('iduser') +"']");
+                if(accountDel.length > 0){  accountDel.parent().remove();  }
             }
             var info = response.deleted ?
                        new Infos("success", "<h4>Account deleted</h4>") :

@@ -46,7 +46,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         }
     }
 }
-class AddonController {
+/*OK*/class AddonController {
     /*OK*/static function displayLastNews(){
         $criterias = "ORDER BY creationDate DESC LIMIT ".NB_NEWS_TO_DISPLAY;
         $themes  = ThemeManager::init()->getAll($criterias);
@@ -139,7 +139,7 @@ class AddonController {
         return LevelManager::init()->getAll("WHERE ".implode(" AND ", $params));        
     }
 }
-class ScoreController {
+/*OK*/class ScoreController {
     /*todo*/static function getScores($idPlayer){
         return ;
     }
