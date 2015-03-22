@@ -5,20 +5,17 @@ include_once "../common/menu.php";
 require_once "../core/config.php";
 ?>
 
-<!--<link type='text/css' rel='stylesheet' href='../css/home.css' />-->
-<section style="padding-bottom:20px" class="col-sm-12 col-md-10">
-          <p>Welcome to your home page</p>
-
+<section class="col-sm-8 col-md-9 col-lg-10">
     <div id="news">
-        <article class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-            <table id="news-addon" class="table table-bordered">
-                <tr><th>Last events of the addons</th></tr>
+        <article class="align-mobile-left col-sm-12 col-md-6">
+			<table id="news-addon" class="table table-bordered">
+                <tr><th colspan="100%" class="th-winds">Last events of the add-ons</th></tr>
                 <?php AddonController::displayLastNews(); ?>
             </table>
         </article>
-        <article class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
-            <table id="news-forum" class="table table-bordered">
-                <tr><th>Last events of the forum</th></tr>
+        <article class="align-mobile-left col-sm-12 col-md-6">
+			<table id="news-forum" class="table table-bordered">
+                <tr><th colspan="100%" class="th-winds">Last events of the forum</th></tr>
                 <?php ForumController::displayLastNews(); ?>
             </table>
         </article>

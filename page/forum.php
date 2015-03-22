@@ -11,81 +11,87 @@ $params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
 $user   = $_SESSION['user'];
 ?>
 
-<link type="text/css" rel="stylesheet" href="../css/forum.css">
 <script type="text/javascript" src="../js/forum.js" ></script>
-<section style="padding-bottom:20px; padding-top:20px" class="col-sm-9 col-md-10">
-<div id="forum">
-    <div id="common">
-        <input id="idUser" type="hidden" value="<?php echo $user->getId(); ?>" >
-        <div id="loader" style="display:none" >
-            <h4>Action in progress</h4>
-            <img src="..\resources\loader.gif" style="height: 32px; width: 32px" >
-            <h5>Please, wait.</h5>        
-        </div>
-        <div id="infos" style="display:none"/>
-    </div>
+<section class="col-sm-8 col-md-9 col-lg-10">
+	<div id="forum">
+		<div id="common">
+			<input id="idUser" type="hidden" value="<?php echo $user->getId(); ?>" >
+			<div id="loader" style="display:none" >
+				<h4>Action in progress</h4>
+				<img src="..\resources\loader.gif" style="height: 32px; width: 32px" >
+				<h5>Please, wait.</h5>        
+			</div>
+			<div id="infos" style="display:none"/>
+		</div>
     
     <?php if(empty($params)){
         /* Display the subjects */?>
-    <div id="subject">
-        <div id="new-subject" style="display:none" >
-            <h3>New subject to create</h3>
-            <div>
-                <label for="title-new-subject">Title :</label>
-                <input id="title-new-subject" type="text" placeholder="Type the title here" ><br/>
-                <label for="message-new-subject">Message :</label>
-                <input id="message-new-subject" type="text" placeholder="Type the message here" >
-            </div>
-            <div>
-                <button id="create-subject">Create</button>
-                <button id="cancel-subject">Cancel</button>
-            </div>
-        </div>
-        <div id="display-subject">
-            <button id="btn-new-subject">Create a new subject</button>
-            <table id="table-subjects">
-                <tr>
-                    <th>Subjects</th>
-                    <th>Status</th>
-                    <th>Last update</th>
-                <tr>
-                <?php ForumController::displaySubjects(); ?>
-            </table>
-        </div>
-    </div>
-    <?php }else
+		<div id="subject">
+			<div id="new-subject" style="display:none" >
+				<h3>New subject to create</h3>
+				<div class="col-xs-12 form-row">
+					<div class="col-xs-12 col-md-3"><label for="title-new-subject">Title :</label></div>
+					<div class="col-xs-12 col-md-9"><input id="title-new-subject" class="form-control" type="text" placeholder="Type the title here" ></div>
+				</div>
+				<div class="col-xs-12 form-row">
+					<div class="col-xs-12 col-md-3"><label for="message-new-subject">Message : (Max.&nbsp;255&nbsp;characters)</label></div>
+					<div class="col-xs-12 col-md-9"><textarea id="message-new-subject" maxlength="255" class="form-control" rows="5" placeholder="Your message"></textarea></div>
+				</div>
+				<div class="col-xs-12 form-row text-center">
+					<button id="create-subject" class="btn btn-primary">Create</button>
+					<button id="cancel-subject" class="btn btn-danger">Cancel</button>
+				</div>
+			</div>
+			
+			<div id="display-subject">
+				<button id="btn-new-subject" class="btn btn-success">Create a new subject</button>
+					<table id="table-subjects" class="table table-bordered">
+					<tr>
+						<th class="th-winds">Subjects</th>
+						<th class="th-winds">Status</th>
+						<th class="th-winds">Last update</th>
+					<tr>
+					<?php ForumController::displaySubjects(); ?>
+				</table>
+			</div>
+		</div>
+    <?php }else //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
           if(isset($params['id'])){
               $subject = SubjectManager::init()->getByID($params['id']);
               /* Display the posts of the specified subject */ ?>
-            <div id="post">
+            <div class="align-mobile-left" id="post">
                 <input id="idSubject" type="hidden" value="<?php echo $subject->getId(); ?>" >
                 <div id="new-post" style="display:none" >
                     <h3>New post to create</h3>
                     <div>
-                        <label for="message-new-post">Message :</label>
-                        <input id="message-new-post" type="text" placeholder="Message" >
+                        <label for="message-new-post">Message : (Max. 255 characters)</label>
+						<textarea id="message-new-post"  maxlength="255" class="form-control" rows="5" placeholder="Your message"></textarea>
                     </div>
-                    <div>
-                        <button id="create-post" class="button-green">Create</button>
-                        <button id="cancel-post" class="button-red">Cancel</button>
+                    <div class="form-row text-center">
+                        <button id="create-post" class="btn btn-primary">Create</button>
+                        <button id="cancel-post" class="btn btn-danger">Cancel</button>
                     </div>
                 </div>
                 <div id="display-post">
                     <div>
-                        <div class="col-xs-6 col-sm-3"><?php if($subject->isActive()){ ?>
-                            <button class="button-green" style="width:135px;"
+                        <div style="margin-bottom:20px" class="col-xs-6 col-md-3"><?php if($subject->isActive()){ ?>
+                            <button class="btn btn-success" style="width:135px;"
                                     id="btn-new-post">Create a new post
-                            </button></div>
-                        <div class="col-xs-6 col-sm-3"><?php if($user->isSuperUser()){ ?>
-                            <button class="button-orange" style="width:135px;"
+                            </button>
+						</div>
+                        <div class="col-xs-6 col-md-3"><?php if($user->isSuperUser()){ ?>
+                            <button class="btn btn-warning" style="width:135px;"
                                     id="btn-close-subject">Close this subject
-                            </button></div>
-                        <div class="col-xs-8 col-sm-4"><?php }} if($user->isSuperUser()){ ?>
-                            <button class="button-red" style="width:135px;"
+                            </button>
+						</div>
+                        <div style="margin-bottom:20px" class="col-xs-8 col-md-4"><?php }} if($user->isSuperUser()){ ?>
+                            <button class="btn btn-danger" style="width:135px;"
                                     id="btn-delete-subject">Delete this subject
-                            </button></div>
-                        <div class="col-xs-4 col-sm-2"><?php } ?>
-                            <button class="button-blue" id="btn-back">Back</button></div>
+                            </button>
+						</div>
+                        <div class="col-xs-4 col-md-2"><?php } ?>
+                            <button class="btn btn-primary" id="btn-back">Back</button>
+						</div>
                     </div>
                     <div id="table-posts" class="col-xs-12">
                         <?php ForumController::displayInfosSubject($subject);

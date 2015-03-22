@@ -5,15 +5,13 @@ include_once "../common/menu.php";
 require_once "../core/config.php";
 ?>
 
-<section style="padding-bottom:20px" class="col-sm-9 col-md-10">
-    <div id="moderate">
+<section id="moderate" class="col-sm-8 col-md-9 col-lg-10">
         <article class="col-xs-12">
             <table id="table-moderate" class="table">
-                <tr><th colspan="3">Custom levels to moderate</th></tr>
+            <tr><th colspan="100%" class="th-winds">Custom levels to moderate</th></tr>
                 <?php AddonController::displayLevelsToModerate(); ?>
             </table>
         </article>
-    </div>
 </section>
 
 <?php

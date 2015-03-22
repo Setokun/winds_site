@@ -1,11 +1,11 @@
 	</div>
-        <footer class="row">
-        <div class="col-sm-12">
-          Pied de page
-        </div>
-      </footer>
-    </div>
-    <script src="../js/jquery-2.1.1.js"></script>
-    <script src="../js/bootstrap.min.js"></script>
-    </body>
+	<div class="container"  style="padding:0">
+			<footer class="text-center">
+				<a class="btn btn-default" href="#"><i class="fa fa-twitter fa-2x"></i></a>
+				<a class="btn btn-default" href="#"><i class="fa fa-facebook fa-2x"></i></a>
+				<a class="btn btn-default" href="#"><i class="fa fa-google-plus fa-2x"></i></a>
+				<p style="color:#fff">site réalisé par <a href="#" target="_blank">Damien Deloche</a> et <a href="http://www.s-guardo.fr" target="_blank">Stéphane Guardo</a></p>
+			</footer>
+	</div>
+  </body>
 </html>

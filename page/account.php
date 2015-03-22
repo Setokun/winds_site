@@ -10,7 +10,7 @@ $user = $_SESSION['user'];
 
 <script type="text/javascript" src="../js/account.js" ></script>
 <section style="padding:20px" class="col-sm-9 col-md-10">
-    <article id="common" class="table-bordered col-xs-12">
+    <article id="common" class="col-xs-12">
         <input id="idUser" type="hidden" value="<?php echo $user->getId(); ?>" >
         <div id="loader" style="display:none" >
             <h4>Action in progress</h4>
@@ -19,17 +19,18 @@ $user = $_SESSION['user'];
         </div>
         <div id="infos" style="display:none" ></div>
     </article>
-    <article class="table-bordered col-xs-12">
-        <p>Winds accounts</p>
-        <div id="list-user" class="col-xs-12">
-            <?php AccountController::displayList($user); ?>
-        </div>
+	
+    <article id="accounts-list" class="col-xs-12">
+        <h2>Winds accounts</h2>
+        <?php AccountController::displayList($user); ?>
     </article>
-    <article class="table-bordered col-xs-12">
-        <p>Accounts waiting deletion - <em style="font-size:12px">click on an item to focus it in the previous list</em></p>
-        <div id="list-deletion" class="col-xs-12">
+	
+    <article class="col-xs-12">
+        <h2>Accounts waiting deletion - <em style="font-size:12px">click on an item to focus it in the previous list</em></h2>
+		<table class="table table-bordered">
+		
             <?php AccountController::displayDeletionList($user); ?>
-        </div>
+		</table>
     </article>
 </section>
 

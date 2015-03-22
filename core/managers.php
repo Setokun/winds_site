@@ -20,7 +20,7 @@ interface ManagerInit {
     /*OK*/protected function __construct(){}
     /*OK*/protected function connectDB() {
         try {
-            $this->PDO = new PDO('mysql:host=localhost;dbname='.$this->nameDB, 'root', ''); // local
+            $this->PDO = new PDO('mysql:host=127.0.0.1;dbname='.$this->nameDB, 'root', ''); // local
             $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
         catch (Exception $e) {
@@ -30,7 +30,7 @@ interface ManagerInit {
     }
     
     /*OK*/public function getAll($clauses=NULL){
-        return $this->parent_select("SELECT * FROM $this->nameTable $clauses")
+		return $this->parent_select("SELECT * FROM $this->nameTable $clauses")
                     ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $this->nameTable);
     }
     /*OK*/public function getByID($id){
@@ -40,11 +40,6 @@ interface ManagerInit {
     }
     /*OK*/public function get($query){
         return $this->parent_select($query)->fetchAll(PDO::FETCH_ASSOC);
-    }
-    /*OK*/public function execute($query){
-        $request = $this->PDO->prepare($query);
-        $request->execute();
-        return $request;
     }
     
     /*OK*/protected function query_insert(){
@@ -95,7 +90,7 @@ interface ManagerInit {
 /*OK*/class UserManager extends ManagerDB {
     /*OK*/static public function init(){
         $mgr = new self();
-        $mgr->nameTable = "User";
+        $mgr->nameTable = "user";
         $mgr->columns   = User::$columns;
         $mgr->connectDB();
         return $mgr;
@@ -124,7 +119,7 @@ interface ManagerInit {
 /*OK*/class ThemeManager extends ManagerDB {
     /*OK*/static public function init(){
         $mgr = new self();
-        $mgr->nameTable = "Theme";
+        $mgr->nameTable = "theme";
         $mgr->columns   = Theme::$columns;
         $mgr->connectDB();
         return $mgr;
@@ -140,7 +135,7 @@ interface ManagerInit {
 /*OK*/class LevelManager extends ManagerDB {
     /*OK*/static public function init(){
         $mgr = new self();
-        $mgr->nameTable = "Level";
+        $mgr->nameTable = "level";
         $mgr->columns   = Level::$columns;
         $mgr->connectDB();
         return $mgr;
@@ -188,7 +183,7 @@ interface ManagerInit {
 /*OK*/class ScoreManager extends ManagerDB {
     /*OK*/static public function init() {
         $score = new self();
-        $score->nameTable = "Score";
+        $score->nameTable = "score";
         $score->columns   = Score::$columns;
         $score->connectDB();
         return $score;
@@ -265,7 +260,7 @@ interface ManagerInit {
 /*OK*/class SubjectManager extends ManagerDB {
     /*OK*/static public function init() {
         $mgr = new self();
-        $mgr->nameTable = "Subject";
+        $mgr->nameTable = "subject";
         $mgr->columns   = Subject::$columns;
         $mgr->connectDB();
         return $mgr;
@@ -293,7 +288,7 @@ interface ManagerInit {
 /*OK*/class PostManager extends ManagerDB {
     /*OK*/static public function init() {
         $mgr = new self();
-        $mgr->nameTable = "Post";
+        $mgr->nameTable = "post";
         $mgr->columns = Post::$columns;
         $mgr->connectDB();
         return $mgr;

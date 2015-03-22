@@ -24,7 +24,8 @@ interface Winds_News {
         return $this->id;
     }
 }
-/*OK*/abstract class Addon extends WindsClass implements Winds_Insert, Winds_News, JsonSerializable {
+/*OK*/abstract class Addon extends WindsClass
+        implements Winds_Insert, Winds_News, JsonSerializable {
     
     static public $columns = ['id','name','description','creationDate','filePath','idCreator'];
     protected $name,                  // text : 64 chars, unique
@@ -73,7 +74,8 @@ interface Winds_News {
     }
 
 }
-/*OK*/class User extends WindsClass implements Winds_Insert, Winds_Update, JsonSerializable {
+/*OK*/class User extends WindsClass
+        implements Winds_Insert, Winds_Update, JsonSerializable {
     static public $columns = ['id','email','password','pseudo','registrationDate','forgotPassword','userType','userStatus'];
     private $email,                 // text : 64 chars, unique
             $password,              // text : 64 chars, MD5 encoding
@@ -120,9 +122,6 @@ interface Winds_News {
     public function isSuperUser(){
         return $this->userType == USER_TYPE::MODERATOR ||
                $this->userType == USER_TYPE::ADMINISTRATOR;
-    }
-    public function isBanished(){
-        return $this->userStatus === USER_STATUS::BANISHED;
     }
     public function jsonSerialize() {
         return (object) get_object_vars($this);
@@ -179,7 +178,9 @@ interface Winds_News {
         return new News($this->creationDate, "available theme", "shop.php");
     }
 }
-/*OK*/class Level extends Addon implements Winds_Update {
+
+/*OK*/class Level extends Addon
+        implements Winds_Update {
     static public $columns = ['id','name','description','creationDate','filePath','timeMax',
                               'levelType','levelStatus','levelMode','idCreator','idTheme'];
     private $timeMax,               // int  : number of second
@@ -254,7 +255,8 @@ interface Winds_News {
     }
 
 }
-/*OK*/class Score extends WindsClass implements Winds_Insert, Winds_Update, JsonSerializable {
+/*OK*/class Score extends WindsClass
+        implements Winds_Insert, Winds_Update, JsonSerializable {
     static public $columns = ['id','idPlayer','idLevel','time','nbClicks','nbItems'];
     private $idPlayer,              // int : user ID
             $idLevel,               // int : level ID
@@ -338,7 +340,8 @@ interface Winds_News {
     }
 
 }
-/*OK*/class Subject extends WindsClass implements Winds_Insert, Winds_Update, Winds_News {
+/*OK*/class Subject extends WindsClass
+        implements Winds_Insert, Winds_Update, Winds_News {
     static public $columns = ['id','title','message','date','subjectStatus','idAuthor'];
     private $title,                 // text : 64 chars
             $message,               // text : 512 chars
@@ -404,7 +407,8 @@ interface Winds_News {
     }
 
 }
-/*OK*/class Post extends WindsClass implements Winds_Insert, Winds_News {
+/*OK*/class Post extends WindsClass
+        implements Winds_Insert, Winds_News {
     static public $columns = ['id','date','message','idAuthor','idSubject'];
     private $date,                  // datetime
             $message,               // text : 512 chars
@@ -448,9 +452,7 @@ interface Winds_News {
     public function getIdSubject() {
         return $this->idSubject;
     }
-    public function setId($id){
-        $this->id = $id;
-    }
+
 }
 
 /*OK*/class News {
