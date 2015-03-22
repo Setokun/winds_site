@@ -20,7 +20,7 @@ interface ManagerInit {
     /*OK*/protected function __construct(){}
     /*OK*/protected function connectDB() {
         try {
-            $this->PDO = new PDO('mysql:host=127.0.0.1;dbname='.$this->nameDB, 'root', ''); // local
+            $this->PDO = new PDO('mysql:host=127.0.0.1;dbname='.$this->nameDB, 'winds_team', 'winds');
             $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
         catch (Exception $e) {
@@ -130,6 +130,15 @@ interface ManagerInit {
     /*OK*/public function delete(Theme $theme){
         if(is_null($theme->getId())){  return FALSE;  }
         return $this->parent_delete($theme);
+    }
+    
+    /*OK*/function getImagePaths(){
+        $values = $this->get("SELECT id, imagePath FROM theme");
+        $data = array();
+        foreach($values as $value){
+            $data[ $value['id'] ] = "../resources/".$value['imagePath'];
+        }
+        return $data;
     }
 }
 /*OK*/class LevelManager extends ManagerDB {

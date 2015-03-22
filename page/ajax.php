@@ -7,15 +7,16 @@ class AjaxOperator {
             $user,
             $response = array();
     
-    /*OK*/static function init(array $data){
+    static function init(array $data){
         $operator = new self();
         $operator->params = $data;
         $operator->action = $data['action'];
-        $operator->user   = UserManager::init()->getByID($data['idUser']);
+        $operator->user   = !isset($data['idUser']) ? NULL :
+                   UserManager::init()->getByID($data['idUser']);
         return $operator;
     }
-    /*OK*/private function __construct(){}
-    /*OK*/public function treat(){
+    private function __construct(){}
+    public function treat(){
         if(empty($this->params)){
             $this->response['error'] = "Missing parameters";
             return $this;
@@ -25,12 +26,12 @@ class AjaxOperator {
         $this->$action();
         return $this;
     }
-    /*OK*/public function getResponse(){
+    public function getResponse(){
         return json_encode($this->response,JSON_UNESCAPED_SLASHES);
     }
     
     // -- FORUM --
-    /*OK*/private function createSubject(){
+    private function createSubject(){
         $subject = Subject::init( $this->params['title'],
                                   $this->params['message'],
                                   $this->user->getId() );
@@ -43,7 +44,7 @@ class AjaxOperator {
             $this->response['error'] = "Subject insertion failed";
         }
     }
-    /*OK*/private function closeSubject(){
+    private function closeSubject(){
         $subject = SubjectManager::init()->getByID($this->params['idSubject']);
         $subject->setSubjectStatus(SUBJECT_STATUS::CLOSED);
         $updated = SubjectManager::init()->update($subject);
@@ -54,7 +55,7 @@ class AjaxOperator {
             $this->response['error'] = "Subject closing failed";
         }
     }
-    /*OK*/private function deleteSubject(){
+    private function deleteSubject(){
         $subject  = SubjectManager::init()->getByID($this->params['idSubject']);
         $posts    = PostManager::init()->getAll("WHERE idSubject=".$subject->getId());
         $delPosts = empty($posts) ? TRUE : PostManager::init()->execute(
@@ -69,7 +70,7 @@ class AjaxOperator {
             $this->response['error'] = "Subject deletion failed";
         }
     }
-    /*OK*/private function createPost(){
+    private function createPost(){
         $post = Post::init( $this->params['message'],
                             $this->user->getId(),
                             $this->params['idSubject'] );
@@ -83,7 +84,7 @@ class AjaxOperator {
             $this->response['error'] = "Post insertion failed";
         }
     }
-    /*OK*/private function deletePost(){
+    private function deletePost(){
         $subject  = SubjectManager::init()->getByID($this->params['idSubject']);
         $posts    = PostManager::init()->getAll("WHERE idSubject=".$subject->getId());
         $delPosts = empty($posts) ? TRUE : PostManager::init()->execute(
@@ -100,7 +101,7 @@ class AjaxOperator {
     }
     
     // -- ACCOUNT --
-    /*OK*/private function updateRights(){
+    private function updateRights(){
         $this->user->setUserType($this->params['userType']);
         $updated = UserManager::init()->update($this->user);
         if($updated){
@@ -110,7 +111,7 @@ class AjaxOperator {
             $this->response['error'] = "Right updating failed";
         }
     }
-    /*OK*/private function deleteAccount(){
+    private function deleteAccount(){
         $scores    = ScoreManager::init()->getAll("WHERE idPlayer="
                      .$this->user->getID());
         $delScores = empty($scores) ? TRUE : PostManager::init()->execute(
@@ -126,7 +127,7 @@ class AjaxOperator {
             $this->response['error'] = "Deletion failed";
         }
     }
-    /*OK*/private function banishAccount(){
+    private function banishAccount(){
         $this->user->setUserStatus(USER_STATUS::BANISHED);
         $banished = UserManager::init()->update($this->user);
         if($banished){
@@ -135,6 +136,22 @@ class AjaxOperator {
         else{
             $this->response['error'] = "Banishment failed";
         }
+    }
+    
+    // -- MODERATION --
+    /*OK*/private function acceptLevel(){
+        $level = LevelManager::init()->getByID($this->params['idLevel']);
+        $level->setLevelStatus(LEVEL_STATUS::ACCEPTED);
+        LevelManager::init()->update($level) ?
+            $this->response['accepted'] = TRUE :
+            $this->response['error']    = "Level acceptance failed";
+    }
+    /*OK*/private function refuseLevel(){
+        $level = LevelManager::init()->getByID($this->params['idLevel']);
+        $level->setLevelStatus(LEVEL_STATUS::REFUSED);
+        LevelManager::init()->update($level) ?
+            $this->response['refused'] = TRUE :
+            $this->response['error']   = "Level refusal failed";
     }
 }
 
