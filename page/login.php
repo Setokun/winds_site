@@ -7,7 +7,7 @@ $param = empty($_SERVER['QUERY_STRING']) ? NULL : $_SERVER['QUERY_STRING'];
 <script type="text/javascript" src="../js/login.js" ></script>
 <link type="text/css" rel="stylesheet" href="../css/login.css">
 <?php if( is_null($param) ){ ?>
-<div id="loginbox" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2" >
+<div id="loginbox" class="mainbox col-xs-12 col-sm-6 col-sm-offset-3 col-lg-offset-4 col-lg-4">
     <div class="panel panel-info" >
         <div class="panel-heading">
             <div class="panel-title">Sign In</div>
@@ -44,7 +44,7 @@ $param = empty($_SERVER['QUERY_STRING']) ? NULL : $_SERVER['QUERY_STRING'];
         </div>
     </div>                     
 </div>
-<div id="signupbox" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2" style="display:none" >
+<div id="signupbox" class="mainbox col-xs-12 col-sm-6 col-sm-offset-3 col-lg-offset-4 col-lg-4" style="display:none" >
     <div class="panel panel-info">
         <div class="panel-heading">
             <div class="panel-title">Sign Up</div>
@@ -89,7 +89,7 @@ $param = empty($_SERVER['QUERY_STRING']) ? NULL : $_SERVER['QUERY_STRING'];
         </div>
     </div>
 </div>
-<div id="forgotbox" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2" style="display:none" >
+<div id="forgotbox" class="mainbox col-xs-12 col-sm-6 col-sm-offset-3 col-lg-offset-4 col-lg-4" style="display:none" >
     <div class="panel panel-info">
         <div class="panel-heading">
             <div class="panel-title">Forgot password</div>
@@ -110,7 +110,7 @@ $param = empty($_SERVER['QUERY_STRING']) ? NULL : $_SERVER['QUERY_STRING'];
     </div>
 </div>
 <?php }else{ ?>
-<div id="resetbox" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2" >
+<div id="resetbox" class="mainbox col-xs-12 col-sm-6 col-sm-offset-3 col-lg-offset-4 col-lg-4" >
         <div class="panel panel-info">
 
         </div>
