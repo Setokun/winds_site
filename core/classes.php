@@ -34,19 +34,7 @@ interface Winds_News {
               $filePath,              // text : 255 chars, unique
               $idCreator;             // int  : user ID
     
-    // -- CONSTRUCTORS --
-    // static public function init()    // to define in derived classes
-    
     // -- METHODS --
-    public function valuesDB_toInsert(){
-        return array(
-            $this->name,
-            $this->description,
-            $this->creationDate,
-            $this->filePath,
-            $this->idCreator
-        );
-    }
     public function jsonSerialize() {
         return (object) get_object_vars($this);
     }
@@ -74,6 +62,7 @@ interface Winds_News {
     }
 
 }
+
 /*OK*/class User extends WindsClass
         implements Winds_Insert, Winds_Update, JsonSerializable {
     static public $columns = ['id','email','password','pseudo','registrationDate','forgotPassword','userType','userStatus'];
@@ -164,21 +153,42 @@ interface Winds_News {
 
 }
 /*OK*/class Theme extends Addon {
-    static public function init($name, $description, $filePath, $idCreator) {
+    static public $columns = ['id','name','description','creationDate','filePath','imagePath','idCreator'];
+    private $imagePath;         // text : 255 chars, unique
+    
+    // -- CONSTRUCTORS --
+    static public function init($name, $description, $filePath, $imagePath, $idCreator) {
         $addon = new self();
         $addon->id           = NULL;
         $addon->name         = $name;
         $addon->description  = $description;
         $addon->creationDate = Tools::now();
         $addon->filePath     = $filePath;
+        $addon->imagePath    = $imagePath;
         $addon->idCreator    = $idCreator;
         return $addon;
+    }
+    
+    // -- METHODS --
+    public function valuesDB_toInsert(){
+        return array(
+            $this->name,
+            $this->description,
+            $this->creationDate,
+            $this->filePath,
+            $this->imagePath,
+            $this->idCreator
+        );
     }
     public function formateAsNews() {
         return new News($this->creationDate, "available theme", "shop.php");
     }
+    
+    // -- ACCESSORS --
+    public function getImagePath(){
+        return $this->imagePath;
+    }
 }
-
 /*OK*/class Level extends Addon
         implements Winds_Update {
     static public $columns = ['id','name','description','creationDate','filePath','timeMax',
@@ -227,8 +237,7 @@ interface Winds_News {
         );
     }
     public function formateAsNews(){
-        $type = $this->levelType == LEVEL_TYPE::CUSTOM ? "$this->levelType " : NULL;
-        return new News($this->creationDate, "available $type level", "shop.php");
+        return new News($this->creationDate, "available $this->levelType level", "shop.php");
     }
     public function jsonSerialize() {
         return (object) get_object_vars($this);
@@ -307,7 +316,7 @@ interface Winds_News {
                 + $this->nbItems  * self::$points['nbItems'];
         return $points;
     }
-    public function updateDataDFrom(Score $score){
+    public function updateFrom(Score $score){
         $this->time     = $score->getTime();
         $this->nbClicks = $score->getNbClicks();
         $this->nbItems  = $score->getNbItems();
