@@ -132,13 +132,20 @@ interface ManagerInit {
         return $this->parent_delete($theme);
     }
     
-    /*OK*/function getImagePaths(){
-        $values = $this->get("SELECT id, imagePath FROM theme");
-        $data = array();
-        foreach($values as $value){
-            $data[ $value['id'] ] = "../resources/".$value['imagePath'];
+    function getImagePath($idTheme=NULL){
+        $query = "SELECT theme.id, imagePath FROM theme "
+                .(is_null($idTheme) ? NULL :" WHERE id=$idTheme");
+        $values = $this->get($query);
+        if( is_null($idTheme) ){
+            $data = array();
+            foreach($values as $value){
+                $data[ $value['id'] ] = "../resources/".$value['imagePath'];
+            }
+            return $data;
+        }else{
+            return "../resources/".$values[0]['imagePath'];
         }
-        return $data;
+        
     }
 }
 /*OK*/class LevelManager extends ManagerDB {

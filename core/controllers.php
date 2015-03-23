@@ -13,32 +13,32 @@ class AccountController {
     static function displayList(User $current){
         $users = UserManager::init()->getAll("WHERE id<>".$current->getId());
         $i = 1;
-		foreach($users as $user){
+        foreach($users as $user){
             echo "<div class='align-mobile-left panel panel-default'>
-						<div class='panel-heading'> 
+                    <div class='panel-heading'> 
 							<h3 class='panel-title'>
 								<a href='#".$user->getId()."' data-parent='#accounts-list' data-toggle='collapse'>".Tools::capitalize($user->getPseudo())."</a> 
 							</h3>
-						</div>
+                    </div>
 						<div id='".$user->getId()."' class='panel-collapse collapse'>
-							<div class='panel-body'>
-								<div class='col-xs-12'>
+                        <div class='panel-body'>
+                            <div class='col-xs-12'>
 									<div class='col-xs-12 col-md-3'><label>Rights :</label></div>
-									";
-									foreach(USER_TYPE::getConstants() as $type){
-										echo "<div class='col-xs-12 col-md-3'><input type='radio' name='".$user->getPseudo()
+                                    ";
+                                foreach(USER_TYPE::getConstants() as $type){
+                                    echo "<div class='col-xs-12 col-md-3'><input type='radio' name='".$user->getPseudo()
 											."' value='$type' />".Tools::capitalize($type)."</div>";
-									}
+                                }
 									
-								echo "</div>
-								<div style='margin-top:10px;' class='col-xs-12'>
-									<div class='col-xs-12 col-md-3'><label>Actions :</label></div>
-									<div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'><button class='btn btn-success center-block'>Valid rights</button></div>
-									<div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'><button class='btn btn-danger center-block'>Delete</button></div>
-									<div class='col-xs-12 col-sm-4 col-md-3'><button class='btn btn-warning center-block'>Banish</button></div>
-								</div>
-							</div>
-						</div>
+                            echo "</div>
+                            <div style='margin-top:10px;' class='col-xs-12'>
+                                <div class='col-xs-12 col-md-3'><label>Actions :</label></div>
+                                <div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'><button class='btn btn-success center-block'>Valid rights</button></div>
+                                <div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'><button class='btn btn-danger center-block'>Delete</button></div>
+                                <div class='col-xs-12 col-sm-4 col-md-3'><button class='btn btn-warning center-block'>Banish</button></div>
+                            </div>
+                        </div>
+                    </div>
 					</div>";
         }
     }
@@ -54,9 +54,9 @@ class AccountController {
     }
 }
 class AddonController {
-    static function displayLastNews(){
+    /*OK*/static function displayLastNews(){
         $criterias = "ORDER BY creationDate DESC LIMIT ".NB_NEWS_TO_DISPLAY;
-		$themes  = ThemeManager::init()->getAll($criterias);
+        $themes  = ThemeManager::init()->getAll($criterias);
         $levels  = LevelManager::init()->getAll("WHERE levelStatus='"
                                 .LEVEL_STATUS::ACCEPTED."' $criterias");
         $authors = UserManager::init()->getPseudos();
@@ -76,66 +76,63 @@ class AddonController {
             echo $news->getMessage();
         }
     }
-    /*todo*/static function displayThemes(){
+    /*OK*/static function displayThemes(){
         $themes = ThemeManager::init()->getAll();
         foreach($themes as $theme){
-            echo "<tr>
-						<td class='image-column'><img class='logo-level' src='".
-                    
-                 "../resources/logo-honey.png"  // mettre l'image
-                
-                ."'/></td>
-						<td style='vertical-align: middle'>".Tools::capitalize($theme->getName())."</td>
-					</tr>";
+            echo "<tr><td class='image-column'><img class='logo-level' "
+                ."src='".$theme->getImagePath()."'/></td>"
+                ."<td style='vertical-align: middle'>"
+                .Tools::capitalize($theme->getName())."</td></tr>";
         }
     }
-    /*todo*/static function displayCustomLevels($source){
+    /*OK*/static function displayCustomLevels($source){
         $customs  = self::getLevel(NULL, LEVEL_TYPE::CUSTOM);
+        $images   = ThemeManager::init()->getImagePath();
         $creators = LevelManager::init()->getCreators();
         
         foreach($customs as $level){
             if($source == "shop"){
-				echo "<tr class='custom-level'>
-							<td class='image-column'><img class='logo-level' src='".
-						
-					 "../resources/logo-ice.png"    // mettre l'image
-						
-					."'/></td>
-							<td style='vertical-align: middle'>"
-					.Tools::capitalize($level->getName())." created by ".$creators[ $level->getId() ]
-					."<br><span class='description'>".$level->getDescription()."</td>
-						</tr>";
-			}
-			if($source == "addon"){
-                echo "<tr>
-						<td style='line-height:3.5' class='col-xs-1 col-md-1'><input type='checkbox' data-idlevel='".$level->getId()."'></input></td>
-						<td style='line-height:3.5' class='col-xs-2 col-md-2'><img class='logo-level' src='"
-                    ."../resources/logo-honey.png"  // mettre l'image
-                    ."'/></td>
-						<td style='line-height:3.5' class='col-xs-8 col-md-9'>".Tools::capitalize($level->getName())
-                    ." created by ".$creators[ $level->getId() ]."</td>
-					</tr>";
+                echo "<tr class='custom-level'>"
+                        ."<td class='image-column'><img class='logo-level' "
+                            ."src='".$images[ $level->getIdTheme() ]."'/></td>"
+                        ."<td style='vertical-align: middle'>"
+                            .Tools::capitalize($level->getName())
+                            ." created by ".$creators[ $level->getId() ]
+                            ."<br><span class='description'>"
+                            .$level->getDescription()."</td></tr>";
+            }
+            if($source == "addon"){
+                echo "<tr>"
+                        ."<td style='line-height:3.5' class='col-xs-1 col-md-1'>"
+                            ."<input type='checkbox' data-idlevel='"
+                            .$level->getId()."'></input></td>"
+                        ."<td style='line-height:3.5' class='col-xs-2 col-md-2'>"
+                            ."<img class='logo-level' src='"
+                            .$images[ $level->getIdTheme() ]."'/></td>"
+                        ."<td style='line-height:3.5' class='col-xs-8 col-md-9'>"
+                            .Tools::capitalize($level->getName())." created by "
+                            .$creators[ $level->getId() ]."</td></tr>";
             }
         }
     }
     /*OK*/static function displayLevelsToModerate(){
         $tomoderates = self::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_STATUS::TOMODERATE);
-        $imagePaths  = ThemeManager::init()->getImagePaths();
+        $imagePaths  = ThemeManager::init()->getImagePath();
         $creators    = LevelManager::init()->getCreators();
         
         foreach($tomoderates as $level){
-            echo "<tr data-idlevel='".$level->getId()."'>"
-                ."<td style='vertical-align: middle;' class='col-xs-2 col-sm-1 image-column'>"
-                    ."<img class='logo-level' src='".$imagePaths[ $level->getIdTheme() ]."'/></td>"
-                ."<td style='vertical-align: middle;' class='col-xs-6 col-sm-7'>"
-                    .Tools::capitalize($level->getName())." by "
-                    .Tools::capitalize($creators[ $level->getIdCreator() ])."</td>"
-                ."<td style='vertical-align: middle;'>"
-                    ."<div class='col-xs-12 col-md-6' style='margin-bottom:5px;'>"
-                        ."<button class='btn btn-success'>Accept</button></div>"
-                    ."<div class='col-xs-12 col-md-6'>"
-                        ."<button class='btn btn-danger'>Refuse</button></div>"
-                ."</td></tr>";
+            echo "<tr data-idlevel='".$level->getId()."'>
+                    <td style='vertical-align: middle;' class='col-xs-2 col-sm-1 image-column'>
+                        <img class='logo-level' src='".$imagePaths[ $level->getIdTheme() ]."'/></td>
+                    <td style='vertical-align: middle;' class='col-xs-6 col-sm-7'>"
+                        .Tools::capitalize($level->getName())." by "
+                        .Tools::capitalize($creators[ $level->getIdCreator() ])."</td>
+                    <td style='vertical-align: middle;'>
+                    <div class='col-xs-12 col-md-6' style='margin-bottom:5px;'>
+                        <button class='btn btn-success'>Accept</button></div>
+                    <div class='col-xs-12 col-md-6'>
+                        <button class='btn btn-danger'>Refuse</button></div>
+                </td></tr>";
         }
     }
     static function getTheme($id=NULL){
@@ -164,12 +161,12 @@ class ScoreController {
     /*todo*/static function getRanksByPlayer($idPlayer){
         return ;
     }
-    static function displayHeaders(Level $level=NULL){
+    /*OK*/static function displayHeaders(Level $level=NULL){
         if(is_null($level)){ ?><tr>
-			<th class="th-winds col-xs-4 col-sm-3 col-md-2">Rank</th>
-			<th class="th-winds col-xs-4 col-sm-3 col-md-2">Player</th>
-			<th class="th-winds col-xs-4 col-sm-6 col-md-8">Points</th>
-        </tr><?php
+                <th class="th-winds col-xs-4 col-sm-3 col-md-2">Rank</th>
+                <th class="th-winds col-xs-4 col-sm-3 col-md-2">Player</th>
+                <th class="th-winds col-xs-4 col-sm-6 col-md-8">Points</th>
+            </tr><?php
         }else{ ?><tr>
             <th style="vertical-align: middle" class="th-winds col-xs-2">Rank</th>
             <th style="vertical-align: middle" class="th-winds col-xs-2">Player</th>
@@ -179,7 +176,7 @@ class ScoreController {
             <th style="vertical-align: middle" class="th-winds col-xs-2">Number of gathered items</th>
         </tr><?php }
     }
-    static function displayRanking(Level $level=NULL){
+    /*OK*/static function displayRanking(Level $level=NULL){
         $ranks = ScoreManager::init()->getRanking(is_null($level) ? NULL : $level->getId());
         $i = 1;
         foreach($ranks as $data){
@@ -196,32 +193,35 @@ class ScoreController {
             }
         }
     }
-    /*todo*/static function displayInfosScore(Level $level){
-        $creator = UserManager::init()->getByID($level->getIdCreator())->getPseudo();
-        // mettre l'image
-        echo "<h4>[image] Ranking of \"".Tools::capitalize($level->getName())
-            ."\" created by ".Tools::capitalize($creator)."</h4>";
+    /*OK*/static function displayInfosScore(Level $level){
+        $creator   = UserManager::init()->getByID($level->getIdCreator())->getPseudo();
+        $imagePath = ThemeManager::init()->getImagePath($level->getIdTheme());
+        
+        echo "<h4><img class='logo-level' src='$imagePath'> Ranking of \""
+            .Tools::capitalize($level->getName())."\" created by "
+            .Tools::capitalize($creator)."</h4>";
     }
-    static function displayScoredBasicLevels(){
+    /*OK*/static function displayScoredBasicLevels(){
         $basics = LevelManager::init()->getLevelsHavingScores(LEVEL_TYPE::BASIC);
         self::formateLevels($basics);
     }
-    static function displayScoredCustomLevels(){
+    /*OK*/static function displayScoredCustomLevels(){
         $customs = LevelManager::init()->getLevelsHavingScores(LEVEL_TYPE::CUSTOM);
         self::formateLevels($customs);
     }
-    /*todo*/static private function formateLevels(array $levels){
+    /*OK*/static private function formateLevels(array $levels){
         if(empty($levels)){
             echo "<div>No level with scores</div>";
             return;
         }
         
+        $imagePaths = ThemeManager::init()->getImagePath();
         foreach($levels as $level){
-            // mettre l'image
-            echo "<tr class='level' data-idlevel='".$level['id']."'>
-						<td class='image-column'><img class='logo-level' src='../resources/logo-ice.png'/></td>
-						<td style='vertical-align: middle'>".Tools::capitalize($level['name'])."</td>
-					</tr>";
+            echo "<tr class='level' data-idlevel='".$level['id']."'>"
+                ."<td class='image-column'><img class='logo-level' src='"
+                .$imagePaths[ $level['idTheme'] ]."'/></td>"
+                ."<td style='vertical-align: middle'>".Tools::capitalize($level['name'])
+                ."</td></tr>";
         }
     }
 }
@@ -285,7 +285,7 @@ class ForumController {
         echo "<div class='col-xs-12'><h4>Title  : ".Tools::capitalize($subject->getTitle())
             ."</h4></div><div class='col-xs-12'><h5 style='font-weight: bold; color:".$colorStatus."'>Status : ".$subject->getSubjectStatus()."</h5></div>";
     }
-    static function displayPosts(Subject $subject, $isSuperUser){
+    static function displayPosts(Subject $subject, $isModerator){
         $authors = USerManager::init()->getPseudos();
         $posts   = PostManager::init()->getAll("WHERE idSubject=".$subject->getId()." ORDER BY date ASC");
         array_unshift($posts, $subject);
@@ -295,7 +295,7 @@ class ForumController {
 			$firstMessage = ($post instanceof Subject)? "background:rgba(200,200,200,0.3); border: 2px solid #aaa; border-radius: 15px 15px 0 0":'';
             echo "<div><div class='col-xs-9 col-sm-9 col-md-10' style='padding:20px; border-bottom: 2px solid #aaa; padding-top:10px;".$firstMessage."'>"
                 ."$date by ".$authors[ $post->getIdAuthor() ]." :<br>".$post->getMessage()."</div>";
-            if($isSuperUser && !$post instanceof Subject){
+            if($isModerator && !$post instanceof Subject){
                 echo "<div class='col-xs-3 col-sm-3 col-md-2'><button id='".$post->getId()
                     ."' style='margin-top:15px' class='btn btn-danger'>Delete</button></div>";
             }

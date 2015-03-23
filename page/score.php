@@ -11,28 +11,27 @@ $params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
 
 <section id="score" style="padding-bottom:20px" class="col-sm-8 col-md-9 col-lg-10">
     <?php if( empty($params) ){ ?>
-			<div class="align-mobile-left">
-				<h2>Main ranking</h2>
-				<table class="table table-bordered">
-					<?php ScoreController::displayHeaders(); ?>
-					<?php ScoreController::displayRanking(); ?>
-				</table>
-			</div>
+    <div class="align-mobile-left">
+        <h2>Main ranking</h2>
+        <table class="table table-bordered">
+            <?php ScoreController::displayHeaders(); ?>
+            <?php ScoreController::displayRanking(); ?>
+        </table>
+    </div>
 
-        <div class="align-mobile-left">
-			<h3>Ranking by level
-				<span class="label-clickme">(Click on one item to show more details)</span>
-			</h3>
-			<h4>Basic levels</h4>
-			<table class="table">
-				<?php ScoreController::displayScoredBasicLevels(); ?>
-			</table>
-			<h4>Custom levels</h4>
-			<table class="table">
-				<?php ScoreController::displayScoredCustomLevels(); ?>
-			</table>
-        </div>
-        
+    <div class="align-mobile-left">
+        <h3>Ranking by level
+            <span class="label-clickme">(Click on one item to show more details)</span>
+        </h3>
+        <h4>Basic levels</h4>
+        <table class="table">
+            <?php ScoreController::displayScoredBasicLevels(); ?>
+        </table>
+        <h4>Custom levels</h4>
+        <table class="table">
+            <?php ScoreController::displayScoredCustomLevels(); ?>
+        </table>
+    </div>
 
     <?php }else{
     $level = LevelManager::init()->getByID($params['id']); ?>
