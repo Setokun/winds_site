@@ -1,44 +1,54 @@
-// -- DIV AJAX --
-var loader, message, infos;
+// -- Ajax --
+var message;
 
-// -- DIV MODERATION --
+// -- Moderation --
 var table_moderate, btn_accept, btn_refuse;
 
-/*OK*/function Infos(classCss, messageToDisplay){
-    this.css = classCss;
-    this.msg = messageToDisplay;
-
-    this.reset = function(){
-        message.removeClass(this.css);
-        message.html("");
-        this.css = undefined;
-        this.msg = undefined;
-    };
-    this.show  = function(afterCallback){
-        message.addClass(this.css);
-        message.html(this.msg);
-        message.slideDown("slow").delay(4000).slideUp("slow", function(){
-            infos.reset();
-            if(afterCallback !== undefined){ afterCallback(); }
-        });
-    };
-}
 /*OK*/function ajaxControls(){
     // -- affectations --
-    loader  = $("#moderation #div-ajax #ajax-loader");
-    message = $("#moderation #div-ajax #ajax-message");
+    var ajax   = $("section #ajax");
+    var loader = ajax.find("#ajax-loader");
+    var closer = ajax.find("#ajax-closer");
+    message    = ajax.find("#ajax-message");
+    idUser     = ajax.find("#idUser");
     
     // -- events --
-    $(document).ajaxStart(function(){ loader.css("display","initial"); });
-    $(document).ajaxStop(function(){ loader.css("display","none"); });
+    /*OK*/$(document).ajaxStart(function(){
+        loader.css('display','block');
+        closer.removeClass('btn-info');
+        closer.addClass('disabled');
+        message.css('display','none');
+        message.html("<h4 class='ajax-error'>Internal error"
+                    +"</h4><p>Timeout reached.</p>");
+        ajax.modal({backdrop: false});
+    });
+    /*OK*/$(document).ajaxStop(function(){
+        loader.toggle();
+        closer.removeClass('disabled');
+        closer.addClass('btn-info');
+        message.toggle();
+        message.append("<span style='color:red'><em>This window will"
+                      +" be closed automatically in 5 seconds.</em><span>");
+        setTimeout(function(){ ajax.modal('hide'); }, 5000);
+    });
 }
-/*OK*/function affectsControls(){
-    table_moderate = $("#moderation #table-moderate");
+/*OK*/function ajaxOperator(data, callback){
+    $.ajax({
+        url     : "ajax.php",
+        data    : data,
+        datatype: "json",
+        method  : "post",
+        timeout : 5000
+    }).done(callback);
+}
+function moderationControls(){
+    // -- affectations --
+    table_moderate = $("section #table-moderate");
     btn_accept     = table_moderate.find(".btn-success");
     btn_refuse     = table_moderate.find(".btn-danger");
-}
-/*OK*/function eventsControls(){
-    /*OK*/btn_accept.click(function(){
+    
+    // -- events --
+    btn_accept.click(function(){
         var levelRow = $(this).parents("tr");
         var data = {
             action : "acceptLevel",
@@ -49,14 +59,14 @@ var table_moderate, btn_accept, btn_refuse;
             if(response.accepted){
                 levelRow.remove();
             }
-            infos = response.accepted ?
-                    new Infos("success", "<h4>Level acceptance succeeded</h4>") :
-                    new Infos("error", "<h4>Internal error</h4><p>Unable"
-                             +" to accept this level.</p>");
+            message.html( response.accepted ?
+                "<h4 class='ajax-success'>Level acceptance succeeded</h4>" :
+                "<h4 class='ajax-error'>Internal error</h4><p>Unable "
+                             + "to accept this level.</p>" );
         };
         ajaxOperator(data, callback);
     });
-    /*OK*/btn_refuse.click(function(){
+    btn_refuse.click(function(){
         var levelRow = $(this).parents("tr");
         var data = {
             action : "refuseLevel",
@@ -67,30 +77,15 @@ var table_moderate, btn_accept, btn_refuse;
             if(response.refused){
                 levelRow.remove();
             }
-            infos = response.refused ?
-                    new Infos("success", "<h4>Level refusal succeeded</h4>") :
-                    new Infos("error", "<h4>Internal error</h4><p>Unable"
-                             +" to refuse this level.</p>");
+            message.html( response.refused ?
+                "<h4 class='ajax-success'>Level refusal succeeded</h4>" :
+                "<h4 class='ajax-error'>Internal error</h4><p>Unable "
+                             + "to refuse this level.</p>" );
         };
         ajaxOperator(data, callback);
     });
 }
-/*OK*/function ajaxOperator(data, callback){
-    $.ajax({
-        url     : "ajax.php",
-        data    : data,
-        datatype: "json",
-        method  : "post",
-        timeout : 5000
-    })
-    .done(callback)
-    .fail(function(){
-        infos = new Infos("error", "<h4>Internal error</h4><p>Timeout reached.</p>");
-    })
-    .always(function(){ infos.show(); });
-}
 /*OK*/$(document).ready(function(){
     ajaxControls();
-    affectsControls();
-    eventsControls();    
+    moderationControls();    
 });
