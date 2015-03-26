@@ -86,6 +86,11 @@ interface ManagerInit {
         $request->execute();
         return $request->rowCount();                    
     }
+    /*OK*/protected function parent_execute($query){
+        $request = $this->PDO->prepare($query);
+        $request->execute();
+        return $request;
+    }
 }
 /*OK*/class UserManager extends ManagerDB {
     /*OK*/static public function init(){
@@ -214,6 +219,11 @@ interface ManagerInit {
     /*OK*/public function delete(Score $score){
         if(is_null($score->getId())){  return FALSE;  }
         return $this->parent_delete($score);
+    }
+    /*OK*/public function deleteMulti(array $scoreIds){
+        $query = "DELETE FROM score WHERE id IN (".implode(',', $scoreIds).")";
+        $nbDel = $this->parent_execute($query)->rowCount();
+        return $nbDel === count($scoreIds);
     }
     
     /*OK*/public function getAllByPlayer($idPlayer){

@@ -112,6 +112,9 @@ interface Winds_News {
         return $this->userType == USER_TYPE::MODERATOR ||
                $this->userType == USER_TYPE::ADMINISTRATOR;
     }
+    public function isBanished(){
+        return $this->userStatus === USER_STATUS::BANISHED;
+    }
     public function jsonSerialize() {
         return (object) get_object_vars($this);
     }
@@ -186,7 +189,7 @@ interface Winds_News {
     
     // -- ACCESSORS --
     public function getImagePath(){
-        return $this->imagePath;
+        return "../resources/".$this->imagePath;
     }
 }
 /*OK*/class Level extends Addon

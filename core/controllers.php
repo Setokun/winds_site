@@ -10,46 +10,54 @@ class AccountController {
         return UserManager::init()->getAll("WHERE email='$email'")[0];
     }
     
-    static function displayList(User $current){
-        $users = UserManager::init()->getAll("WHERE id<>".$current->getId());
-        $i = 1;
+    /*OK*/static function displayList(User $current){
+        $users = UserManager::init()->getAll("WHERE id<>".$current->getId()
+                ." AND userStatus<>'deleted'");
         foreach($users as $user){
-            echo "<div class='align-mobile-left panel panel-default'>
-                    <div class='panel-heading'> 
-							<h3 class='panel-title'>
-								<a href='#".$user->getId()."' data-parent='#accounts-list' data-toggle='collapse'>".Tools::capitalize($user->getPseudo())."</a> 
-							</h3>
-                    </div>
-						<div id='".$user->getId()."' class='panel-collapse collapse'>
-                        <div class='panel-body'>
-                            <div class='col-xs-12'>
-									<div class='col-xs-12 col-md-3'><label>Rights :</label></div>
-                                    ";
-                                foreach(USER_TYPE::getConstants() as $type){
-                                    echo "<div class='col-xs-12 col-md-3'><input type='radio' name='".$user->getPseudo()
-											."' value='$type' />".Tools::capitalize($type)."</div>";
-                                }
-									
-                            echo "</div>
-                            <div style='margin-top:10px;' class='col-xs-12'>
-                                <div class='col-xs-12 col-md-3'><label>Actions :</label></div>
-                                <div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'><button class='btn btn-success center-block'>Valid rights</button></div>
-                                <div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'><button class='btn btn-danger center-block'>Delete</button></div>
-                                <div class='col-xs-12 col-sm-4 col-md-3'><button class='btn btn-warning center-block'>Banish</button></div>
-                            </div>
+            echo "<div class='align-mobile-left panel panel-default account'"
+                    ."style='margin-bottom:2px' data-iduser='".$user->getId()."'"
+                    ."data-usertype='".$user->getUserType()."'>
+                <div class='panel-heading'> 
+                    <h3 class='panel-title'>".Tools::capitalize($user->getPseudo())
+                    .($user->isBanished() ? " (banished)" : NULL)."</h3>
+                </div>
+                <div class='panel-collapse collapse account-actions'>
+                    <div class='panel-body'>
+                        <div class='col-xs-12'>
+                            <div class='col-xs-12 col-md-3'><label>Rights :</label></div>
+                            ";
+                            foreach(USER_TYPE::getConstants() as $type){
+                                echo "<div class='col-xs-12 col-md-3'><input value='$type' "
+                                    .($user->isBanished() ? "disabled " : NULL)
+                                    ."type='radio' name='".$user->getPseudo()."' />"
+                                    .Tools::capitalize($type)."</div>
+                            ";
+                            }
+                        echo "</div>
+                        <div style='margin-top:10px' class='col-xs-12'>
+                            <div class='col-xs-12 col-md-3'>
+                                <label>Actions :</label></div>"
+                            .($user->isBanished() ? NULL : "<div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'>
+                                <button class='btn btn-success center-block'>Valid rights</button></div>")."
+                            <div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'>
+                                <button class='btn btn-danger center-block'>Delete</button></div>"
+                            .($user->isBanished() ? NULL : "<div class='col-xs-12 col-sm-4 col-md-3'>
+                                <button class='btn btn-warning center-block'>Banish</button></div>" )."
                         </div>
                     </div>
-					</div>";
+                </div>
+            </div>
+    ";
         }
     }
-    static function displayDeletionList(User $current){
-        $users = UserManager::init()->getAll("WHERE id<>".$current->getId()
-                            ." AND userStatus='".USER_STATUS::DELETING."'");
+    /*OK*/static function displayDeletionList(User $current){
+        $users = UserManager::init()->getAll("WHERE id<>"
+                .$current->getId()." AND userStatus='"
+                .USER_STATUS::DELETING."'");
         foreach($users as $user){
-            echo "<tr id='".$user->getId()."'>
-					<td class='col-xs-12 bold' colspan='100%'><a href='#".$user->getId()."' data-parent='#accounts-list' data-toggle='collapse'>
-					<h5>".Tools::capitalize($user->getPseudo())."</h5></a></td>
-				</tr>";
+            echo "<tr data-iduser='".$user->getId()."'><td class='col-xs-12 bold' "
+                ."colspan='100%'><span><h5>".Tools::capitalize($user->getPseudo())
+                ."</h5></span></td></tr>";
         }
     }
 }

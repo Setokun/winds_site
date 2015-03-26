@@ -19,6 +19,7 @@ abstract class USER_STATUS extends Enumeration {
     const CREATED   = 'created',
           ACTIVATED = 'activated',
           DELETING  = 'deleting',
+          DELETED   = 'deleted',
           BANISHED  = 'banished';
 }
 abstract class LEVEL_TYPE extends Enumeration {

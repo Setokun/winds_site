@@ -101,41 +101,31 @@ class AjaxOperator {
     }
     
     // -- ACCOUNT --
-    private function updateRights(){
+    /*OK*/private function updateRights(){
         $this->user->setUserType($this->params['userType']);
-        $updated = UserManager::init()->update($this->user);
-        if($updated){
-            $this->response['updated'] = TRUE;
-        }
-        else{
+        UserManager::init()->update($this->user) ?
+            $this->response['updated'] = TRUE :
             $this->response['error'] = "Right updating failed";
-        }
     }
-    private function deleteAccount(){
+    /*OK*/private function deleteAccount(){
         $scores    = ScoreManager::init()->getAll("WHERE idPlayer="
-                     .$this->user->getID());
-        $delScores = empty($scores) ? TRUE : PostManager::init()->execute(
-                     "DELETE FROM score WHERE id IN (".implode(',',
-                     array_map(function($score){ return $score->getId(); },
-                     $scores)).")");
+                   . $this->user->getID());
+        $scoreIds  = array_map(function($score){ return $score->getId(); }, $scores);
+        $delScores = empty($scores) ? TRUE :
+                     ScoreManager::init()->deleteMulti($scoreIds);
+        
         $this->user->setUserStatus(USER_STATUS::DELETED);
         $delAccount = UserManager::init()->update($this->user);
-        if($delScores && $delAccount){
-            $this->response['deleted'] = TRUE;
-        }
-        else{
+        
+        $delScores && $delAccount ?
+            $this->response['deleted'] = TRUE :
             $this->response['error'] = "Deletion failed";
-        }
     }
-    private function banishAccount(){
+    /*OK*/private function banishAccount(){
         $this->user->setUserStatus(USER_STATUS::BANISHED);
-        $banished = UserManager::init()->update($this->user);
-        if($banished){
-            $this->response['banished'] = TRUE;
-        }
-        else{
+        UserManager::init()->update($this->user)  ?
+            $this->response['banished'] = TRUE :
             $this->response['error'] = "Banishment failed";
-        }
     }
     
     // -- MODERATION --

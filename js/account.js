@@ -1,83 +1,80 @@
-// -- Common --
-var idUser, loader, infos;
+// -- Ajax --
+var idUser, message;
 
 // -- Users list --
-var userList, accounts, btn_valid, btn_delete, btn_banish;
+var usersList, accounts, btn_update, btn_delete, btn_banish;
 
 // -- Deletions list --
-var deletionList;
+var deletionsList;
 
-/*OK*/function Infos(classCss, message){
-    this.class = classCss;
-    this.msg   = message;
-    this.show  = function(){
-        infos.addClass(this.class);
-        infos.html(this.msg);
-        infos.slideDown("slow").delay(5000).slideUp("slow", function(){
-            infos.html(undefined);
-            infos.removeClass(Infos.class);
-        });
-}
-}
-/*OK*/function focusAccount(item){
-    // leave focus of the previous account
-    var exFocus = accounts.filter(function(){ return $(this).data("focused"); });
-    exFocus.children().last().css('display','none');
-    exFocus.css('background-color','transparent');
-    exFocus.removeData("focused");
-    
-    // focus the current account
-    item.data("focused", true);
-    item.children().last().css('display','initial');
-    item.css('background-color','lightskyblue');
-    
-    // reset the radiobutton of the current account
-    var radios = item.find("input[type='radio']");
-    radios.filter(":checked").removeAttr("checked");
-    radios.filter("[value='"+ item.data('usertype') +"']").prop("checked",true);
-    
-    // animate it
-    $('body').animate({ scrollTop: item.offset().top -50 }, 800);
-}
-/*OK*/function scrollTo(position){
-    $('body').animate({scrollTop: position});
-}
-/*OK*/function commonControls(){
+/*OK*/function ajaxControls(){
     // -- affectations --
-    idUser = $("section #common #idUser");
-    loader = $("section #common #loader");
-    infos  = $("section #common #infos");
+    var ajax   = $("section #ajax");
+    var loader = ajax.find("#ajax-loader");
+    var closer = ajax.find("#ajax-closer");
+    message    = ajax.find("#ajax-message");
+    idUser     = ajax.find("#idUser");
     
     // -- events --
-    var animatedLoader;
-    $(document).ajaxStart(function(){
-        position = $(document).scrollTop();
-        loader.css("display","initial");
-        animatedLoader = $('body').animate({scrollTop: 0}, 400);
+    /*OK*/$(document).ajaxStart(function(){
+        loader.css('display','block');
+        closer.removeClass('btn-info');
+        closer.addClass('disabled');
+        message.css('display','none');
+        message.html("<h4 class='ajax-error'>Internal error"
+                    +"</h4><p>Timeout reached.</p>");
+        ajax.modal({backdrop: false});
     });
-    $(document).ajaxStop(function(){
-        $.when(animatedLoader).done(function(){
-            loader.css("display","none");
-            $('body').animate({scrollTop: position}, 400);
-        });
+    /*OK*/$(document).ajaxStop(function(){
+        loader.toggle();
+        closer.removeClass('disabled');
+        closer.addClass('btn-info');
+        message.toggle();
+        message.append("<span style='color:red'><em>This window will"
+                      +" be closed automatically in 5 seconds.</em><span>");
+        setTimeout(function(){ ajax.modal('hide'); }, 5000);
     });
+}
+/*OK*/function ajaxOperator(data, callback){
+    $.ajax({
+        url     : "ajax.php",
+        data    : data,
+        datatype: "json",
+        method  : "post",
+        timeout : 5000
+    }).done(callback);
+}
+/*OK*/function scrollTo(account){
+    $('body').animate({scrollTop: account.offset().top -44}, 600);
+}
+/*OK*/function focusAccount(account){
+    accounts.find(".account-actions")
+            .filter(':not(.collapse)')
+            .addClass('collapse');
+     
+    account.find(".account-actions").removeClass('collapse');
+    scrollTo(account);
 }
 /*OK*/function userControls(){
     // -- affectations --
-    userList   = $("section #list-user");
-    accounts   = userList.find(".account");
-    btn_valid  = userList.find(".btn-valid");
-    btn_delete = userList.find(".btn-delete");
-    btn_banish = userList.find(".btn-banish");
+    usersList  = $("section #users-list");
+    accounts   = usersList.find(".account");
+    btn_update = usersList.find(".btn-success");
+    btn_delete = usersList.find(".btn-danger");
+    btn_banish = usersList.find(".btn-warning");
 
     // -- events --
-    /*OK*/userList.on("click",".account h4",function(){
-        focusAccount( $(this).parents(".account") );
+    /*OK*/usersList.on("click",".panel-heading",function(){
+        var account = $(this).parent();
+        account.find("[type='radio'][value='"+ account.data('usertype') +"']")
+               .prop("checked",true);
+        account.find(".account-actions").hasClass('collapse') ?
+                focusAccount(account) :
+                account.find(".account-actions").addClass('collapse');
     });
-    /*OK*/btn_valid.click(function(){
+    /*OK*/btn_update.click(function(){
         var account     = $(this).parents(".account");
         var newUserType = account.find(":checked").val();
-        
         var data = {
             action   : "updateRights",
             idUser   : account.data('iduser'),
@@ -88,11 +85,10 @@ var deletionList;
             if(response.updated){
                 account.data('usertype', newUserType);
             }
-            var info = response.updated ?
-                       new Infos("success", "<h4>Account updated</h4>") :
-                       new Infos("error", "<h4>Internal error</h4><p>Unable"
-                                +" to update the type of this account.</p>");
-            info.show();
+            message.html( response.updated ?
+                "<h4 class='ajax-success'>Account updated</h4>" :
+                "<h4 class='ajax-error'>Internal error</h4><p>Unable to "
+                          + "update the account type of this user.</p>" );
         };
         ajaxOperator(data, callback);
     });
@@ -106,15 +102,14 @@ var deletionList;
             var response = $.parseJSON(data);
             if(response.deleted){
                 account.remove();
-                var accountDel = deletionList.find("h5[data-iduser='"
+                var accountDel = deletionsList.find("[data-iduser='"
                                + account.data('iduser') +"']");
                 if(accountDel.length > 0){  accountDel.parent().remove();  }
             }
-            var info = response.deleted ?
-                       new Infos("success", "<h4>Account deleted</h4>") :
-                       new Infos("error", "<h4>Internal error</h4><p>Unable"
-                                +" to delete this account.</p>");
-            info.show();
+            message.html( response.deleted ?
+                "<h4 class='ajax-success'>Account deleted</h4>" :
+                "<h4 class='ajax-error'>Internal error</h4><p>Unable to "
+                          + "delete this account.</p>" );
         };
         ajaxOperator(data, callback);
     });
@@ -127,41 +122,34 @@ var deletionList;
         var callback = function(data){
             var response = $.parseJSON(data);
             if(response.banished){
-                account.find("input[type='radio']").attr("disabled","");
-                account.find("input.btn-valid").parent().css("display","none");
-                account.find("input.btn-banish").parent().css("display","none");
+                account.find("[type='radio']").attr("disabled",true);
+                account.find(".btn-success").parent().css("display","none");
+                account.find(".btn-warning").parent().css("display","none");
+                account.find("h3").append(" (banished)");
             }
-            var info = response.banished ?
-                       new Infos("success", "<h4>Account banished</h4>") :
-                       new Infos("error", "<h4>Internal error</h4><p>Unable"
-                                +" to banish this account.</p>");
-            info.show();
+            message.html( response.banished ?
+                "<h4 class='ajax-success'>Account banished</h4>" :
+                "<h4 class='ajax-error'>Internal error</h4><p>Unable to "
+                          + "banish this account.</p>" );
         };
         ajaxOperator(data, callback);
     });
 }
 /*OK*/function deletionControls(){
     // -- affectations --
-    deletionList = $("section #list-deletion");
+    deletionsList = $("section #deletions-list");
     
     // -- events --
-    /*OK*/deletionList.on("click","h5",function(){
+    /*OK*/deletionsList.on("click","tr",function(){
         var idUser = $(this).data('iduser');
-        var userAccount = accounts.filter("[data-iduser='"+idUser+"']");
-        focusAccount(userAccount);
+        var account = accounts.filter("[data-iduser="+idUser+"]");
+        account.find(".account-actions").hasClass('collapse') ?
+            account.children().first().click() :
+            scrollTo(account);
     });
 }
-
-/*OK*/function ajaxOperator(data, callback){
-    $.ajax({
-        url: "ajax.php",
-        data: data,
-        datatype: "json",
-        method: "post",
-    }).done(callback);
-}
 /*OK*/$(document).ready(function(){
-    commonControls();
+    ajaxControls();
     userControls();
     deletionControls();
 });
