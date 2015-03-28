@@ -31,73 +31,50 @@ class AjaxOperator {
     }
     
     // -- FORUM --
-    private function createSubject(){
+    /*OK*/private function createSubject(){sleep(2);
         $subject = Subject::init( $this->params['title'],
                                   $this->params['message'],
                                   $this->user->getId() );
-        $inserted = SubjectManager::init()->insert($subject);
-        if($inserted){
-            $subject->setId($inserted);
-            $this->response['added'] = ForumController::formateSubject($subject);
-        }
-        else{
-            $this->response['error'] = "Subject insertion failed";
-        }
+        $insertedID = SubjectManager::init()->insert($subject);
+        $insertedID ? $subject->setId($insertedID) : NULL;
+        $insertedID ? $this->response['created'] = ForumController::formateSubject($subject) :
+                      $this->response['error'] = "Subject insertion failed";
     }
-    private function closeSubject(){
+    /*OK*/private function closeSubject(){
         $subject = SubjectManager::init()->getByID($this->params['idSubject']);
         $subject->setSubjectStatus(SUBJECT_STATUS::CLOSED);
-        $updated = SubjectManager::init()->update($subject);
-        if($updated){
-            $this->response['updated'] = TRUE;
-        }
-        else{
+        SubjectManager::init()->update($subject) ?
+            $this->response['closed'] = TRUE :
             $this->response['error'] = "Subject closing failed";
-        }
     }
-    private function deleteSubject(){
+    /*OK*/private function deleteSubject(){
         $subject  = SubjectManager::init()->getByID($this->params['idSubject']);
         $posts    = PostManager::init()->getAll("WHERE idSubject=".$subject->getId());
-        $delPosts = empty($posts) ? TRUE : PostManager::init()->execute(
-                    "DELETE FROM post WHERE id IN (".implode(',',
-                    array_map(function($post){ return $post->getId(); },
-                    $posts)).")");
+        $postIds  = array_map(function($post){ return $post->getId(); }, $posts);
+
+        $delPosts = empty($posts) ? TRUE : PostManager::init()->deleteMulti($postIds);
         $delSubj  = SubjectManager::init()->delete($subject);
-        if($delPosts && $delSubj){
-            $this->response['deleted'] = TRUE;
-        }
-        else{
+
+        $delPosts && $delSubj ?
+            $this->response['deleted'] = TRUE :
             $this->response['error'] = "Subject deletion failed";
-        }
     }
-    private function createPost(){
+    /*OK*/private function createPost(){
         $post = Post::init( $this->params['message'],
                             $this->user->getId(),
                             $this->params['idSubject'] );
         $inserted = PostManager::init()->insert($post);
-        if($inserted){
-            $post->setId($inserted);
-            $this->response['added'] = ForumController::formatePost($post,
-                    $this->user->getPseudo(), $this->user->isSuperUser());
-        }
-        else{
-            $this->response['error'] = "Post insertion failed";
-        }
+        $inserted ? $post->setId($inserted) : NULL;
+        $inserted ? $this->response['created'] = ForumController::formatePost(
+                        $post, $this->user->getPseudo(),
+                        $this->user->isSuperUser()) :
+                    $this->response['error'] = "Post insertion failed";
     }
-    private function deletePost(){
-        $subject  = SubjectManager::init()->getByID($this->params['idSubject']);
-        $posts    = PostManager::init()->getAll("WHERE idSubject=".$subject->getId());
-        $delPosts = empty($posts) ? TRUE : PostManager::init()->execute(
-                    "DELETE FROM post WHERE id IN (".implode(',',
-                    array_map(function($post){ return $post->getId(); },
-                    $posts)).")");
-        $delSubj  = SubjectManager::init()->delete($subject);
-        if($delPosts && $delSubj){
-            $this->response['deleted'] = TRUE;
-        }
-        else{
+    /*OK*/private function deletePost(){
+        $post = PostManager::init()->getByID($this->params['idPost']);
+        PostManager::init()->delete($post) ?
+            $this->response['deleted'] = TRUE :
             $this->response['error'] = "Post deletion failed";
-        }
     }
     
     // -- ACCOUNT --

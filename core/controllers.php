@@ -165,7 +165,6 @@ class AddonController {
                ThemeManager::init()->getAll() :
                ThemeManager::init()->getByID($id);
     }
-    
     static function getLevel($id=NULL, $levelType=NULL, $levelStatus=LEVEL_STATUS::ACCEPTED, $levelMode=LEVEL_MODE::STANDARD){
         if( !is_null($id) ){
             return LevelManager::init()->getByID($id);
@@ -180,10 +179,10 @@ class AddonController {
     }
 }
 class ScoreController {
-    /*todo*/static function getScores($idPlayer){
+    static function getScores($idPlayer){
         return ;
     }
-    /*todo*/static function getRanksByPlayer($idPlayer){
+    static function getRanksByPlayer($idPlayer){
         return ;
     }
     /*OK*/static function displayHeaders(Level $level=NULL){
@@ -289,13 +288,13 @@ class ForumController {
         $news->setAuthor($author);
         echo $news->getMessage();
     }
-    static function displaySubjects(){
+    /*OK*/static function displaySubjects(){
         $subjects = SubjectManager::init()->getAll();
         foreach($subjects as $subject){
             echo self::formateSubject($subject);
         }
     }
-    static function formateSubject(Subject $subject){
+    /*OK*/static function formateSubject(Subject $subject){
         $last = SubjectManager::init()->getLastUpdate($subject);
         $date = (new DateTime($last['date']))->format("d-m-Y");
         return "<tr class='subject' data-idsubject='".$subject->getId()."'>"
@@ -304,28 +303,35 @@ class ForumController {
               ."<td>$date by ".Tools::capitalize($last['author'])."</td>"
               ."</tr>";
     }
-    static function displayInfosSubject(Subject $subject){
+    /*OK*/static function displayInfosSubject(Subject $subject){
         if(is_null($subject)){ return; }
-		$colorStatus = ($subject->getSubjectStatus() == 'active')? 'green':'red';
+        $colorStatus = ($subject->getSubjectStatus() === SUBJECT_STATUS::ACTIVE)? 'green' : 'red';
         echo "<div class='col-xs-12'><h4>Title  : ".Tools::capitalize($subject->getTitle())
-            ."</h4></div><div class='col-xs-12'><h5 style='font-weight: bold; color:".$colorStatus."'>Status : ".$subject->getSubjectStatus()."</h5></div>";
+            ."</h4></div><div class='col-xs-12'><h5 id='status-subject' "
+            ."style='font-weight: bold; color:".$colorStatus."'>Status : "
+            .$subject->getSubjectStatus()."</h5></div>";
     }
-    static function displayPosts(Subject $subject, $isModerator){
-        $authors = USerManager::init()->getPseudos();
+    /*OK*/static function displayPosts(Subject $subject, $isSuperUser){
+        $authors = UserManager::init()->getPseudos();
         $posts   = PostManager::init()->getAll("WHERE idSubject=".$subject->getId()." ORDER BY date ASC");
         array_unshift($posts, $subject);
 
         foreach($posts as $post){
-            $date = (new DateTime($post->getDate()))->format("d-m-Y H:i:s");
-			$firstMessage = ($post instanceof Subject)? "background:rgba(200,200,200,0.3); border: 2px solid #aaa; border-radius: 15px 15px 0 0":'';
-            echo "<div><div class='col-xs-9 col-sm-9 col-md-10' style='padding:20px; border-bottom: 2px solid #aaa; padding-top:10px;".$firstMessage."'>"
-                ."$date by ".$authors[ $post->getIdAuthor() ]." :<br>".$post->getMessage()."</div>";
-            if($isModerator && !$post instanceof Subject){
-                echo "<div class='col-xs-3 col-sm-3 col-md-2'><button id='".$post->getId()
-                    ."' style='margin-top:15px' class='btn btn-danger'>Delete</button></div>";
-            }
+            echo self::formatePost($post, $authors[$post->getIdAuthor()], $isSuperUser);
+        }        
+    }
+    /*OK*/static function formatePost($post, $author, $isSuperUser){
+        $date = (new DateTime($post->getDate()))->format("d-m-Y H:i:s");
+        $echo = "<div class='row-post'><div class='col-xs-8 col-sm-9 col-md-10' "
+              . "style='border-top: 2px solid #aaa; padding-top:10px;'>"
+              . "$date by $author :<br>".$post->getMessage()."</div>";
+        if($isSuperUser && !$post instanceof Subject){
+            $echo .= "<div class='col-xs-4 col-sm-3 col-md-2'><button class='btn "
+                    ."btn-danger' style='margin-top:15px' data-idpost='"
+                    .$post->getId()."'>Delete</button></div>";
         }
-        
+        $echo .= "</div>";
+        return $echo;
     }
 }
 class ApiController {

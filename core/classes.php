@@ -464,7 +464,9 @@ interface Winds_News {
     public function getIdSubject() {
         return $this->idSubject;
     }
-
+    public function setId($id){
+        $this->id = $id;
+    }
 }
 
 /*OK*/class News {

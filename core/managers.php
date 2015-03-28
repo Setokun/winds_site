@@ -326,4 +326,9 @@ interface ManagerInit {
          if(is_null($post->getId())){  return FALSE;  }
         return $this->parent_delete($post);
     }
+    /*OK*/public function deleteMulti(array $postIds){
+        $query = "DELETE FROM post WHERE id IN (".implode(',', $postIds).")";
+        $nbDel = $this->parent_execute($query)->rowCount();
+        return $nbDel === count($postIds);
+    }
 }
