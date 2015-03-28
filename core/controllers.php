@@ -41,7 +41,8 @@ class AccountController {
                                 <button class='btn btn-success center-block'>Valid rights</button></div>")."
                             <div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'>
                                 <button class='btn btn-danger center-block'>Delete</button></div>"
-                            .($user->isBanished() ? NULL : "<div class='col-xs-12 col-sm-4 col-md-3'>
+                            .($user->isBanished() ? "<div class='col-xs-12 col-sm-4 col-md-3'>
+                                <button class='btn btn-success center-block'>Unbanish</button></div>" : "<div class='col-xs-12 col-sm-4 col-md-3'>
                                 <button class='btn btn-warning center-block'>Banish</button></div>" )."
                         </div>
                     </div>
@@ -91,6 +92,22 @@ class AddonController {
                 ."src='".$theme->getImagePath()."'/></td>"
                 ."<td style='vertical-align: middle'>"
                 .Tools::capitalize($theme->getName())."</td></tr>";
+        }
+    }
+    static function displayBasicLevels(){
+        $basics  = self::getLevel(NULL, LEVEL_TYPE::BASIC);
+        $images   = ThemeManager::init()->getImagePath();
+        $creators = LevelManager::init()->getCreators();
+        
+        foreach($basics as $level){
+            echo "<tr class='custom-level'>"
+                    ."<td class='image-column'><img class='logo-level' "
+                        ."src='".$images[ $level->getIdTheme() ]."'/></td>"
+                    ."<td style='vertical-align: middle'>"
+                        .Tools::capitalize($level->getName())
+                        ." created by ".$creators[ $level->getId() ]
+                        ."<br><span class='description'>"
+                        .$level->getDescription()."</td></tr>";
         }
     }
     /*OK*/static function displayCustomLevels($source){
