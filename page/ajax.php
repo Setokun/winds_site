@@ -7,16 +7,16 @@ class AjaxOperator {
             $user,
             $response = array();
     
-    static function init(array $data){
+    /*OK*/static function init(array $data){
         $operator = new self();
         $operator->params = $data;
         $operator->action = $data['action'];
         $operator->user   = !isset($data['idUser']) ? NULL :
-                   UserManager::init()->getByID($data['idUser']);
+            UserManager::init()->getByID($data['idUser']);
         return $operator;
     }
-    private function __construct(){}
-    public function treat(){
+    /*OK*/private function __construct(){}
+    /*OK*/public function treat(){
         if(empty($this->params)){
             $this->response['error'] = "Missing parameters";
             return $this;
@@ -26,7 +26,7 @@ class AjaxOperator {
         $this->$action();
         return $this;
     }
-    public function getResponse(){
+    /*OK*/public function getResponse(){
         return json_encode($this->response,JSON_UNESCAPED_SLASHES);
     }
     
@@ -120,6 +120,32 @@ class AjaxOperator {
             $this->response['refused'] = TRUE :
             $this->response['error']   = "Level refusal failed";
     }
+    
+    // -- ADDON --
+    private function uploadAddon(){
+        $addonType = $this->params['addonType'];
+        
+        
+        
+        
+        true ?
+            $this->response['uploaded'] = TRUE :
+            $this->response['error']   = "Addon uploading failed";
+    }
+    /*OK*/private function removeAddons(){
+        $levelIds = $this->params['idLevels'];
+        $scores   = ScoreManager::init()->getAll("WHERE idLevel in ("
+                   .implode(',',$levelIds).")");
+        $scoreIds = array_map(function($score){ return $score->getId(); }, $scores);
+        
+        $delScores = empty($scoreIds) ? TRUE : ScoreManager::init()->deleteMulti($scoreIds);
+        $delLevels = LevelManager::init()->deleteMulti($levelIds);
+        
+        $delScores && $delLevels ?
+            $this->response['deleted'] = TRUE :
+            $this->response['error']   = "Scores and levels deletion failed";
+    }
+    
 }
 
 echo AjaxOperator::init($_POST)->treat()->getResponse();

@@ -250,7 +250,7 @@ class ScoreController {
     }
 }
 class ForumController {
-    static function displayLastNews(){
+    /*OK*/static function displayLastNews(){
         $orderByDate = "ORDER BY date DESC, id DESC LIMIT ".NB_NEWS_TO_DISPLAY;
         $subjects    = SubjectManager::init()->getAll($orderByDate);
         $posts       = PostManager::init()->getAll($orderByDate);
@@ -282,7 +282,7 @@ class ForumController {
             }            
         }
     }
-    static private function displayNews($item, $authors){
+    /*OK*/static private function displayNews($item, $authors){
         $news   = $item->formateAsNews();
         $author = $authors[ $item->getIdAuthor() ];
         $news->setAuthor($author);

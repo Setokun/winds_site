@@ -200,6 +200,11 @@ interface ManagerInit {
         }
         return $data;
     }
+    public function deleteMulti(array $levelIds){
+        $query = "DELETE FROM level WHERE id IN (".implode(',', $levelIds).")";
+        $nbDel = $this->parent_execute($query)->rowCount();
+        return $nbDel === count($levelIds);
+    }
 }
 /*OK*/class ScoreManager extends ManagerDB {
     /*OK*/static public function init() {
