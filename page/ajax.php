@@ -30,6 +30,14 @@ class AjaxOperator {
         return json_encode($this->response,JSON_UNESCAPED_SLASHES);
     }
     
+    // -- PROFILE --
+    /*OK*/private function askDeletion(){
+        $this->user->setUserStatus(USER_STATUS::DELETING);
+        UserManager::init()->update($this->user) ?
+            $this->response['deleting'] = TRUE :
+            $this->response['error'] = "Deletion asking failed";
+    }
+    
     // -- FORUM --
     /*OK*/private function createSubject(){sleep(2);
         $subject = Subject::init( $this->params['title'],
