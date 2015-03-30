@@ -3,6 +3,7 @@ require_once "config.php";
 define("NB_NEWS_TO_DISPLAY", 5);
 
 class AccountController {
+    // -- API --
     static function checkIDs($email,$password){
         return !empty(UserManager::init()->getAll("WHERE email='$email' AND password='$password'"));
     }
@@ -10,6 +11,7 @@ class AccountController {
         return UserManager::init()->getAll("WHERE email='$email'")[0];
     }
     
+    // -- WEBSITE --
     /*OK*/static function displayList(User $current){
         $users = UserManager::init()->getAll("WHERE id<>".$current->getId()
                 ." AND userStatus<>'deleted'");
@@ -63,6 +65,26 @@ class AccountController {
     }
 }
 class AddonController {
+    // -- API --
+    static function getTheme($id=NULL){
+        return is_null($id) ?
+               ThemeManager::init()->getAll() :
+               ThemeManager::init()->getByID($id);
+    }
+    static function getLevel($id=NULL, $levelType=NULL, $levelStatus=LEVEL_STATUS::ACCEPTED, $levelMode=LEVEL_MODE::STANDARD){
+        if( !is_null($id) ){
+            return LevelManager::init()->getByID($id);
+        }
+        
+        $params = array();
+        if( !is_null($levelType) ){
+            array_push($params, "levelType='$levelType'");
+        }
+        array_push($params, "levelStatus='$levelStatus'", "levelMode='$levelMode'");
+        return LevelManager::init()->getAll("WHERE ".implode(" AND ", $params));        
+    }
+    
+    // -- WEBSITE --
     /*OK*/static function displayLastNews(){
         $criterias = "ORDER BY creationDate DESC LIMIT ".NB_NEWS_TO_DISPLAY;
         $themes  = ThemeManager::init()->getAll($criterias);
@@ -94,7 +116,7 @@ class AddonController {
                 .Tools::capitalize($theme->getName())."</td></tr>";
         }
     }
-    static function displayBasicLevels(){
+    /*OK*/static function displayBasicLevels(){
         $basics  = self::getLevel(NULL, LEVEL_TYPE::BASIC);
         $images   = ThemeManager::init()->getImagePath();
         $creators = LevelManager::init()->getCreators();
@@ -160,31 +182,17 @@ class AddonController {
                 </td></tr>";
         }
     }
-    static function getTheme($id=NULL){
-        return is_null($id) ?
-               ThemeManager::init()->getAll() :
-               ThemeManager::init()->getByID($id);
-    }
-    static function getLevel($id=NULL, $levelType=NULL, $levelStatus=LEVEL_STATUS::ACCEPTED, $levelMode=LEVEL_MODE::STANDARD){
-        if( !is_null($id) ){
-            return LevelManager::init()->getByID($id);
-        }
-        
-        $params = array();
-        if( !is_null($levelType) ){
-            array_push($params, "levelType='$levelType'");
-        }
-        array_push($params, "levelStatus='$levelStatus'", "levelMode='$levelMode'");
-        return LevelManager::init()->getAll("WHERE ".implode(" AND ", $params));        
-    }
 }
 class ScoreController {
+    // -- API --
     static function getScores($idPlayer){
         return ;
     }
     static function getRanksByPlayer($idPlayer){
         return ;
     }
+    
+    // -- WEBSITE --
     /*OK*/static function displayHeaders(Level $level=NULL){
         if(is_null($level)){ ?><tr>
                 <th class="th-winds col-xs-4 col-sm-3 col-md-2">Rank</th>
@@ -250,6 +258,7 @@ class ScoreController {
     }
 }
 class ForumController {
+    // -- WEBSITE --
     /*OK*/static function displayLastNews(){
         $orderByDate = "ORDER BY date DESC, id DESC LIMIT ".NB_NEWS_TO_DISPLAY;
         $subjects    = SubjectManager::init()->getAll($orderByDate);
@@ -335,6 +344,7 @@ class ForumController {
     }
 }
 class ApiController {
+    // -- API --
     static function existsAction($action){
         $constants = API_ACTION::getConstants();
         return array_search($action, $constants);
@@ -346,7 +356,6 @@ class ApiController {
         echo json_encode($response);
         die;
     }
-    
     /* Each function must have its name like the value in API_ACTION 
      * and declare following as arguments :
      *     - $user   : the user account

@@ -1,9 +1,9 @@
 $(document).ready(function(){
-    $("#shop .custom-level").click(function(){
+    $("section .custom-level").click(function(){
         var description = $(this).find(".description");
-        var isDisplayed = description.css("display") === "inline-block";
-        $("#shop .custom-level .description").css("display","none");
-        if(isDisplayed){ description.slideUp(400);
-        }else{           description.slideDown(400); }
+        var isDisplayed = description.css("display") === "inline";
+        $("section .custom-level .description").css("display","none");
+        if(isDisplayed){ description.fadeOut(400);
+        }else{           description.fadeIn(400); }
     });
 });

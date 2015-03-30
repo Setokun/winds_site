@@ -6,7 +6,7 @@ require_once "../core/config.php";
 ?>
 
 <script type="text/javascript" src="../js/shop.js" ></script>
-    <section id="shop" class="col-sm-8 col-md-9 col-lg-10">
+    <section class="col-sm-8 col-md-9 col-lg-10">
         <!-- download button
         =============================-->
         <div id="download-btn" class="row">
