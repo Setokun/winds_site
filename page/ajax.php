@@ -112,6 +112,12 @@ class AjaxOperator {
             $this->response['banished'] = TRUE :
             $this->response['error'] = "Banishment failed";
     }
+    /*OK*/private function unbanishAccount(){
+        $this->user->setUserStatus(USER_STATUS::ACTIVATED);
+        UserManager::init()->update($this->user)  ?
+            $this->response['unbanished'] = TRUE :
+            $this->response['error'] = "Banishment failed";
+    }
     
     // -- MODERATION --
     /*OK*/private function acceptLevel(){

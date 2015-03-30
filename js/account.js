@@ -57,11 +57,12 @@ var deletionsList;
 }
 /*OK*/function userControls(){
     // -- affectations --
-    usersList  = $("section #users-list");
-    accounts   = usersList.find(".account");
-    btn_update = usersList.find(".btn-success");
-    btn_delete = usersList.find(".btn-danger");
-    btn_banish = usersList.find(".btn-warning");
+    usersList    = $("section #users-list");
+    accounts     = usersList.find(".account");
+    btn_update   = usersList.find(".btn-success");
+    btn_delete   = usersList.find(".btn-danger");
+    btn_banish   = usersList.find(".btn-warning");
+    btn_unbanish = usersList.find(".btn-primary");
 
     // -- events --
     /*OK*/usersList.on("click",".panel-heading",function(){
@@ -123,14 +124,38 @@ var deletionsList;
             var response = $.parseJSON(data);
             if(response.banished){
                 account.find("[type='radio']").attr("disabled",true);
-                account.find(".btn-success").parent().css("display","none");
-                account.find(".btn-warning").parent().css("display","none");
+                account.find(".btn-success").css("display","none");
+                account.find(".btn-warning").css("display","none");
+                account.find(".btn-primary").removeAttr("style");
                 account.find("h3").append(" (banished)");
             }
             message.html( response.banished ?
                 "<h4 class='ajax-success'>Account banished</h4>" :
                 "<h4 class='ajax-error'>Internal error</h4><p>Unable to "
                           + "banish this account.</p>" );
+        };
+        ajaxOperator(data, callback);
+    });
+    /*OK*/btn_unbanish.click(function(){
+        var account = $(this).parents(".account");
+        var title   = account.find("h3");
+        var data = {
+            action   : "unbanishAccount",
+            idUser   : account.data('iduser')
+        };
+        var callback = function(data){
+            var response = $.parseJSON(data);
+            if(response.unbanished){
+                account.find("[type='radio']").removeAttr("disabled");
+                account.find(".btn-success").removeAttr("style");
+                account.find(".btn-warning").removeAttr("style");
+                account.find(".btn-primary").css("display","none");
+                title.html(title.html().replace(' (banished)',''));
+            }
+            message.html( response.unbanished ?
+                "<h4 class='ajax-success'>Account unbanished</h4>" :
+                "<h4 class='ajax-error'>Internal error</h4><p>Unable to "
+                          + "unbanish this account.</p>" );
         };
         ajaxOperator(data, callback);
     });

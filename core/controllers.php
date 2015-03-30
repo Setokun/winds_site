@@ -38,14 +38,24 @@ class AccountController {
                         echo "</div>
                         <div style='margin-top:10px' class='col-xs-12'>
                             <div class='col-xs-12 col-md-3'>
-                                <label>Actions :</label></div>"
-                            .($user->isBanished() ? NULL : "<div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'>
-                                <button class='btn btn-success center-block'>Valid rights</button></div>")."
+                                <label>Actions :</label>
+                            </div>
                             <div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'>
-                                <button class='btn btn-danger center-block'>Delete</button></div>"
-                            .($user->isBanished() ? "<div class='col-xs-12 col-sm-4 col-md-3'>
-                                <button class='btn btn-success center-block'>Unbanish</button></div>" : "<div class='col-xs-12 col-sm-4 col-md-3'>
-                                <button class='btn btn-warning center-block'>Banish</button></div>" )."
+                                <button class='btn btn-success center-block' "
+                                    .($user->isBanished() ? "style='display:none' " : NULL)
+                                    .">Valid rights</button>
+                            </div>
+                            <div class='col-xs-12 col-sm-4 col-md-3 align-mobile-button-down'>
+                                <button class='btn btn-danger center-block'>Delete</button>
+                            </div>
+                            <div class='col-xs-12 col-sm-4 col-md-3'>
+                                <button class='btn btn-warning center-block align-mobile-button-down' "
+                                    .($user->isBanished() ? "style='display:none' " : NULL)
+                                    .">Banish</button>
+                                <button class='btn btn-primary center-block' "
+                                    .($user->isBanished() ? NULL : "style='display:none' ")
+                                    .">Unbanish</button>
+                            </div>       
                         </div>
                     </div>
                 </div>
