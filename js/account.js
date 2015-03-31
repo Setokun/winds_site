@@ -2,7 +2,7 @@
 var idUser, message;
 
 // -- Users list --
-var usersList, accounts, btn_update, btn_delete, btn_banish;
+var usersList, accounts, btn_update, btn_delete, btn_banish, btn_unbanish;
 
 // -- Deletions list --
 var deletionsList;

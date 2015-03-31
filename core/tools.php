@@ -5,6 +5,9 @@
  */
 
 abstract class Tools {
+    static public function today(){
+        return date("Y-m-d");
+    }
     static public function now(){
         return date("Y-m-d H:i:s");
     }

@@ -30,6 +30,32 @@ class AjaxOperator {
         return json_encode($this->response,JSON_UNESCAPED_SLASHES);
     }
     
+    // -- LOGIN --
+    /*OK*/private function updatePassword(){
+        $token     = $this->params['token'];
+        $today     = Tools::today();
+        $forgotDay = (new DateTime($this->user->getForgotPassword()))->format("Y-m-d");
+        
+        // check reset password constraints
+        if($token != $this->user->getTokenPassword()){
+            $this->response['errorToken'] = "Unknown token";
+            return;
+        }
+        if($today != $forgotDay){
+            $this->response['errorTime'] = "Allocated time over";
+            return;
+        }
+        
+        // reset password allowed
+        $this->user->setPassword($this->params['password1']);
+        $this->user->setForgotPassword(NULL);
+        $this->user->setTokenPassword(NULL);
+        UserManager::init()->update($this->user) ?
+            $this->response['updated'] = TRUE :
+            $this->response['error'] = "Password update failed";
+        
+    }
+    
     // -- PROFILE --
     /*OK*/private function askDeletion(){
         $this->user->setUserStatus(USER_STATUS::DELETING);

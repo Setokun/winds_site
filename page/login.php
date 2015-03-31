@@ -1,12 +1,35 @@
 <?php
+require_once '../core/config.php';
 include "../common/header.php";
 
-$param = empty($_SERVER['QUERY_STRING']) ? NULL : $_SERVER['QUERY_STRING'];
+$params = Tools::getParamsURL($_SERVER['QUERY_STRING']);
 ?>
 
 <script type="text/javascript" src="../js/login.js" ></script>
 <link type="text/css" rel="stylesheet" href="../css/login.css">
-<?php if( is_null($param) ){ ?>
+
+<article class="modal" id="ajax">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button id="ajax-close" type="button" class="close" data-dismiss="modal">&times</button>
+                <h4 class="modal-title">Action in progress</h4>
+            </div>
+            <div class="modal-body">
+                <div id="ajax-loader" style="text-align:center">
+                    <img src="..\resources\loader.gif">
+                    <h5 style="margin-bottom:0"><b>Please, wait.</b></h5>
+                </div>
+                <div id="ajax-message"></div>
+            </div>
+            <div class="modal-footer">
+                <button id="ajax-closer" class="btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</article>
+
+<?php if( empty($params) ){ ?>
 <div id="loginbox" class="mainbox col-xs-12 col-sm-6 col-sm-offset-3 col-lg-offset-4 col-lg-4">
     <div class="panel panel-info" >
         <div class="panel-heading">
@@ -14,7 +37,7 @@ $param = empty($_SERVER['QUERY_STRING']) ? NULL : $_SERVER['QUERY_STRING'];
             <div style="float:right;font-size:80%;position:relative;top:-10px">
                 <span class="link" onClick="$('#loginbox').hide(); $('#forgotbox').show()" >Forgot password ?</span>
             </div>
-        </div>     
+        </div>
         <div style="padding-top:30px" class="panel-body" >
             <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12">
             </div>
@@ -96,7 +119,7 @@ $param = empty($_SERVER['QUERY_STRING']) ? NULL : $_SERVER['QUERY_STRING'];
             <div style="float:right;font-size:80%;position:relative;top:-10px">
                 <span class="link" onClick="$('#forgotbox').hide(); $('#loginbox').show()" >Back</span>
             </div>
-        </div>     
+        </div>
         <div style="padding-top:30px" class="panel-body" >
             <div style="display:none" id="login-alert" class="alert alert-danger col-sm-12"></div>
             <div class="input-group">
@@ -111,8 +134,32 @@ $param = empty($_SERVER['QUERY_STRING']) ? NULL : $_SERVER['QUERY_STRING'];
 </div>
 <?php }else{ ?>
 <div id="resetbox" class="mainbox col-xs-12 col-sm-6 col-sm-offset-3 col-lg-offset-4 col-lg-4" >
-        <div class="panel panel-info">
-
+    <input id="id" type="hidden" value="<?php echo $params['id']; ?>" >
+    <input id="token" type="hidden" value="<?php echo $params['token']; ?>" >
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <div class="panel-title">Change password</div>
+            <div style="float:right;font-size:80%;position:relative;top:-10px">
+                <span id="reset-back" class="link" onClick="$('#forgotbox').hide(); $('#loginbox').show()" >Back to login page</span>
+            </div>
         </div>
+        <div class="panel-body form-horizontal" >
+            <div class="form-group" >
+                <label for="password1" class="col-md-3 control-label">Password</label>
+                <div class="col-md-9">
+                    <input id="password1" type="password" class="form-control" placeholder="Type your new password">
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="password2" class="col-md-3 control-label">Confirmation</label>
+                <div class="col-md-9">
+                    <input id="password2" type="password" class="form-control" placeholder="Confirm your new password">
+                </div>
+            </div>
+            <div class="col-sm-12 controls" style="margin-top:10px; padding:0 0" >
+                <span id="btn-valid" class="btn btn-success">Valid  </span>
+            </div>
+        </div>
+    </div>
 </div>
 <?php } ?>

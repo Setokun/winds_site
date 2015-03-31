@@ -65,12 +65,13 @@ interface Winds_News {
 
 /*OK*/class User extends WindsClass
         implements Winds_Insert, Winds_Update, JsonSerializable {
-    static public $columns = ['id','email','password','pseudo','registrationDate','forgotPassword','userType','userStatus'];
+    static public $columns = ['id','email','password','pseudo','registrationDate','forgotPassword','tokenPassword','userType','userStatus'];
     private $email,                 // text : 64 chars, unique
             $password,              // text : 64 chars, MD5 encoding
             $pseudo,                // text : 64 chars, unique
             $registrationDate,      // datetime
             $forgotPassword,        // datetime
+            $tokenPassword,         // text : 64 chars
             $userType,              // text : 64 chars - use constant of USER_TYPE
             $userStatus;            // text : 64 chars - use constant of USER_STATUS
 
@@ -83,6 +84,7 @@ interface Winds_News {
         $user->pseudo           = $pseudo;
         $user->registrationDate = Tools::now();
         $user->forgotPassword   = NULL;
+        $user->tokenPassword    = NULL;
         $user->userType         = USER_TYPE::PLAYER;
         $user->userStatus       = USER_STATUS::CREATED;
         return $user;
@@ -96,6 +98,7 @@ interface Winds_News {
             $this->pseudo,
             $this->registrationDate,
             $this->forgotPassword,
+            $this->tokenPassword,
             $this->userType,
             $this->userStatus
         );
@@ -104,6 +107,7 @@ interface Winds_News {
         return array(
             'password'       => $this->password,
             'forgotPassword' => $this->forgotPassword,
+            'tokenPassword' => $this->tokenPassword,
             'userType'       => $this->userType,
             'userStatus'     => $this->userStatus
         );
@@ -135,6 +139,9 @@ interface Winds_News {
     public function getForgotPassword() {
         return $this->forgotPassword;
     }
+    public function getTokenPassword() {
+        return $this->tokenPassword;
+    }
     public function getUserType() {
         return $this->userType;
     }
@@ -144,8 +151,11 @@ interface Winds_News {
     public function setPassword($password) {
         $this->password = md5($password);
     }
-    public function setForgotPassword(Date $forgotPassword) {
+    public function setForgotPassword($forgotPassword) {
         $this->forgotPassword = $forgotPassword;
+    }
+    public function setTokenPassword($tokenPassword) {
+        $this->tokenPassword = $tokenPassword;
     }
     public function setUserType($userType) {
         $this->userType = $userType;
