@@ -72,10 +72,12 @@ $user = $_SESSION['user'];
     </article>
         
     <article id="remove-addon" class="col-xs-12">
-        <table class="table">
-            <tr><th colspan="100%" class="th-winds">Available custom levels</th></tr>
-            <?php AddonController::displayCustomLevels("addon"); ?>
-        </table>
+        <div class="row-scroll">
+            <table class="table">
+                <tr><th colspan="100%" class="th-winds">Available custom levels</th></tr>
+                <div class="row-scroll"><?php AddonController::displayCustomLevels("addon"); ?>
+            </table>
+        </div>
         <div class="col-xs-12 form-row">
             <button id="btn-remove" style="margin-bottom: 10px;" class="pull-right btn btn-danger" type="submit">Remove</button>
         </div>

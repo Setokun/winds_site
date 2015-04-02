@@ -22,8 +22,10 @@ table{background: #fff;}
 /* shop */
 .description{display: none;}
 .custom-level:hover{cursor:pointer;}
-.row-scroll{max-height:195px; overflow-y: scroll;}
-.row{margin-bottom: 20px}
+.row-scroll{max-height:195px; overflow-y: scroll; margin-bottom: 20px}
+
+/*account*/
+#row-scroll-accounts{max-height:250px; overflow-y: scroll; margin-bottom: 20px}
 
 /* forum */
 #btn-new-subject{margin-bottom:20px}
@@ -47,7 +49,7 @@ footer a{color:#ccc; font-style: italic;}
 
 .custom-file-input{margin-left: 80px;}
 
-
+.label-clickme{font-size:14px;}
 
 @media (max-width:768px){
 	.page-head{margin:0px;}
@@ -62,6 +64,7 @@ footer a{color:#ccc; font-style: italic;}
 	.custom-file-input{margin-left: 25px;}
 	#img-raspberry{position: relative; height: 100px; }
 	#img-raspberry img{position: absolute; left:37%; width:36%; }
+        #basic-scores-title{margin-top: 50px;}
 }
 
 @media (min-width:769px){

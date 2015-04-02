@@ -20,17 +20,23 @@ $params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
     </div>
 
     <div class="align-mobile-left">
-        <h3>Ranking by level
-            <span class="label-clickme">(Click on one item to show more details)</span>
-        </h3>
-        <h4>Basic levels</h4>
-        <table class="table">
-            <?php ScoreController::displayScoredBasicLevels(); ?>
-        </table>
+        <h2>Ranking by level
+            <span class="label-clickme">(Click&nbsp;on&nbsp;one&nbsp;item&nbsp;to&nbsp;show&nbsp;more&nbsp;details)</span>
+        </h2>
+        
+        <h4 id="basic-scores-title">Basic levels</h4>
+        <div class="row-scroll">
+            <table class="table">
+                <?php ScoreController::displayScoredBasicLevels(); ?>
+            </table>
+        </div>
+        
         <h4>Custom levels</h4>
-        <table class="table">
-            <?php ScoreController::displayScoredCustomLevels(); ?>
-        </table>
+        <div class="row-scroll">
+            <table class="table">
+                <?php ScoreController::displayScoredCustomLevels(); ?>
+            </table>
+        </div>
     </div>
 
     <?php }else{

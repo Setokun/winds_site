@@ -38,7 +38,7 @@ require_once "../core/config.php";
         </div>
         <div class="row row-scroll">
             <table class="table">
-                <div class="row-scroll">
+                <div>
                     <?php AddonController::displayThemes(); ?>
                 </div>
             </table>
@@ -49,9 +49,9 @@ require_once "../core/config.php";
         <div style="margin:0 -15px;" class="th-winds">
             <h3>Available basic levels</h3>
         </div>
-        <div class="row">
+        <div class="row row-scroll">
             <table class="table">
-                <div class="row-scroll">
+                <div>
                     <?php AddonController::displayBasicLevels(); ?>
                 </div>
             </table>
@@ -62,9 +62,9 @@ require_once "../core/config.php";
         <div style="margin:0 -15px;" class="th-winds">
             <h3>Available custom levels <em style="font-size: 0.5em">(click&nbsp;on&nbsp;one&nbsp;item&nbsp;to&nbsp;show&nbsp;more&nbsp;details)</em></h3>
         </div>
-        <div class="row">
+        <div class="row row-scroll">
             <table class="table">
-                <div class="row-scroll">
+                <div>
                     <?php AddonController::displayCustomLevels("shop"); ?>
                 </div>
             </table>

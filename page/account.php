@@ -35,7 +35,9 @@ $user = $_SESSION['user'];
     
     <article id="users-list" class="col-xs-12">
         <h2>Winds accounts</h2>
-        <?php AccountController::displayList($user); ?>
+        <div id="row-scroll-accounts">
+            <?php AccountController::displayList($user); ?>
+        </div>
     </article>
     
     <article class="col-xs-12">
