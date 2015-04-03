@@ -1,9 +1,3 @@
-// -- Ajax --
-var idUser, message;
-
-// -- Profile --
-var btn_changePwd, btn_accountDel;
-
 /*OK*/function ajaxControls(){
     // -- affectations --
     var ajax   = $("section #ajax");
@@ -41,14 +35,28 @@ var btn_changePwd, btn_accountDel;
         timeout : 5000
     }).done(callback);
 }
+
 /*OK*/function profileControls(){
     // -- afectations --
     btn_changePwd  = $("section #change-pwd");
     btn_accountDel = $("section #account-deletion");
+    var email      = $("section #profile [type='email']");
     
     // -- events --
-    btn_changePwd.click(function(){
-        
+    /*OK*/btn_changePwd.click(function(){
+        var data = {
+            action: "forgotPassword",
+            email : email.val()
+        };
+        var callback = function(data){
+            var response = $.parseJSON(data);
+            message.html( response.forgotten ?
+                "<h4 class='ajax-success'>Password forgotten</h4><p>An "
+                    +"e-mail has been sended to reset your password.</p>" :
+                "<h4 class='ajax-error'>Internal error</h4><p>Unable"
+                    + " to forgot your current password.</p>");
+        };
+        ajaxOperator(data, callback);
     });
     /*OK*/btn_accountDel.click(function(){
         var data = {
