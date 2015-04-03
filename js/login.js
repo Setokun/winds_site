@@ -1,18 +1,3 @@
-// -- Ajax --
-var ajax, loader, message;
-
-// -- Login --
-
-
-// -- Signup --
-
-
-// -- Forgot --
-
-
-// -- Reset --
-var btn_login, btn_signup;
-
 /*OK*/function ajaxControls(){
     // -- affectations --
     ajax       = $("#ajax");
@@ -50,53 +35,150 @@ var btn_login, btn_signup;
     }).done(callback);
 }
 
-//function controlsAffectation(){
-//    btn_login = $("#loginbox #btn-login");
-//    btn_signup = $("#signupbox #btn-signup");
-//}
-//function controlsEvents(){
-//    btn_login.click(function(){});
-//    btn_signup.click(function(){});
-//}
-
-/*OK*/function resetControls(){
+/*OK*/function loginControls(){
     // -- affectations --
-    div_reset  = $("#resetbox");
-    reset_back = div_reset.find("#reset-back");
-    id         = div_reset.find("#id");
-    token      = div_reset.find("#token");
-    password1  = div_reset.find("#password1");
-    password2  = div_reset.find("#password2");
-    btn_valid  = div_reset.find("#btn-valid");
+    div_login          = $('#login-box');
+    var login_toForgot = div_login.find('#login-to-forgot');
+    var login_toSignup = div_login.find("#login-to-signup");
+    var btn_login      = div_login.find("#btn-login");
+    var form           = div_login.find("form");
     
     // -- events --
-    /*OK*/reset_back.click(function(){
+    /*OK*/login_toForgot.click(function(){
+        div_login.toggle();
+        div_forgot.toggle();
+    });
+    /*OK*/login_toSignup.click(function(){
+        div_login.toggle();
+        div_signup.toggle();
+    });
+    /*OK*/btn_login.click(function(){
+        if( requiredFilled(div_login) ){ form.submit(); }
+    });
+}
+/*OK*/function signupControls(){
+    // -- affectations --
+    div_signup         = $('#signup-box');
+    var signup_toLogin = div_signup.find('#signup-to-login');
+    var btn_signup     = div_signup.find('#btn-signup');
+    var email          = div_signup.find('#signup-email');
+    var pseudo         = div_signup.find('#signup-pseudo');
+    var password1      = div_signup.find('#signup-password1');
+    var password2      = div_signup.find('#signup-password2');
+    
+    // -- events --
+    /*OK*/signup_toLogin.click(function(){
+        div_signup.toggle();
+        div_login.toggle();
+    });
+    /*OK*/btn_signup.click(function(){
+        // checks
+        if( !requiredFilled(div_signup) ){ return; }
+        if( !checkPwdFields(password1, password2) ){ return; }
+        
+        // all is filled        
+        var data = {
+            action   : "createAccount",
+            email    : email.val(),
+            pseudo   : pseudo.val(),
+            password1: password1.val(),
+            password2: password2.val()
+        };
+        var callback = function(data){
+            var response = $.parseJSON(data);
+            if(response.created){
+                div_signup.find("input[type=text], input[type=password]")
+                          .each(function(){ this.value = ''; });
+                div_signup.toggle();  div_login.toggle();
+                message.html("<h4 class='ajax-success'>Account created</h4><p>An "
+                            +"e-mail has been sended to active your account.</p>");
+            }
+            if(response.error){
+                message.html("<h4 class='ajax-error'>Internal error</h4>"
+                           + "<p>Unable to create this account.</p>");
+            }
+            if(response.errorEmail){
+                message.html("<h4 class='ajax-error'>Email error</h4>"
+                           + "<p>"+ response.errorEmail +".</p>"
+                           + "<p>Please, type another one.</p>");
+            }
+            if(response.errorPseudo){
+                message.html("<h4 class='ajax-error'>Pseudo error</h4>"
+                           + "<p>"+ response.errorPseudo +".</p>"
+                           + "<p>Please, type another one.</p>");
+            }
+            if(response.errorMailing){
+                message.html("<h4 class='ajax-error'>Mail error</h4>"
+                           + "<p>"+ response.errorMailing +".</p>"
+                           + "<p>Please, type a correct e-mail address.</p>");
+            }
+        };
+        ajaxOperator(data, callback);
+    });
+}
+/*OK*/function forgotControls(){
+    // -- affectations --
+    div_forgot         = $('#forgot-box');
+    var forgot_toLogin = div_forgot.find('#forgot-to-login');
+    var btn_send       = div_forgot.find('#btn-send');
+    var email          = div_forgot.find('#forgot-email');
+    
+    // -- events --
+    /*OK*/forgot_toLogin.click(function(){
+        div_forgot.toggle();
+        div_login.toggle();
+    });
+    /*OK*/btn_send.click(function(){
+        if( !requiredFilled(div_forgot) ){ return; }
+        
+        // passwords match
+        var data = {
+            action: "forgotPassword",
+            email : email.val()
+        };
+        var callback = function(data){
+            var response = $.parseJSON(data);
+            if(response.forgotten){
+                div_forgot.toggle();
+                div_login.toggle();
+                message.html("<h4 class='ajax-success'>Password forgotten</h4>"
+                    +"<p>An e-mail has been sended to reset your password.</p");
+            }
+            if(response.error){
+                message.html("<h4 class='ajax-error'>Internal error</h4>"
+                           + "<p>Unable to forgot the password for "
+                           + "this email address.</p>");
+            }
+            if(response.errorMail){
+                message.html("<h4 class='ajax-error'>Email error</h4>"
+                           + "<p>"+ response.errorMail +".</p>");
+            }
+        };
+        ajaxOperator(data, callback);
+    });
+}
+/*OK*/function resetControls(){
+    // -- affectations --
+    var div_reset     = $("#reset-box");
+    var reset_toLogin = div_reset.find("#reset-to-login");
+    var id            = $("#id");
+    var token         = $("#token");
+    var password1     = div_reset.find("#password1");
+    var password2     = div_reset.find("#password2");
+    var btn_valid     = div_reset.find("#btn-valid");
+    
+    // -- events --
+    /*OK*/reset_toLogin.click(function(){
        document.location = "login.php";
     });
     /*OK*/btn_valid.click(function(){
         // check passwords
-        if(password1.val()==='' || password2.val()===''){
-            loader.css('display','none');
-            message.html("<h4>Operation cancelled</h4><p>Empty password found.</p>"
-                        +"<span style='color:red'><em>This window will be closed"
-                        +" automatically in 5 seconds.</em><span>");
-            ajax.modal({backdrop: false});
-            setTimeout(function(){ ajax.modal('hide'); }, 5000);
-            return;
-        }
-        if(password1.val() !== password2.val()){
-            loader.css('display','none');
-            message.html("<h4>Operation cancelled</h4><p>Passwords don't match.</p>"
-                        +"<span style='color:red'><em>This window will be closed"
-                        +" automatically in 5 seconds.</em><span>");
-            ajax.modal({backdrop: false});
-            setTimeout(function(){ ajax.modal('hide'); }, 5000);
-            return;
-        }
+        if( !requiredFilled(div_reset) ){ return; }
+        if( !checkPwdFields(password1, password2) ){ return; }
         
         // passwords match
         var data = {
-            action   : "updatePassword",
+            action   : "resetPassword",
             idUser   : id.val(),
             token    : token.val(),
             password1: password1.val(),
@@ -131,8 +213,36 @@ var btn_login, btn_signup;
     });
 }
 
-
-$(document).ready(function(){
+/*OK*/function requiredFilled(div){
+    var inputs = div.find("input[type=text], input[type=password]");
+    var emptys = inputs.filter(function(){ return !this.value; });
+    
+    if(emptys.length === 0){ return true; }
+    loader.css('display','none');
+    message.html("<h4>Operation cancelled</h4><p>Empty fields found."
+                +"</p><span style='color:red'><em>This window will "
+                +"be closed automatically in 5 seconds.</em><span>");
+    ajax.modal({backdrop: false});
+    setTimeout(function(){ ajax.modal('hide'); }, 5000);
+    return false;
+}
+/*OK*/function checkPwdFields(pwd1, pwd2){
+    if(pwd1.val() !== pwd2.val()){
+        loader.css('display','none');
+        message.html("<h4>Operation cancelled</h4>"
+                    +"<p>Passwords don't match.</p>"
+                    +"<span style='color:red'><em>This window will be "
+                    +"closed automatically in 5 seconds.</em><span>");
+        ajax.modal({backdrop: false});
+        setTimeout(function(){ ajax.modal('hide'); }, 5000);
+        return false;
+    }
+    return true;
+}
+/*OK*/$(document).ready(function(){
     ajaxControls();
+    loginControls();
+    signupControls();
+    forgotControls();
     resetControls();
 });

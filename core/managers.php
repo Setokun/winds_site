@@ -34,9 +34,10 @@ interface ManagerInit {
                     ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $this->nameTable);
     }
     /*OK*/public function getByID($id){
-        $query = "SELECT * FROM $this->nameTable WHERE id=$id";
-        return $this->parent_select($query)
-                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $this->nameTable)[0];
+        $query  = "SELECT * FROM $this->nameTable WHERE id=$id";
+        $result = $this->parent_select($query)
+                    ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $this->nameTable);
+        return empty($result) ? NULL : $result[0];
     }
     /*OK*/public function get($query){
         return $this->parent_select($query)->fetchAll(PDO::FETCH_ASSOC);

@@ -5,10 +5,28 @@ define("NB_NEWS_TO_DISPLAY", 5);
 class AccountController {
     // -- API --
     static function checkIDs($email,$password){
-        return !empty(UserManager::init()->getAll("WHERE email='$email' AND password='$password'"));
+        return !empty(UserManager::init()->getAll(
+            "WHERE email='$email' AND password='".md5($password)."'"));
     }
     static function getUserProfile($email){
         return UserManager::init()->getAll("WHERE email='$email'")[0];
+    }
+    static function activateAccount($idUser, $token){
+        $user = UserManager::init()->getByID($idUser);
+        if( is_null($user) ){ return "Unknown account ID"; }
+        if($user->getToken() !== $token){ return "Unknown token"; }
+        
+        $user->setUserStatus(USER_STATUS::ACTIVATED);
+        $user->setToken(NULL);
+        return UserManager::init()->update($user)
+            ?  TRUE : "Account activation failed";
+    }
+    static function generateToken($email){
+        $users = UserManager::init()->getAll("WHERE email='$email'");
+        if( empty($users) ){ return "Unknown e-mail account"; }
+        
+        $users[0]->setToken( Tools::generateRandomString() );
+        return UserManager::init()->update($users[0]) ? TRUE : "DB error";
     }
     
     // -- WEBSITE --

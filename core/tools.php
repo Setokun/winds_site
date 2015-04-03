@@ -5,16 +5,16 @@
  */
 
 abstract class Tools {
-    static public function today(){
+    /*OK*/static public function today(){
         return date("Y-m-d");
     }
-    static public function now(){
+    /*OK*/static public function now(){
         return date("Y-m-d H:i:s");
     }
-    static public function capitalize($string){
+    /*OK*/static public function capitalize($string){
         return strtoupper(substr($string,0,1)).substr($string,1);
     }
-    static function getParamsURL($paramsURL){
+    /*OK*/static function getParamsURL($paramsURL){
         $params = array();
         if( !empty($paramsURL) ){
             $splitted_params = explode("&",$paramsURL);
@@ -24,5 +24,38 @@ abstract class Tools {
             }
         }
         return $params;
+    }
+    /*OK*/static function goToLogin(){
+        header('location: login.php');
+    }
+    /*OK*/static function goToHome(){
+        header('location: home.php');
+    }
+    /*OK*/static function generateRandomString(){
+        $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charsLen = strlen($chars);
+        $rndStr = '';
+        for($i=0; $i<64; $i++) {
+            $rndStr .= $chars[rand(0, $charsLen - 1)];
+        }
+        return $rndStr;
+    }
+    // to finish
+    static function sendActivationMail(User $user){
+        $link = "http://localhost/Winds/page/login.php"
+              . "?action=activate&id=".$user->getId()
+                ."&token=".$user->getToken();
+        $subject = "Winds - Account activation";
+        $message = $link;
+        return mail($user->getEmail(), $subject, $message);
+    }
+    // to finish
+    static function sendResetMail(User $user){
+        $link = "http://localhost/Winds/page/login.php"
+              . "?action=reset&id=".$user->getId()
+                ."&token=".$user->getToken();
+        $subject = "Winds - Password reset";
+        $message = $link;
+        return mail($user->getEmail(), $subject, $message);
     }
 }

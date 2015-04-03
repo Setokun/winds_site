@@ -1,10 +1,3 @@
-<?php
-
-$user = new stdClass();
-$user->pseudo = "bibi";
-$user->userType = 2;
-
-?>
 <!DOCTYPE HTML>
 <html>
     <head>

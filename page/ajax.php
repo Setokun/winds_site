@@ -31,13 +31,46 @@ class AjaxOperator {
     }
     
     // -- LOGIN --
-    /*OK*/private function updatePassword(){
+    // manque gestion du mail
+    /*to finish*/private function createAccount(){
+        $email  = $this->params['email'];
+        $pwd    = $this->params['password1'];
+        $pseudo = $this->params['pseudo'];
+        
+        if( !empty(UserManager::init()->getAll("WHERE email='$email'")) ){
+            $this->response['errorEmail'] = "This e-mail address already exists";
+            return;
+        }
+        if( !empty(UserManager::init()->getAll("WHERE pseudo='$pseudo'")) ){
+            $this->response['errorPseudo'] = "This pseudo already exists";
+            return;
+        }
+        
+        $token = Tools::generateRandomString();
+        $user = User::init($email, $pwd, $pseudo);
+        $user->setToken($token);
+        $idUser = UserManager::init()->insert($user);
+        
+        if( !$idUser ){
+            $this->response['error'] = "Account creation failed";
+            return;
+        }
+
+//        $sended = Tools::sendActivationMail($user);
+//        if( !$sended ){
+//            $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+//            return;
+//        }
+        
+        $this->response['created'] = TRUE;
+    }
+    /*OK*/private function resetPassword(){
         $token     = $this->params['token'];
         $today     = Tools::today();
         $forgotDay = (new DateTime($this->user->getForgotPassword()))->format("Y-m-d");
         
         // check reset password constraints
-        if($token != $this->user->getTokenPassword()){
+        if($token != $this->user->getToken()){
             $this->response['errorToken'] = "Unknown token";
             return;
         }
@@ -49,11 +82,40 @@ class AjaxOperator {
         // reset password allowed
         $this->user->setPassword($this->params['password1']);
         $this->user->setForgotPassword(NULL);
-        $this->user->setTokenPassword(NULL);
+        $this->user->setToken(NULL);
         UserManager::init()->update($this->user) ?
             $this->response['updated'] = TRUE :
             $this->response['error'] = "Password update failed";
         
+    }
+    
+    // -- LOGIN & PROFILE --
+    // manque gestion du mail
+    /*to finish*/private function forgotPassword(){
+        $email = $this->params['email'];
+        $users = UserManager::init()->getAll("WHERE email='$email'");
+        
+        if( empty($users) ){
+            $this->response['errorEmail'] = "Unknown e-mail address";
+            return;
+        }
+        
+        $token = Tools::generateRandomString();
+        $users[0]->setToken($token);
+        $users[0]->setForgotPassword(Tools::today());
+        $updated = UserManager::init()->update($users[0]);
+        
+        if( !$updated ){
+            $this->response['error'] = "Password forgot failed";
+        }
+        
+//        $sended = Tools::sendResetMail($user);
+//        if( !$sended ){
+//            $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+//            return;
+//        }
+        
+        $this->response['forgotten'] = TRUE;            
     }
     
     // -- PROFILE --
