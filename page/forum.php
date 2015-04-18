@@ -1,4 +1,8 @@
 <?php
+session_start();
+require_once "../core/config.php";
+isset($_SESSION['user']) ? $user = User::initFrom($_SESSION['user']) : Tools::goToLogin();
+
 include_once "../common/header.php";
 include_once "../common/banner.php";
 include_once "../common/menu.php";
