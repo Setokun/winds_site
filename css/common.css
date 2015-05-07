@@ -1,0 +1,81 @@
+/* généralités */
+
+body{background-image: url(../resources/subtle_white_mini_waves.png); max-width:97%; margin:auto;}
+	
+@font-face {
+        font-family: 'bubble';
+        src: url('../fonts/bubble & soap.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+}
+
+#menu-small{z-index: 2}
+
+@media (min-width: 992px) {
+    #menu-small{display: none;}
+    #navigation{display: initial}
+}
+
+@media (max-width: 991px) {
+    #menu-small{display: initial;}
+    #navigation{display: none}
+        
+}
+
+[class*="col"], footer {
+    line-height: 40px;
+}
+
+header [class*="col"]{margin:0;	padding:0; border-bottom: 5px solid black;}
+
+nav{border-right: 2px solid black; border-bottom: 2px solid black; text-align: center;}
+nav , nav [class*="col"]{margin:0; padding: 10px 0 10px 0;}
+nav ul {margin:0; padding:0;}
+nav li{list-style-type:none; margin:0px; padding:0px; line-height: 35px; color: #337abb; font-family: bubble; font-size: 22px}
+nav a:hover li{border-radius: 6px; /*border-box;*/ background:#fff; color: black}
+nav a:hover{cursor: pointer; text-decoration: none;}
+nav .active li{border-radius: 6px; /*border-box;*/ background:#337abb; color:white;}
+
+#logout li{color:red;}
+#navigation{position:absolute; top: 0px; left: 0px; z-index: 2;}
+#toggle-nav{background: #337abb; border : none; margin-left: 15px; padding: 10px 15px; border-radius: 0 0 5px 5px}
+
+table{width:100%}
+.account{border-top: 2px solid #ccc; padding-bottom: 10px;}
+.choice-center{text-align: center}
+
+.button-green, .button-red, .button-orange, .button-blue, .btn-delete-post{
+    width: 80px; border-radius: 10px; padding: 0px; border: 2px solid grey; color:white;}
+.button-green{background: green}
+.button-red, .btn-delete-post{background: red}
+.button-orange{background: orange}
+.button-blue{background: blue}
+
+
+/* shop */
+.theme-image{margin: 15px; width:48px; border: 2px solid #666; border-radius: 10px;}
+.custom-level{margin-left: 15px;}
+.description{margin-left: 50px;}
+#download-game{width:100%; background: #337abb; color: #fff;}
+
+/* scores */
+.score-data{text-align: center;}
+
+/* forum */
+.forum-post-title{margin-top: 20px; padding: 0px; background: #ccc;}
+.forum-post-title p{font-family: bubble; margin:0 0 0 20px; padding: 0px;}
+
+/* moderation */
+.moderation-button{margin:20px; padding: 5px;}
+
+section {background: #fff; padding: 20px;}
+section p {margin: 10px 0 0 20px; font-weight: bold;}
+article {/*border: 2px solid black;*/ margin-bottom: 20px;}
+
+hr{margin:5px; padding:0;}
+th{text-align: center; font-family: bubble; font-size: 15px; background: #ccc}
+td{background: #fff}
+
+footer{border-top : 2px solid black; height: 100px; background: #7aacff}
+
+img { width: 100%; }

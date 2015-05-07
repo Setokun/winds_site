@@ -1,0 +1,5 @@
+#news { text-align: center }
+#news table { width: 49% }
+#news th { padding: 4px; text-align: center; font-weight: bold; border: 1px solid black; background-color: lightsteelblue }
+#news td { padding: 2px }
+#news-addon, #news-forum { display:inline-table; vertical-align: top; border-collapse: collapse; border: 1px solid black }
