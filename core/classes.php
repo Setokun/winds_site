@@ -298,7 +298,7 @@ interface Winds_News {
             $time,                  // int : seconds
             $nbClicks,              // int
             $nbItems;               // int
-    static private $points = ['time'=> 10, 'nbClicks'=> 2, 'nbItems'=> 1];
+    static private $points = ['time'=> 100, 'nbClicks'=> 10, 'nbItems'=> 75];
     
     // -- CONSTRUCTORS --
     static public function init($idPlayer, $idLevel, $time, $nbClicks, $nbItems) {
@@ -333,12 +333,13 @@ interface Winds_News {
         return (object) get_object_vars($this);
     }
     public function compareTo(Score $score, $timeMaxLevel){
-        return $this->calculate($timeMaxLevel) - $score->calculate($timeMaxLevel);
+        return $this->calculate($timeMaxLevel) > $score->calculate($timeMaxLevel);
     }
     public function calculate($timeMaxLevel){
         $time   = $timeMaxLevel - $this->time;
-        $points = $time           * self::$points['time']
-                + $this->nbClicks * self::$points['nbClicks']
+        $points = 10000
+				+ $time           * self::$points['time']
+                - $this->nbClicks * self::$points['nbClicks']
                 + $this->nbItems  * self::$points['nbItems'];
         return $points;
     }
