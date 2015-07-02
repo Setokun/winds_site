@@ -479,16 +479,16 @@ class ApiController {
         }
 		
         $basicLevel = LevelManager::init()->getByID($params['idBasicLevel']);
-		$name = $basicLevel->getFilePath();
-		// ouvre un fichier en mode binaire
-		$fp = fopen($name, 'rb');
-		// envoie les bons en-têtes
-		header("Content-Type: application/java-archive");
-		header("Content-Transfer-Encoding: binary");
-		header("Content-Length: " . filesize($name));
-		// envoie le contenu du fichier, puis stoppe le script
-		fpassthru($fp);
-		exit;
+        $name = $basicLevel->getFilePath();
+        // ouvre un fichier en mode binaire
+        $fp = fopen($name, 'rb');
+        // envoie les bons en-têtes
+        header("Content-Type: application/java-archive");
+        header("Content-Transfer-Encoding: binary");
+        header("Content-Length: " . filesize($name));
+        // envoie le contenu du fichier, puis stoppe le script
+        fpassthru($fp);
+        exit;
 		
     }
     static function downloadCustomLevel(User $user, array $params=[]){
@@ -497,7 +497,16 @@ class ApiController {
         }
         
         $customLevel = LevelManager::init()->getByID($params['idCustomLevel']);
-        var_dump($customLevel);
+        $name = $customLevel->getFilePath();
+        // ouvre un fichier en mode binaire
+        $fp = fopen($name, 'rb');
+        // envoie les bons en-têtes
+        header("Content-Type: application/java-archive");
+        header("Content-Transfer-Encoding: binary");
+        header("Content-Length: " . filesize($name));
+        // envoie le contenu du fichier, puis stoppe le script
+        fpassthru($fp);
+        exit;
     }
     static function downloadLevelToModerate(User $user, array $params=[]){
         if(!isset($params['idLevelToModerate'])){
@@ -505,7 +514,16 @@ class ApiController {
         }
         
         $levelToModerate = LevelManager::init()->getByID($params['idLevelToModerate']);
-        var_dump($levelToModerate);
+        $name = $levelToModerate->getFilePath();
+        // ouvre un fichier en mode binaire
+        $fp = fopen($name, 'rb');
+        // envoie les bons en-têtes
+        header("Content-Type: application/java-archive");
+        header("Content-Transfer-Encoding: binary");
+        header("Content-Length: " . filesize($name));
+        // envoie le contenu du fichier, puis stoppe le script
+        fpassthru($fp);
+        exit;
     }
     static function uploadCustomLevel(User $user, array $params=[]){
         var_dump($user,$params);
