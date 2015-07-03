@@ -14,8 +14,11 @@ abstract class Tools {
     /*OK*/static public function capitalize($string){
         return strtoupper(substr($string,0,1)).substr($string,1);
     }
-    /*OK*/static function getParamsURL($paramsURL){
+    /*OK*/static function getIncomingParams(){
         $params = array();
+        
+        // collect parameters from URL request
+        $paramsURL = $_SERVER['QUERY_STRING'];
         if( !empty($paramsURL) ){
             $splitted_params = explode("&",$paramsURL);
             foreach($splitted_params as $param){
@@ -23,6 +26,17 @@ abstract class Tools {
                 $params[$parts[0]] = @$parts[1];
             }
         }
+        
+        // collect parameters from file uploads
+        if( !empty($_FILES) ){
+            foreach($_POST as $key=>$val){
+                $params[$key] = $val;
+            }
+            foreach($_FILES as $name=>$file){
+                $params[$name] = $file;                
+            }
+        }
+
         return $params;
     }
     /*OK*/static function goToLogin(){

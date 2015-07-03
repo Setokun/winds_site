@@ -447,8 +447,13 @@ class ApiController {
         $levelToModerate = LevelManager::init()->getByID($params['idLevelToModerate']);
         var_dump($levelToModerate);
     }
-    /*todo*/static function uploadCustomLevel(User $user, array $params=[]){
-        var_dump($user,$params);
+    static function uploadCustomLevel(User $user, array $params=[]){
+        if(!isset($params['level'])){
+            self::displayResponse(NULL, "Missing uploaded level file");
+        }
+        
+        $manip = LevelManipulator::init($params['level'])->run();
+        self::displayResponse($manip->getResult(), $manip->getError());
     }
     /*totest*/static function uploadScores(User $user, array $params=[]){
         if(!isset($params['scores'])){
