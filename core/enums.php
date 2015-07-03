@@ -32,7 +32,7 @@ abstract class LEVEL_STATUS extends Enumeration {
           TOMODERATE = 'tomoderate';
 }
 abstract class LEVEL_MODE extends Enumeration {
-    const STANDARD = 'normal',
+    const STANDARD = 'standard',
           BOSS     = 'boss';
 }
 abstract class SUBJECT_STATUS extends Enumeration {
