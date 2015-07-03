@@ -4,12 +4,17 @@ define("NB_NEWS_TO_DISPLAY", 5);
 
 class AccountController {
     // -- API --
-    static function checkIDs($email,$password){
-        return !empty(UserManager::init()->getAll(
-            "WHERE email='$email' AND password='".md5($password)."'"));
+    static function checkIDs($email,$password){//echo "test1<br>";
+		$mgr = UserManager::init();//echo "test2<br>";
+		$test = $mgr->getAll("WHERE email='$email' AND password='".md5($password)."'");//echo "test3<br>";
+		//var_dump($test);
+        return !empty($test);
     }
     static function getUserProfile($email){
         return UserManager::init()->getAll("WHERE email='$email'")[0];
+    }
+	static function getPseudoById($idUser){
+		return UserManager::init()->getAll("WHERE id='$idUser'")[0]->getPseudo();
     }
     static function activateAccount($idUser, $token){
         $user = UserManager::init()->getByID($idUser);
@@ -30,7 +35,7 @@ class AccountController {
     }
     
     // -- WEBSITE --
-    /*OK*/static function displayList(User $current){
+    static function displayList(User $current){
         $users = UserManager::init()->getAll("WHERE id<>".$current->getId()
                 ." AND userStatus<>'deleted'");
         foreach($users as $user){
@@ -81,7 +86,7 @@ class AccountController {
     ";
         }
     }
-    /*OK*/static function displayDeletionList(User $current){
+    static function displayDeletionList(User $current){
         $users = UserManager::init()->getAll("WHERE id<>"
                 .$current->getId()." AND userStatus='"
                 .USER_STATUS::DELETING."'");
@@ -91,7 +96,9 @@ class AccountController {
                 ."</h5></span></td></tr>";
         }
     }
+
 }
+
 class AddonController {
     // -- API --
     static function getTheme($id=NULL){
@@ -109,11 +116,11 @@ class AddonController {
             array_push($params, "levelType='$levelType'");
         }
         array_push($params, "levelStatus='$levelStatus'", "levelMode='$levelMode'");
-        return LevelManager::init()->getAll("WHERE ".implode(" AND ", $params));        
+        return LevelManager::init()->get("SELECT timeMax, idTheme, name, description, creationDate, user.pseudo AS creator, level.id AS idLevel FROM `level` JOIN `user` ON idCreator = user.id WHERE ".implode(" AND ", $params));        
     }
     
     // -- WEBSITE --
-    /*OK*/static function displayLastNews(){
+    static function displayLastNews(){
         $criterias = "ORDER BY creationDate DESC LIMIT ".NB_NEWS_TO_DISPLAY;
         $themes  = ThemeManager::init()->getAll($criterias);
         $levels  = LevelManager::init()->getAll("WHERE levelStatus='"
@@ -135,7 +142,7 @@ class AddonController {
             echo $news->getMessage();
         }
     }
-    /*OK*/static function displayThemes(){
+    static function displayThemes(){
         $themes = ThemeManager::init()->getAll();
         foreach($themes as $theme){
             echo "<tr><td class='image-column'><img class='logo-level' "
@@ -144,7 +151,7 @@ class AddonController {
                 .Tools::capitalize($theme->getName())."</td></tr>";
         }
     }
-    /*OK*/static function displayBasicLevels(){
+    static function displayBasicLevels(){
         $basics  = self::getLevel(NULL, LEVEL_TYPE::BASIC);
         $images   = ThemeManager::init()->getImagePath();
         $creators = LevelManager::init()->getCreators();
@@ -160,7 +167,7 @@ class AddonController {
                         .$level->getDescription()."</td></tr>";
         }
     }
-    /*OK*/static function displayCustomLevels($source){
+    static function displayCustomLevels($source){
         $customs  = self::getLevel(NULL, LEVEL_TYPE::CUSTOM);
         $images   = ThemeManager::init()->getImagePath();
         $creators = LevelManager::init()->getCreators();
@@ -190,7 +197,7 @@ class AddonController {
             }
         }
     }
-    /*OK*/static function displayLevelsToModerate(){
+    static function displayLevelsToModerate(){
         $tomoderates = self::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_STATUS::TOMODERATE);
         $imagePaths  = ThemeManager::init()->getImagePath();
         $creators    = LevelManager::init()->getCreators();
@@ -211,6 +218,7 @@ class AddonController {
         }
     }
 }
+
 class ScoreController {
     // -- API --
     static function getScores($idPlayer){
@@ -221,7 +229,7 @@ class ScoreController {
     }
     
     // -- WEBSITE --
-    /*OK*/static function displayHeaders(Level $level=NULL){
+    static function displayHeaders(Level $level=NULL){
         if(is_null($level)){ ?><tr>
                 <th class="th-winds col-xs-4 col-sm-3 col-md-2">Rank</th>
                 <th class="th-winds col-xs-4 col-sm-3 col-md-2">Player</th>
@@ -236,7 +244,7 @@ class ScoreController {
             <th style="vertical-align: middle" class="th-winds col-xs-2">Number of gathered items</th>
         </tr><?php }
     }
-    /*OK*/static function displayRanking(Level $level=NULL){
+    static function displayRanking(Level $level=NULL){
         $ranks = ScoreManager::init()->getRanking(is_null($level) ? NULL : $level->getId());
         $i = 1;
         foreach($ranks as $data){
@@ -253,7 +261,7 @@ class ScoreController {
             }
         }
     }
-    /*OK*/static function displayInfosScore(Level $level){
+    static function displayInfosScore(Level $level){
         $creator   = UserManager::init()->getByID($level->getIdCreator())->getPseudo();
         $imagePath = ThemeManager::init()->getImagePath($level->getIdTheme());
         
@@ -261,15 +269,15 @@ class ScoreController {
             .Tools::capitalize($level->getName())."\" created by "
             .Tools::capitalize($creator)."</h4>";
     }
-    /*OK*/static function displayScoredBasicLevels(){
+    static function displayScoredBasicLevels(){
         $basics = LevelManager::init()->getLevelsHavingScores(LEVEL_TYPE::BASIC);
         self::formateLevels($basics);
     }
-    /*OK*/static function displayScoredCustomLevels(){
+    static function displayScoredCustomLevels(){
         $customs = LevelManager::init()->getLevelsHavingScores(LEVEL_TYPE::CUSTOM);
         self::formateLevels($customs);
     }
-    /*OK*/static private function formateLevels(array $levels){
+    static private function formateLevels(array $levels){
         if(empty($levels)){
             echo "<div>No level with scores</div>";
             return;
@@ -285,9 +293,10 @@ class ScoreController {
         }
     }
 }
+
 class ForumController {
     // -- WEBSITE --
-    /*OK*/static function displayLastNews(){
+    static function displayLastNews(){
         $orderByDate = "ORDER BY date DESC, id DESC LIMIT ".NB_NEWS_TO_DISPLAY;
         $subjects    = SubjectManager::init()->getAll($orderByDate);
         $posts       = PostManager::init()->getAll($orderByDate);
@@ -319,19 +328,19 @@ class ForumController {
             }            
         }
     }
-    /*OK*/static private function displayNews($item, $authors){
+    static private function displayNews($item, $authors){
         $news   = $item->formateAsNews();
         $author = $authors[ $item->getIdAuthor() ];
         $news->setAuthor($author);
         echo $news->getMessage();
     }
-    /*OK*/static function displaySubjects(){
+    static function displaySubjects(){
         $subjects = SubjectManager::init()->getAll();
         foreach($subjects as $subject){
             echo self::formateSubject($subject);
         }
     }
-    /*OK*/static function formateSubject(Subject $subject){
+    static function formateSubject(Subject $subject){
         $last = SubjectManager::init()->getLastUpdate($subject);
         $date = (new DateTime($last['date']))->format("d-m-Y");
         return "<tr class='subject' data-idsubject='".$subject->getId()."'>"
@@ -340,7 +349,7 @@ class ForumController {
               ."<td>$date by ".Tools::capitalize($last['author'])."</td>"
               ."</tr>";
     }
-    /*OK*/static function displayInfosSubject(Subject $subject){
+    static function displayInfosSubject(Subject $subject){
         if(is_null($subject)){ return; }
         $colorStatus = ($subject->getSubjectStatus() === SUBJECT_STATUS::ACTIVE)? 'green' : 'red';
         echo "<div class='col-xs-12'><h4>Title  : ".Tools::capitalize($subject->getTitle())
@@ -348,7 +357,7 @@ class ForumController {
             ."style='font-weight: bold; color:".$colorStatus."'>Status : "
             .$subject->getSubjectStatus()."</h5></div>";
     }
-    /*OK*/static function displayPosts(Subject $subject, $isSuperUser){
+    static function displayPosts(Subject $subject, $isSuperUser){
         $authors = UserManager::init()->getPseudos();
         $posts   = PostManager::init()->getAll("WHERE idSubject=".$subject->getId()." ORDER BY date ASC");
         array_unshift($posts, $subject);
@@ -357,7 +366,7 @@ class ForumController {
             echo self::formatePost($post, $authors[$post->getIdAuthor()], $isSuperUser);
         }        
     }
-    /*OK*/static function formatePost($post, $author, $isSuperUser){
+    static function formatePost($post, $author, $isSuperUser){
         $date = (new DateTime($post->getDate()))->format("d-m-Y H:i:s");
         $echo = "<div class='row-post'><div class='col-xs-8 col-sm-9 col-md-10' "
               . "style='border-top: 2px solid #aaa; padding-top:10px;'>"
@@ -371,6 +380,7 @@ class ForumController {
         return $echo;
     }
 }
+
 class ApiController {
     // -- API --
     static function existsAction($action){
@@ -384,70 +394,139 @@ class ApiController {
         echo json_encode($response);
         die;
     }
-    /* Each function must have its name like the value in API_ACTION 
-     * and declare following as arguments :
-     *     - $user   : the user account
-     *     - $params : the array of parameters sent in URL / optionnal  */
+    // Each function must have its name like the value in API_ACTION 
+    // and declare following as arguments :
+    //     - $user   : the user account
+    //     - $params : the array of parameters sent in URL / optionnal
     static function getThemes(User $user, array $params=[]){
-        $themes = AddonController::getTheme();
-        self::displayResponse( json_encode($themes) );
+		if(isset($params['idTheme'])){
+			$rawTheme = AddonController::getTheme($params['idTheme']);
+			$theme = array();
+			$theme[0]["id"] = $rawTheme->getId();
+			$theme[0]["name"] = $rawTheme->getName();
+			$theme[0]["description"] = $rawTheme->getDescription();
+			$theme[0]["fileName"] = str_replace("resources/themes/", "", $rawTheme->getFilePath());
+			echo json_encode($theme);
+		}
+		else{
+			$themes = AddonController::getTheme();
+			echo json_encode($themes);
+		}
     }
-    static function getBasicLevels(User $user, array $params=[]){
-        $basics = AddonController::getLevel(NULL, LEVEL_TYPE::BASIC);
-        self::displayResponse( json_encode($basics) );
+    static function getLevelInfos(User $user, array $params=[]){
+		$rawLevel = AddonController::getLevel($params['idLevel'], NULL);
+		$level[0]["timeMax"] = $rawLevel->getTimeMax();
+		$level[0]["levelType"] = $rawLevel->getLevelType();
+		$level[0]["levelStatus"] = $rawLevel->getLevelStatus();
+		$level[0]["levelMode"] = $rawLevel->getLevelMode();
+		$level[0]["idTheme"] = $rawLevel->getIdTheme();
+		$level[0]["name"] = $rawLevel->getName();
+		$level[0]["description"] = $rawLevel->getDescription();
+		$level[0]["creationDate"] = $rawLevel->getCreationDate();
+		$level[0]["filePath"] = $rawLevel->getFilePath();
+		$level[0]["creator"] = AccountController::getPseudoById($rawLevel->getIdCreator());
+		$level[0]["id"] = $rawLevel->getId();
+		echo json_encode($level);
+	}
+	static function getBasicLevels(User $user, array $params=[]){
+		$basics = AddonController::getLevel(NULL, LEVEL_TYPE::BASIC);
+		echo json_encode($basics);
     }
     static function getCustomLevels(User $user, array $params=[]){
         $customs = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM);
-        self::displayResponse( json_encode($customs) );
+        //self::displayResponse( $customs );
+		echo json_encode($customs);
     }
     static function getLevelsToModerate(User $user, array $params=[]){
         $toModerates = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_STATUS::TOMODERATE);
-        self::displayResponse( json_encode($toModerates) );
+        //self::displayResponse( $toModerates );
+		echo json_encode($toModerates);
     }
     static function getScores(User $user, array $params=[]){
-        $scores = ScoreManager::init()->getListByPlayer($user->getId());
-        self::displayResponse( json_encode($scores) );
+		$scores = ScoreManager::init()->getAllByPlayer($user->getId());
+        //self::displayResponse( $scores );
+		echo json_encode($scores);
     }
     static function getRanks(User $user, array $params=[]){
         $playerRanks = ScoreManager::init()->getRanksByPlayer($user->getId());
-        self::displayResponse( json_encode($playerRanks) );
+        self::displayResponse( $playerRanks );
     }
     static function downloadProfile(User $user, array $params=[]){
-        self::displayResponse(json_encode($user) );
+		echo json_encode($user);
     }
-    /*todo*/static function downloadTheme(User $user, array $params=[]){
+    static function downloadTheme(User $user, array $params=[]){
         if(!isset($params['idTheme'])){
             self::displayResponse(NULL, "Missing theme ID");
         }
         
         $theme = ThemeManager::init()->getByID($params['idTheme']);
-        var_dump($theme);
+		$name = $theme->getFilePath();
+		// ouvre un fichier en mode binaire
+		$fp = fopen($name, 'rb');
+
+		// envoie les bons en-têtes
+		header("Content-Type: application/java-archive");
+		header("Content-Transfer-Encoding: binary");
+		header("Content-Length: " . filesize($name));
+		// envoie le contenu du fichier, puis stoppe le script
+		fpassthru($fp);
+		exit;
+		
     }
-    /*todo*/static function downloadBasicLevel(User $user, array $params=[]){
+    static function downloadBasicLevel(User $user, array $params=[]){
         if(!isset($params['idBasicLevel'])){
             self::displayResponse(NULL, "Missing basic level ID");
         }
-        
+		
         $basicLevel = LevelManager::init()->getByID($params['idBasicLevel']);
-        var_dump($basicLevel);
+        $name = $basicLevel->getFilePath();
+        // ouvre un fichier en mode binaire
+        $fp = fopen($name, 'rb');
+        // envoie les bons en-têtes
+        header("Content-Type: application/java-archive");
+        header("Content-Transfer-Encoding: binary");
+        header("Content-Length: " . filesize($name));
+        // envoie le contenu du fichier, puis stoppe le script
+        fpassthru($fp);
+        exit;
+		
     }
-    /*todo*/static function downloadCustomLevel(User $user, array $params=[]){
+    static function downloadCustomLevel(User $user, array $params=[]){
         if(!isset($params['idCustomLevel'])){
             self::displayResponse(NULL, "Missing custom level ID");
         }
         
         $customLevel = LevelManager::init()->getByID($params['idCustomLevel']);
-        var_dump($customLevel);
+        $name = $customLevel->getFilePath();
+        // ouvre un fichier en mode binaire
+        $fp = fopen($name, 'rb');
+        // envoie les bons en-têtes
+        header("Content-Type: application/java-archive");
+        header("Content-Transfer-Encoding: binary");
+        header("Content-Length: " . filesize($name));
+        // envoie le contenu du fichier, puis stoppe le script
+        fpassthru($fp);
+        exit;
     }
-    /*todo*/static function downloadLevelToModerate(User $user, array $params=[]){
+    static function downloadLevelToModerate(User $user, array $params=[]){
         if(!isset($params['idLevelToModerate'])){
             self::displayResponse(NULL, "Missing level-to-moderate ID");
         }
         
         $levelToModerate = LevelManager::init()->getByID($params['idLevelToModerate']);
-        var_dump($levelToModerate);
+        $name = $levelToModerate->getFilePath();
+        // ouvre un fichier en mode binaire
+        $fp = fopen($name, 'rb');
+        // envoie les bons en-têtes
+        header("Content-Type: application/java-archive");
+        header("Content-Transfer-Encoding: binary");
+        header("Content-Length: " . filesize($name));
+        // envoie le contenu du fichier, puis stoppe le script
+        fpassthru($fp);
+        exit;
     }
     static function uploadCustomLevel(User $user, array $params=[]){
+
         if(!isset($params['level'])){
             self::displayResponse(NULL, "Missing uploaded level file");
         }
@@ -455,34 +534,38 @@ class ApiController {
         $manip = LevelManipulator::init($params['level'])->run();
         self::displayResponse($manip->getResult(), $manip->getError());
     }
-    /*totest*/static function uploadScores(User $user, array $params=[]){
+    static function uploadScores(User $user, array $params=[]){
         if(!isset($params['scores'])){
             self::displayResponse(NULL, "Missing scores to upload");
         }
-        /*                                                                                                                                                   |                ||                    |||                   ||
-         * http://localhost/Winds/api.php?email=player2@winds.net&password=912af0dff974604f1321254ca8ff38b6&action=uploadScores&scores=%5B%7B%22idLevel%22%3A4%2C%22time%22%3A60%2C%22nbClicks%22%3A100%2C%22nbItems%22%3A80%7D%5D
-         */
         $scoresSended = json_decode( urldecode($params['scores']), TRUE );
+		//var_dump($scoresSended);
         $counter = 0;
+		
         foreach($scoresSended as $value){
-            $uploaded = Score::init($user->getId(), $value['idLevel'],
+			
+			$uploaded = Score::init($user->getId(), $value['idLevel'],
                     $value['time'], $value['nbClicks'], $value['nbItems']);
-            $scoresDB = (new ScoreManager())->get(array(
-                    "idPlayer" => $user->getId(),
-                    "idLevel"  => $value['idLevel']));
+
+			$scoresDB = ScoreManager::init()->getScoreById($user->getId(),$value['idLevel']);
+			//var_dump($scoresDB);
+			
             if( empty($scoresDB) ){
                 // no score found for this user and level
-                //OK //(new ScoreManager())->insert($uploaded);
+                ScoreManager::init()->insert($uploaded);
             }
             else {
-                $current = $scoresDB[0];
+                $current = $scoresDB;
                 $needUpdate = $uploaded->compareTo($current) == TRUE;
                 $needUpdate ? $current->updateFrom($uploaded) : NULL;
-                var_dump(intval($needUpdate));
-                //(new ScoreManager())->update($current);
+                //var_dump($needUpdate);
+				//die;
+                $retour = ScoreManager::init()->update($current);
+				//echo 'valeur de retour : '.$retour;
             }
             $counter++;
         }
+		echo $counter;
         exit;
         $all = $counter == count($scoresSended);
         $message = "All of uploaded scores have ".($all ? NULL : "not ")."been inserted into DB";

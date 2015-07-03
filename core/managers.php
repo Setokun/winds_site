@@ -5,13 +5,13 @@
  */
 require_once "config.php";
 
+
 interface ManagerInit {
     static function init();
 }
 
 /*OK*/abstract class ManagerDB implements ManagerInit {
-    protected $PDO,
-              $nameDB = "winds";
+    protected $PDO;			  
     
     // VARIABLES - MUST BE OVERRIDEN IN CONSTRUCTOR OF THE DERIVED CLASS
     protected $nameTable,           // the name of the table in DB and of the class to use to instanciate objects 
@@ -19,8 +19,13 @@ interface ManagerInit {
     
     /*OK*/protected function __construct(){}
     /*OK*/protected function connectDB() {
+		$host	= "windsgamqiwinds.mysql.db";
+        $nameDB = "windsgamqiwinds";
+		$user	= "windsgamqiwinds";
+		$pwd	= "Wind2084";
+	
         try {
-            $this->PDO = new PDO('mysql:host=127.0.0.1;dbname='.$this->nameDB, 'winds_team', 'winds');
+            $this->PDO = new PDO("mysql:host=$host;dbname=$nameDB", $user, $pwd);
             $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
         catch (Exception $e) {
@@ -74,9 +79,10 @@ interface ManagerInit {
         return $this->PDO->lastInsertId();
     }
     /*OK*/protected function parent_update(WindsClass $item){
-        $values  = array_values($item->valuesDB_toUpdate());
+		$values  = array_values($item->valuesDB_toUpdate());
         $query   = $this->query_update($item);
         $request = $this->PDO->prepare($query);
+		var_dump($query, $request, $values);
         $request->execute($values);
         return $request->rowCount();
                          
@@ -216,24 +222,56 @@ interface ManagerInit {
         return $score;
     }
     /*OK*/public function insert(Score $score){
-        return $this->parent_insert($score);
+
+        $query = "INSERT INTO score (time, nbClicks, nbItems, idPlayer, idLevel) VALUES (?,?,?,?,?)";
+		/*$query = "INSERT INTO score (time, nbClicks, nbItems, idPlayer, idLevel) VALUES (:time,:nbclicks,:nbitems,:idplayer,:idlevel)";
+		$request = $this->PDO->prepare($query);
+		$request->bindValue('time', $score->getTime(), PDO::PARAM_INT);
+		$request->bindValue('nbclicks', $score->getNbClicks(), PDO::PARAM_INT);
+		$request->bindValue('nbitems', $score->getNbItems(), PDO::PARAM_INT);
+		$request->bindValue('idplayer', $score->getIdPlayer(), PDO::PARAM_STR);
+		$request->bindValue('idlevel', $score->getIdLevel(), PDO::PARAM_INT);
+
+		$request->execute();*/
+		$values = array($score->getTime(), $score->getNbClicks(), $score->getNbItems(), $score->getIdPlayer(), $score->getIdLevel());
+		$request = $this->PDO->prepare($query);
+		
+		$request->execute($values);
+		return $request->rowCount();
     }
     /*OK*/public function update(Score $score){
-        if(is_null($score->getId())){  return FALSE;  }
-        return $this->parent_update($score);
+
+		$query = "UPDATE $this->nameTable SET time=?, nbClicks=?, nbItems=? where idPlayer=? AND idLevel=?";
+		$values = array($score->getTime(), $score->getNbClicks(), $score->getNbItems(), $score->getIdPlayer(), $score->getIdLevel());
+		$request = $this->PDO->prepare($query);
+		
+		$request->execute($values);
+		return $request->rowCount();
     }
     /*OK*/public function delete(Score $score){
-        if(is_null($score->getId())){  return FALSE;  }
-        return $this->parent_delete($score);
+        if(is_null($score->getIdPlayer()) || is_null($score->getIdLevel())){  return FALSE;  }
+        $query = "DELETE FROM $this->nameTable where idPlayer=? AND idLevel=?";
+		$values = array($score->getIdPlayer(), $score->getIdLevel());
+		$request->execute($values);
+		return $request->rowCount();
     }
-    /*OK*/public function deleteMulti(array $scoreIds){
+    /*KO*/public function deleteMulti(array $scoreIds){
         $query = "DELETE FROM score WHERE id IN (".implode(',', $scoreIds).")";
         $nbDel = $this->parent_execute($query)->rowCount();
         return $nbDel === count($scoreIds);
     }
-    
+	
+	public function getScoreById($idPlayer, $idLevel){
+		$query = "SELECT * from score WHERE idPLayer=$idPlayer AND idLevel=$idLevel";
+		$dataDB = $this->get($query)[0];
+		if(!$dataDB) return null;
+		return Score::init((int)$dataDB['idPlayer'],(int)$dataDB['idLevel'],(int)$dataDB['time'],(int)$dataDB['nbClicks'],(int)$dataDB['nbItems']);
+	}
+	
     /*OK*/public function getAllByPlayer($idPlayer){
-        return $this->getAll("WHERE idPlayer=$idPlayer");
+		return $this->get("SELECT idLevel, nbClicks, nbItems, time, name AS levelName FROM `score` JOIN `level` ON idLevel = level.id WHERE idPlayer = 1");
+		//var_dump($dataDB);
+		//return $this->getAll(" WHERE idPlayer=$idPlayer");
     }
     /*OK*/public function getRanksByPlayer($idPlayer){
         $dataDB = $this->get("SELECT DISTINCT idLevel FROM $this->nameTable");

@@ -39,6 +39,19 @@ abstract class Tools {
 
         return $params;
     }
+    /*OK*/static function getParams($request){
+        $params = array();
+        if( !empty($request) ){
+            foreach($request as $key => $value){
+				if($key != "300gpBAK" && $key != "300gp"){
+					$params[$key] = $value;
+				}
+            }
+        }
+		//var_dump($params);
+		//die;
+        return $params;
+    }
     /*OK*/static function goToLogin(){
         header('location: login.php');
     }
