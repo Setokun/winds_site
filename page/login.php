@@ -48,7 +48,8 @@ if($action === 'activate'){
                 <span id="login-to-forgot" class="link" >Forgot password ?</span>
             </div>
         </div>
-        <form method="post" action="authentification.php" class="panel-body" style="padding-top:30px" >
+        <form method="post" action="session.php" class="panel-body" style="padding-top:30px" >
+            <input name="login" type="hidden" value="true">
             <div class="input-group">
                 <span class="input-group-addon">Email address</span>
                 <input name="email" type="text" class="form-control" placeholder="Email"

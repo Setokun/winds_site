@@ -6,7 +6,6 @@ isset($_SESSION['user']) ? $user = User::initFrom($_SESSION['user']) : Tools::go
 include_once "../common/header.php";
 include_once "../common/banner.php";
 include_once "../common/menu.php";
-require_once "../core/config.php";
 ?>
 
 <script type="text/javascript" src="../js/shop.js" ></script>

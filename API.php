@@ -12,7 +12,7 @@ RETOUR : JSON
 */
 require_once 'core/config.php';
 
-$params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
+$params = Tools::getIncomingParams();
 $hasMandatoryParams = isset($params['email']) && isset($params['password']) && isset($params['action']);
 
 // -- Check the presence of mandatory parameters --

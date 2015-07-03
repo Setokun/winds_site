@@ -135,6 +135,19 @@ interface Winds_News {
     public function jsonSerialize() {
         return (object) get_object_vars($this);
     }
+    public function toAssocArray(){
+        return array(
+            'id'                => $this->id,
+            'email'             => $this->email,
+            'password'          => $this->password,
+            'pseudo'            => $this->pseudo,
+            'registrationDate'  => $this->registrationDate,
+            'forgotPassword'    => $this->forgotPassword,
+            'token'             => $this->token,
+            'userType'          => $this->userType,
+            'userStatus'        => $this->userStatus
+        );
+    }
     
     //-- ACCESSORS --
     public function getEmail() {
@@ -224,6 +237,7 @@ interface Winds_News {
             $levelStatus,           // text : 20 char - use constant of LEVEL_STATUS
             $levelMode,             // text : 20 char - use constant of LEVEL_MODE
             $idTheme;               // int  : theme ID
+    private $gameData;
     
     // -- CONSTRUCTORS --
     static public function init($name, $description, $filePath, $timeMax, $idCreator, $idTheme) {
@@ -239,6 +253,28 @@ interface Winds_News {
         $level->levelMode    = LEVEL_MODE::STANDARD;
         $level->idCreator    = $idCreator;
         $level->idTheme      = $idTheme;
+        return $level;
+    }
+    static public function initFromUpload($data){
+        $level = new self();
+        $level->id           = NULL;
+        $level->name         = $data['name'];
+        $level->description  = $data['description'];
+        $level->creationDate = $data['date'];
+        $level->filePath     = $data['path'];
+        $level->timeMax      = $data['timeMax'];
+        $level->levelType    = LEVEL_TYPE::CUSTOM;
+        $level->levelStatus  = LEVEL_STATUS::TOMODERATE;
+        $level->levelMode    = LEVEL_MODE::STANDARD;
+        $level->idCreator    = UserManager::init()->get("SELECT id FROM user"
+                             . " WHERE pseudo='".$data['creator']."'")[0]['id'];
+        $level->idTheme      = $data['idTheme'];
+        
+        $level->gameData['startPosition'] = $data['startPosition'];
+        $level->gameData['endPosition'] = $data['endPosition'];
+        $level->gameData['matrix'] = $data['matrix'];
+        $level->gameData['interactions'] = $data['interactions'];
+        
         return $level;
     }
     
@@ -268,6 +304,25 @@ interface Winds_News {
     public function jsonSerialize() {
         return (object) get_object_vars($this);
     }
+    public function values_toZipFile(){
+        $data = [
+            'creator' => UserManager::init()->getByID($this->idCreator)->getPseudo(),
+            'date' => $this->creationDate,
+            'name' => $this->name,
+            'description' => $this->description,
+            'idDB' => $this->id,
+            'idTheme' => $this->idTheme,
+            'mode' => $this->levelMode,
+            'type' => $this->levelType,
+            'uploaded' => true,
+            'startPosition' => $this->gameData['startPosition'],
+            'endPosition' => $this->gameData['endPosition'],
+            'matrix' => $this->gameData['matrix'],
+            'interactions' => $this->gameData['interactions'],
+            'timeMax' => $this->timeMax
+        ];
+        return json_encode($data);
+    }
     
     // -- ACCESSORS --
     public function getTimeMax(){
@@ -285,7 +340,10 @@ interface Winds_News {
     public function getIdTheme() {
         return $this->idTheme;
     }
-    public function setLevelStatus($levelStatus) {
+    public function setId($id){
+		$this->id = $id;
+		}
+	public function setLevelStatus($levelStatus) {
         $this->levelStatus = $levelStatus;
     }
 
@@ -514,4 +572,80 @@ interface Winds_News {
     public function setAuthor($author) {
         $this->author = $author;
     }
+}
+class LevelManipulator {
+    const filename = 'level.src';
+    private $file, $lvl, $output=['result'=>NULL, 'error'=>NULL];
+    
+    // -- CONSTRUCTORS --
+    static public function init($file){
+        $manip = new self();
+        $manip->file = $file;
+        return $manip;
+    }
+    
+    // -- METHODS --
+    public function run(){
+        $dest = $_SERVER['DOCUMENT_ROOT']."Winds/addons/levels/".$this->file['name'];
+        $idLvl = NULL;
+        try {
+            $this->file = $this->file['tmp_name'];
+            $data = $this->extractLevelData();
+            $data['path'] = $dest;
+            $this->lvl = Level::initFromUpload($data);
+            
+            $idLvl = LevelManager::init()->insert($this->lvl);
+            $this->lvl->setId($idLvl);
+            $this->updateZip();
+            
+            $moved = move_uploaded_file($this->file, $dest);
+            if( !$moved ){
+                // overwrite if exists
+                $this->output['error'] = "Unable to store the level";
+                return $this;
+            }
+        
+            $this->output['result'] = "Level uploading succeeded";
+        } catch(PDOException $e){
+            $this->output['error'] = "Uploaded level removed :\n"
+                                   . "This level file already exists";
+        } catch (Exception $e){
+            if( !is_null($idLvl) ){
+                LevelManager::init()->deleteMulti([$idLvl]);
+            }
+            $this->output['error'] = "Uploaded level removed :\n"
+                                   . $e->getMessage();			
+        }        
+        return $this;
+    }
+    /*OK*/private function extractLevelData(){
+        $zip = new ZipArchive;
+        if( !$zip->open($this->file) ){
+            throw new Exception("Unable to open the level file to extract its content");
+        }
+        $data = $zip->getFromName('level.src');
+        $zip->close();
+        return json_decode($data, true);
+    }
+    /*OK*/private function updateZip(){
+        $zip = new ZipArchive;
+        if( !$zip->open($this->file) ){
+            throw new Exception("Unable to open the level file to update its content");
+        }
+        $zip->deleteName(LevelManipulator::filename);
+        $written = $zip->addFromString(LevelManipulator::filename, $this->lvl->values_toZipFile());
+        $zip->close();
+        if( !$written ){
+            throw new Exception("Unable to update the level file");
+        }
+    }
+	
+    // -- ACCESSORS --
+    public function getResult(){
+        return $this->output['result'];
+    }
+    public function getError(){
+        return $this->output['error'];
+    }
+    
 }

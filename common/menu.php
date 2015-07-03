@@ -14,7 +14,7 @@
                 <div class="panel-heading">Hello <em><?php echo $user->getPseudo(); ?></em></div>
                 <ul class="nav nav-stacked">
                     <li><a id="profile" href="profile.php"><span class="glyphicon glyphicon-user"></span> Profile</a></li>
-                    <li><a id="logout" href="#"><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
+                    <li><a id="logout" href=""><span class="glyphicon glyphicon-log-out"></span> Log out</a></li>
                     <hr>
                     <li><a id="home" href="home.php"><span class="glyphicon glyphicon-home"></span> Home</a></li>
                     <li><a id="shop" href="shop.php"><span class="glyphicon glyphicon-shopping-cart"></span> Shop</a></li>
