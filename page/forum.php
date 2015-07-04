@@ -7,7 +7,7 @@ include_once "../common/header.php";
 include_once "../common/banner.php";
 include_once "../common/menu.php";
 
-$params = Tools::getParamsURL( $_SERVER['QUERY_STRING'] );
+$params = Tools::getIncomingParams();
 ?>
 
 <script type="text/javascript" src="../js/forum.js" ></script>

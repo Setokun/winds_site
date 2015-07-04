@@ -2,7 +2,7 @@
 require_once '../core/config.php';
 include_once '../common/header.php';
 
-$params = Tools::getParamsURL($_SERVER['QUERY_STRING']);
+$params = Tools::getIncomingParams();
 $action = isset($params['action']) ? $params['action'] : NULL;
 $id     = isset($params['id'])     ? $params['id'] : NULL;
 $token  = isset($params['token'])  ? $params['token'] : NULL;
