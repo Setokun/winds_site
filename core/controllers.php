@@ -428,7 +428,7 @@ class ApiController {
 		$level[0]["id"] = $rawLevel->getId();
 		echo json_encode($level);
 	}
-	static function getBasicLevels(User $user, array $params=[]){
+    static function getBasicLevels(User $user, array $params=[]){
 		$basics = AddonController::getLevel(NULL, LEVEL_TYPE::BASIC);
 		echo json_encode($basics);
     }
@@ -442,10 +442,51 @@ class ApiController {
         //self::displayResponse( $toModerates );
 		echo json_encode($toModerates);
     }
+    static function getTrophies(User $user, array $params=[]){
+        $trophies = array();
+        
+        $scores = ScoreManager::init()->getAllByPlayer($user->getId());
+        
+        $nbScores =  sizeof($scores, null);
+        
+        for($i=0; $i<$nbScores; $i++){
+            foreach ($scores[$i] as $key => $value) {
+                if($key == 'idLevel')
+                switch($value){
+                    case 1:
+                        echo 'level 1<br>';
+                        break;
+                    case 2:
+                        echo 'level 2<br>';
+                        break;
+                    case 3:
+                        echo 'level 3<br>';
+                        break;
+                    case 4:
+                        echo 'level 4<br>';
+                        break;
+                    case 5:
+                        echo 'level 5<br>';
+                        break;
+                    case 6:
+                        echo 'level 6<br>';
+                        break;
+                    case 7:
+                        echo 'level 7<br>';
+                        break;
+                    case 8:
+                        echo 'level 8 <br>';
+                        break;
+                }
+            }
+        }
+        
+        
+    }
     static function getScores(User $user, array $params=[]){
-		$scores = ScoreManager::init()->getAllByPlayer($user->getId());
+        $scores = ScoreManager::init()->getAllByPlayer($user->getId());
         //self::displayResponse( $scores );
-		echo json_encode($scores);
+        echo json_encode($scores);
     }
     static function getRanks(User $user, array $params=[]){
         $playerRanks = ScoreManager::init()->getRanksByPlayer($user->getId());
