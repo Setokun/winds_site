@@ -83,13 +83,13 @@ if($action === 'activate'){
             <div class="form-group" >
                 <label for="signup-email" class="col-md-3 control-label">Email</label>
                 <div class="col-md-9">
-                    <input value="damien.deloche@gmail.com" id="signup-email" type="text" class="form-control" placeholder="Email address">
+                    <input value="s.guardo@live.fr" id="signup-email" type="text" class="form-control" placeholder="Email address">
                 </div>
             </div>
             <div class="form-group" >
                 <label for="signup-pseudo" class="col-md-3 control-label">Pseudo</label>
                 <div class="col-md-9">
-                    <input value="player10" id="signup-pseudo" type="text" class="form-control" placeholder="Pseudo">
+                    <input value="setokun" id="signup-pseudo" type="text" class="form-control" placeholder="Pseudo">
                 </div>
             </div>
             <div class="form-group" >

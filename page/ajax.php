@@ -50,10 +50,13 @@ class AjaxOperator {
         $user = User::init($email, $pwd, $pseudo);
         $user->setToken($token);
         $idUser = UserManager::init()->insert($user);
-        
+
         if( !$idUser ){
             $this->response['error'] = "Account creation failed";
             return;
+        }
+        else{
+            Tools::sendActivationMail($user, $idUser);
         }
 
 //        $sended = Tools::sendActivationMail($user);

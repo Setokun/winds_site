@@ -4,7 +4,7 @@
  * @author Damien.D & Stephane.G
  */
 require_once "config.php";
-
+require_once "tools.php";
 
 interface ManagerInit {
     static function init();
@@ -82,7 +82,6 @@ interface ManagerInit {
 		$values  = array_values($item->valuesDB_toUpdate());
         $query   = $this->query_update($item);
         $request = $this->PDO->prepare($query);
-		var_dump($query, $request, $values);
         $request->execute($values);
         return $request->rowCount();
                          
@@ -109,6 +108,7 @@ interface ManagerInit {
     }
     /*OK*/public function insert(User $user){
         return $this->parent_insert($user);
+        
     }
     /*OK*/public function update(User $user){
         if(is_null($user->getId())){  return FALSE;  }

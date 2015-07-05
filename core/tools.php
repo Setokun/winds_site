@@ -68,13 +68,55 @@ abstract class Tools {
         return $rndStr;
     }
     // to finish
-    static function sendActivationMail(User $user){
-        $link = "http://localhost/Winds/page/login.php"
-              . "?action=activate&id=".$user->getId()
+    /*OK*/static function sendActivationMail(User $user, $idUser){
+        $mail = $user->getEmail();
+        $pseudo = $user->getPseudo();
+        $link = "http://www.winds-game.com/page/login.php"
+              . "?action=activate&id=".$idUser
                 ."&token=".$user->getToken();
+        $message_html = "<html><head></head><body><h1 style='margin-bottom:20px;'>Welcome to WINDS world, ".$pseudo." !</h1>";
+        
+        $message_html .= "<p>All you have to do is to click on this link to activate your account : <a href=\"";
+        $message_html .= $link."\">Account activation</a>.</p>";
+        $message_html .= "<p>You will be able to download the game in the \"Shop\" section.</p>";
+        $message_html .= "<p>Please visit our forum too, to share with the Winds community !</p>";
+        $message_html .= "<p>And again, welcome !</p>";
+        $message_html .= "<p><em>The Winds Team</em></p>";
+        $message_html .= "</body></html>";
+        
+        
+        $passage_ligne = "\r\n";
+
+        //=====Création de la boundary
+        $boundary = "-----=".md5(rand());
+        //==========
+
+        //=====Définition du sujet.
         $subject = "Winds - Account activation";
-        $message = $link;
-        return mail($user->getEmail(), $subject, $message);
+        //=========
+
+        //=====Création du header de l'e-mail.
+        $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
+        $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
+        $header.= "MIME-Version: 1.0".$passage_ligne;
+        $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
+        //==========
+
+        //=====Création du message.
+        $message.= $passage_ligne."--".$boundary.$passage_ligne;
+        //=====Ajout du message au format HTML
+        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+        $message.= $passage_ligne.$message_html.$passage_ligne;
+        //==========
+        $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
+        $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
+        //==========
+
+        //=====Envoi de l'e-mail.
+        return mail($mail,$subject,$message,$header);
+        //==========
+        
     }
     // to finish
     static function sendResetMail(User $user){
