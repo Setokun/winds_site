@@ -454,33 +454,65 @@ class ApiController {
                 if($key == 'idLevel')
                 switch($value){
                     case 1:
-                        echo 'level 1<br>';
+                        $t = array();
+                        $t["trophy"] = "get 50 items in level 1 in less than 20 seconds"; 
+                        $t["ok"] = (intval($scores[$i]["nbItems"]) >= 50
+                            && intval($scores[$i]["time"]) <= 20)?"ok":"no";
+                        $trophies[] = $t;
                         break;
                     case 2:
-                        echo 'level 2<br>';
+                        $t = array();
+                        $t["trophy"] = "get 50 items in level 2 in less than 20 seconds";
+                        $t["ok"] = (intval($scores[$i]["nbItems"]) >= 50
+                            && intval($scores[$i]["time"]) <= 20)?"ok":"no";
+                        $trophies[] = $t;
                         break;
                     case 3:
-                        echo 'level 3<br>';
+                        $t = array();
+                        $t["trophy"] = "get 50 items in level 3 in less than 20 seconds"; 
+                        $t["ok"] = (intval($scores[$i]["nbItems"]) >= 50
+                            && intval($scores[$i]["time"]) <= 20)?"ok":"no";
+                        $trophies[] = $t;
                         break;
                     case 4:
-                        echo 'level 4<br>';
+                        $t = array();
+                        $t["trophy"] = "get 50 items in level 4 in less than 20 seconds"; 
+                        $t["ok"] = (intval($scores[$i]["nbItems"]) >= 50
+                            && intval($scores[$i]["time"]) <= 20)?"ok":"no";
+                        $trophies[] = $t;
                         break;
                     case 5:
-                        echo 'level 5<br>';
+                        $t = array();
+                        $t["trophy"] = "get 50 items in level 5 in less than 20 seconds"; 
+                        $t["ok"] = (intval($scores[$i]["nbItems"]) >= 50
+                            && intval($scores[$i]["time"]) <= 20)?"ok":"no";
+                        $trophies[] = $t;
                         break;
                     case 6:
-                        echo 'level 6<br>';
+                        $t = array();
+                        $t["trophy"] = "get 50 items in level 6 in less than 20 seconds"; 
+                        $t["ok"] = (intval($scores[$i]["nbItems"]) >= 50
+                            && intval($scores[$i]["time"]) <= 20)?"ok":"no";
+                        $trophies[] = $t;
                         break;
                     case 7:
-                        echo 'level 7<br>';
+                        $t = array();
+                        $t["trophy"] = "get 50 items in level 7 in less than 20 seconds"; 
+                        $t["ok"] = (intval($scores[$i]["nbItems"]) >= 50
+                            && intval($scores[$i]["time"]) <= 20)?"ok":"no";
+                        $trophies[] = $t;
                         break;
                     case 8:
-                        echo 'level 8 <br>';
+                        $t = array();
+                        $t["trophy"] = "get 50 items in level 8 in less than 20 seconds"; 
+                        $t["ok"] = (intval($scores[$i]["nbItems"]) >= 50
+                            && intval($scores[$i]["time"]) <= 20)?"ok":"no";
+                        $trophies[] = $t;
                         break;
                 }
             }
         }
-        
+        echo json_encode($trophies);
         
     }
     static function getScores(User $user, array $params=[]){
