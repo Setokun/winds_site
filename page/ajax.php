@@ -37,11 +37,11 @@ class AjaxOperator {
         $pwd    = $this->params['password1'];
         $pseudo = $this->params['pseudo'];
         
-        if( !empty(UserManager::init()->getAll("WHERE email='$email'")) ){
+        if(count(UserManager::init()->getAll("WHERE email='$email'")) > 0){
             $this->response['errorEmail'] = "This e-mail address already exists";
             return;
         }
-        if( !empty(UserManager::init()->getAll("WHERE pseudo='$pseudo'")) ){
+        if( count(UserManager::init()->getAll("WHERE pseudo='$pseudo'")) > 0){
             $this->response['errorPseudo'] = "This pseudo already exists";
             return;
         }
@@ -224,6 +224,7 @@ class AjaxOperator {
     }
     
     // -- ADDON --
+    //to finsih
     private function uploadAddon(){
         $addonType = $this->params['addonType'];
         
