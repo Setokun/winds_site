@@ -53,12 +53,12 @@ if($action === 'activate'){
             <div class="input-group">
                 <span class="input-group-addon">Email address</span>
                 <input id="login-email" name="email" type="text" class="form-control" placeholder="Email"
-                       value="player1@winds.net">
+                       value="administrator1@winds.net">
             </div>
             <div class="input-group" style="margin-top:10px">
                 <span class="input-group-addon">Password</span>
                 <input id="login-password" name="password" type="password" class="form-control" placeholder="Password"
-                       value="player">
+                       value="administrator">
             </div>
             <div class="col-sm-12 controls" style="margin-top:10px; padding:0 0" >
                 <span id="btn-login" class="btn btn-success">Login  </span>

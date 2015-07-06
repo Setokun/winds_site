@@ -20,12 +20,12 @@
                     <li><a id="shop" href="shop.php"><span class="glyphicon glyphicon-shopping-cart"></span> Shop</a></li>
                     <li><a id="score" href="score.php"><span class="glyphicon glyphicon-screenshot"></span> Scores</a></li>
                     <li><a id="forum" href="forum.php"><span class="glyphicon glyphicon-book"></span> Forum</a></li>
-                    <?php if($user->getUserType() > 0){ ?>
+                    <?php if($user->getUserType()==USER_TYPE::MODERATOR || $user->getUserType()==USER_TYPE::ADMINISTRATOR){ ?>
                     <hr>	
                     <li><a id="account" href="account.php"><span class="glyphicon glyphicon-user"></span> Accounts</a></li>
                     <li><a id="moderation" href="moderation.php"><span class="glyphicon glyphicon-check"></span> Moderation</a></li>
                     <?php }
-                    if($user->getUserType() > 1){ ?>
+                    if($user->getUserType() == USER_TYPE::ADMINISTRATOR){ ?>
                     <li><a id="addon" href="addon.php"><span class="glyphicon glyphicon-plus-sign"></span> Addons</a></li>
                     <?php } ?>
                 </ul>
