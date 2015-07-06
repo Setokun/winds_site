@@ -38,6 +38,8 @@
 /*OK*/function loginControls(){
     // -- affectations --
     div_login          = $('#login-box');
+    var email          = div_login.find('#login-email');
+    var password       = div_login.find('#login-password');
     var login_toForgot = div_login.find('#login-to-forgot');
     var login_toSignup = div_login.find("#login-to-signup");
     var btn_login      = div_login.find("#btn-login");
@@ -53,7 +55,31 @@
         div_signup.toggle();
     });
     /*OK*/btn_login.click(function(){
-        if( requiredFilled(div_login) ){ form.submit(); }
+        if( !requiredFilled(div_login) ){ return; }
+        
+        // checks account
+        var data = {
+            action   : "checkLogin",
+            email    : email.val(),
+            password : password.val()
+        };
+        var callback = function(data){
+            var response = $.parseJSON(data);
+            if(response.allowed){
+                message.html("<h4 class='ajax-success'>Allowed account</h4>"
+                           + "<p>"+ response.allowed +".</p>");
+                form.submit();
+            }
+            if(response.errorID){
+                message.html("<h4 class='ajax-error'>Wrong identifiants</h4>"
+                           + "<p>"+ response.errorID +".</p>");
+            }
+            if(response.errorStatus){
+                message.html("<h4 class='ajax-error'>You can't log in :(</h4>"
+                           + "<p>"+ response.errorStatus +".</p>");
+            }
+        };
+        ajaxOperator(data, callback);       
     });
 }
 /*OK*/function signupControls(){

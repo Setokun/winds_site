@@ -31,6 +31,23 @@ class AjaxOperator {
     }
     
     // -- LOGIN --
+    /*OK*/private function checkLogin(){
+        $email  = $this->params['email'];
+        $pwd    = $this->params['password'];
+        
+        $logged = AccountController::checkIDs($email, $pwd);
+        if( !$logged ){
+            $this->response['errorID'] = "Invalid account identifiants";
+            return;
+        }
+        
+        $status = AccountController::getUserProfile($email)->getUserStatus();
+        $refusedStatus = $status == USER_STATUS::BANISHED
+                      || $status == USER_STATUS::CREATED
+                      || $status == USER_STATUS::DELETED;
+        $refusedStatus ? $this->response['errorStatus'] = "Forbidden account status"
+                       : $this->response['allowed'] = "Your will be redirected to your home page";
+    }
     // manque gestion du mail
     /*to finish*/private function createAccount(){
         $email  = $this->params['email'];
@@ -41,7 +58,7 @@ class AjaxOperator {
             $this->response['errorEmail'] = "This e-mail address already exists";
             return;
         }
-        if( count(UserManager::init()->getAll("WHERE pseudo='$pseudo'")) > 0){
+        if(count(UserManager::init()->getAll("WHERE pseudo='$pseudo'")) > 0){
             $this->response['errorPseudo'] = "This pseudo already exists";
             return;
         }
