@@ -47,6 +47,7 @@ abstract class API_ACTION extends Enumeration {
           GET_LEVELS_TO_MODERATE     = 'getLevelsToModerate',
           GET_SCORES                 = 'getScores',
           GET_RANKS                  = 'getRanks',
+          GET_TROPHIES               = 'getTrophies',
           DOWNLOAD_PROFILE           = 'downloadProfile',
           DOWNLOAD_THEME             = 'downloadTheme',
           DOWNLOAD_BASIC_LEVEL       = 'downloadBasicLevel',
