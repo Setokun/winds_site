@@ -84,7 +84,7 @@ function uploadControls(){
             method     : "post",
             cache      : false,
             processData: false,
-            contentType: false,
+            contentType: false
         }).done(callback);
     });
 }

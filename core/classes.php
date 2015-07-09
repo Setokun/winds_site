@@ -650,3 +650,30 @@ class LevelManipulator {
     }
     
 }
+class ThemeManipulator {
+    const filename = 'logo.png';
+    private $file, $name;
+    
+    // -- CONSTRUCTORS --
+    static public function init($file, $themename){
+        $manip = new self();
+        $manip->file = $file;
+        $manip->name = $themename;
+        return $manip;
+    }
+    
+    // -- METHODS --
+    /*error*/public function getLogoPath(){
+        $zip = new ZipArchive;
+        if( !$zip->open($this->file) ){ return Tools::getEmptyLogoPath(); }
+        
+        $extracted = $zip->extractTo(Tools::getResourcesPath(), self::filename);
+        $zip->close();
+        if( !$extracted ){ return Tools::getEmptyLogoPath(); }
+        
+        $newName = Tools::getResourcesPath().'logo-'.$this->name.'.png';
+        $renamed = rename(Tools::getResourcesPath().self::filename, $newName);
+        return $renamed ? $newName : Tools::getEmptyLogoPath();
+    }
+    
+}
