@@ -428,7 +428,7 @@ class ApiController {
 		$level[0]["id"] = $rawLevel->getId();
 		echo json_encode($level);
 	}
-    static function getBasicLevels(User $user, array $params=[]){
+	static function getBasicLevels(User $user, array $params=[]){
 		$basics = AddonController::getLevel(NULL, LEVEL_TYPE::BASIC);
 		echo json_encode($basics);
     }
@@ -443,9 +443,9 @@ class ApiController {
 		echo json_encode($toModerates);
     }
     static function getScores(User $user, array $params=[]){
-        $scores = ScoreManager::init()->getAllByPlayer($user->getId());
+		$scores = ScoreManager::init()->getAllByPlayer($user->getId());
         //self::displayResponse( $scores );
-        echo json_encode($scores);
+		echo json_encode($scores);
     }
     static function getRanks(User $user, array $params=[]){
         $playerRanks = ScoreManager::init()->getRanksByPlayer($user->getId());

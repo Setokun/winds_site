@@ -127,4 +127,22 @@ abstract class Tools {
         $message = $link;
         return mail($user->getEmail(), $subject, $message);
     }
+    
+    static function displayResponse($data, $error=NULL){
+        $response = array();
+        if($data){  $response['data']  = $data;  }
+        if($error){ $response['error'] = $error; }
+        echo json_encode($response);
+        die;
+    }
+    static function getThemesPath(){
+        return $_SERVER['DOCUMENT_ROOT']."/addons/themes/";
+    }
+    static function getLevelsPath(){
+        return $_SERVER['DOCUMENT_ROOT']."/addons/levels/";
+    }
+    static function getResourcesPath(){
+        return $_SERVER['DOCUMENT_ROOT']."/addons/resources/";
+    }
+    
 }

@@ -47,24 +47,26 @@ var remove_addon, table, btn_remove;
 function uploadControls(){
     // -- affectations --
     upload_addon     = $('section #upload-addon');
-    inp_name         = upload_addon.find('#addon-name');
-    inp_description  = upload_addon.find('#addon-description');
-    select_addonType = upload_addon.find('#addon-type');
-    inp_file         = upload_addon.find('#addon-file');
+    form             = upload_addon.find("form")[0];
+    inp_name         = upload_addon.find("[name='addon-name']");
+    inp_description  = upload_addon.find("[name='addon-description']");
+    select_addonType = upload_addon.find("[name='addon-type']");
+    inp_file         = upload_addon.find("[name='addon-file']");
     btn_upload       = upload_addon.find('#btn-upload');
     
     // -- events --
     btn_upload.click(function(){
-        var data = {
-            action     : "uploadAddon",
-            idUser     : idUser.val(),
-            name       : inp_name.val(),
-            description: inp_description.val(),
-            addonType  : select_type.find(':selected').val(),
-            file       : inp_file.val()
-        };
+        // checks
+        var valid = inp_name.val() !== '' && inp_description !== ''
+                 && select_addonType.find(':selected').val() !== "-1"
+                 && inp_file.prop('files').length === 1;
+        if( !valid ){ return; }
+        
+        // upload
+        var formData = new FormData(form);
         var callback = function(data){
-            var response = $.parseJSON(data);
+            console.log(data);
+            /*var response = $.parseJSON(data);
             if(response.uploaded){
                 inp_name.val(undefined);
                 inp_description.val(undefined);
@@ -74,9 +76,16 @@ function uploadControls(){
             message.html( response.uploaded ?
                 "<h4 class='ajax-success'>Level uploaded</h4>" :
                 "<h4 class='ajax-error'>Internal error</h4><p>"
-                          + "Unable to upload this level.</p>" );
+                          + "Unable to upload this level.</p>" );*/
         };
-        //ajaxOperator(data, callback);
+        $.ajax({
+            url        : "upload.php",
+            data       : formData,
+            method     : "post",
+            cache      : false,
+            processData: false,
+            contentType: false,
+        }).done(callback);
     });
 }
 /*OK*/function removeControls(){

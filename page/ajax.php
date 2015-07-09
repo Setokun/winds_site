@@ -31,7 +31,7 @@ class AjaxOperator {
     }
     
     // -- LOGIN --
-    /*OK*/private function checkLogin(){
+    private function checkLogin(){
         $email  = $this->params['email'];
         $pwd    = $this->params['password'];
         
