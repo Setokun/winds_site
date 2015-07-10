@@ -142,7 +142,9 @@ abstract class Tools {
         return $_SERVER['DOCUMENT_ROOT']."/addons/levels/";
     }
     static function getResourcesPath(){
-        return $_SERVER['DOCUMENT_ROOT']."/addons/resources/";
+        return $_SERVER['DOCUMENT_ROOT']."/resources/";
     }
-    
+    static function getEmptyLogoName(){
+        return "logo-empty.png";
+    }
 }

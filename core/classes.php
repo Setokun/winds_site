@@ -587,7 +587,7 @@ class LevelManipulator {
     
     // -- METHODS --
     public function run(){
-        $dest = $_SERVER['DOCUMENT_ROOT']."Winds/addons/levels/".$this->file['name'];
+        $dest = $_SERVER['DOCUMENT_ROOT']."/addons/levels/".$this->file['name'];
         $idLvl = NULL;
         try {
             $this->file = $this->file['tmp_name'];
@@ -651,29 +651,37 @@ class LevelManipulator {
     
 }
 class ThemeManipulator {
-    const filename = 'logo.png';
-    private $file, $name;
+    private $zipPath, $name;
     
     // -- CONSTRUCTORS --
-    static public function init($file, $themename){
+    static public function init($file, $themeName){
         $manip = new self();
-        $manip->file = $file;
-        $manip->name = $themename;
+        $manip->zipPath = $file;
+        $manip->name = $themeName;
         return $manip;
     }
     
     // -- METHODS --
-    /*error*/public function getLogoPath(){
+    public function getLogoName(){
         $zip = new ZipArchive;
-        if( !$zip->open($this->file) ){ return Tools::getEmptyLogoPath(); }
+        if( !$zip->open($this->zipPath) ){ return Tools::getEmptyLogoName(); }
         
-        $extracted = $zip->extractTo(Tools::getResourcesPath(), self::filename);
+        $logoName = 'logo-'.$this->name.'.png';
+        $logoPath = Tools::getResourcesPath().$logoName;
+        $logoFound = FALSE;
+        
+        for($i=0; $i<$zip->numFiles; $i++){
+            $entry = $zip->getNameIndex($i);
+            if(preg_match('#.*logo\.png$#i', $entry)){
+                $logoFound = TRUE;
+                $copied = copy("zip://".$this->zipPath."#".$entry, $logoPath);
+                break;
+            }
+        }
+        
         $zip->close();
-        if( !$extracted ){ return Tools::getEmptyLogoPath(); }
-        
-        $newName = Tools::getResourcesPath().'logo-'.$this->name.'.png';
-        $renamed = rename(Tools::getResourcesPath().self::filename, $newName);
-        return $renamed ? $newName : Tools::getEmptyLogoPath();
+        $logo = $logoFound && $copied ? $logoName : Tools::getEmptyLogoName();
+        return $logo;
     }
     
 }

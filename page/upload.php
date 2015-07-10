@@ -12,17 +12,21 @@ function uploadTheme(){
     global $idUser, $addonName, $addonDesc, $addonFile;
     
     $dest = Tools::getThemesPath().$addonFile['name'];
+    if( file_exists($dest) ){ Tools::displayResponse(NULL, "The theme "
+            ."file named \"".$addonFile['name']."\" already exists"); }
+    
     $moved = rename($addonFile['tmp_name'], $dest);
     if( !$moved ){ Tools::displayResponse(NULL, "Unable to "
                 ."store the theme on the remote server"); }
     
     $manip = ThemeManipulator::init($dest, $addonName);
-    var_dump($dest, $moved);//, $manip->getLogoPath()
-    /*$theme = Theme::init($addonName, $addonDesc, $dest, NULL, $idUser);
+    $logoName = $manip->getLogoName();
+    $dest = str_replace($_SERVER['DOCUMENT_ROOT'].'/', '', $dest);
+
+    $theme = Theme::init($addonName, $addonDesc, $dest, $logoName, $idUser);
     $idThm = ThemeManager::init()->insert($theme);
-    Tools::displayResponse( $idThm ? "Theme added" : NULL,
-        $idThm ? NULL : Tools::displayResponse(NULL, "Unable"
-                ." to store the theme in the database"));*/
+    Tools::displayResponse(  $idThm ? "Theme added" : NULL,
+        $idThm ? NULL : "Unable to store the theme in the database");
 }
 function uploadLevel(){
     /*global $addonFile;
