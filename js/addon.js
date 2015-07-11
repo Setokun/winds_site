@@ -65,18 +65,16 @@ function uploadControls(){
         // upload
         var formData = new FormData(form);
         var callback = function(data){
-            console.log(data);
-            /*var response = $.parseJSON(data);
-            if(response.uploaded){
+            var response = $.parseJSON(data);
+            if(response.data){
                 inp_name.val(undefined);
                 inp_description.val(undefined);
-                select_type.find('option').first().prop('selected',true);
+                select_addonType.find('option').first().prop('selected',true);
                 inp_file.val(undefined);
             }
-            message.html( response.uploaded ?
-                "<h4 class='ajax-success'>Level uploaded</h4>" :
-                "<h4 class='ajax-error'>Internal error</h4><p>"
-                          + "Unable to upload this level.</p>" );*/
+            message.html( response.data ?
+                "<h4 class='ajax-success'>"+ response.data +".</h4>" :
+                "<h4 class='ajax-error'>Error</h4><p>"+ response.error +".</p>" );
         };
         $.ajax({
             url        : "upload.php",

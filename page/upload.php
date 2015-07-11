@@ -25,17 +25,16 @@ function uploadTheme(){
 
     $theme = Theme::init($addonName, $addonDesc, $dest, $logoName, $idUser);
     $idThm = ThemeManager::init()->insert($theme);
-    Tools::displayResponse(  $idThm ? "Theme added" : NULL,
+    Tools::displayResponse(  $idThm ? "Theme uploaded" : NULL,
         $idThm ? NULL : "Unable to store the theme in the database");
 }
 function uploadLevel(){
     /*global $addonFile;
     
-    //$manip = LevelManipulator::init($addonFile, TRUE)->run();
-    //Tools::displayResponse($manip->getResult(), $manip->getError());*/
+    $manip = LevelManipulator::init($addonFile)->run();
+    Tools::displayResponse($manip->getResult(), $manip->getError());*/
 }
 
 if($addonType === "theme"){ uploadTheme(); }
-if($addonType === "level"){ uploadLevel(); }
-
+//if($addonType === "level"){ uploadLevel(); }
 ?>
