@@ -270,7 +270,7 @@ interface ManagerInit {
 	
     /*OK*/public function getAllByPlayer($idPlayer){
 		return $this->get("SELECT idLevel, nbClicks, nbItems, time, name "
-                        . "AS levelName FROM `score` JOIN `level` ON idLevel = level.id WHERE idPlayer = $idPlayer");
+                        . "AS levelName FROM `score` JOIN `level` ON idLevel = level.id WHERE idPlayer = $idPlayer ORDER BY idLevel");
     }
     /*OK*/public function getRanksByPlayer($idPlayer){
         $dataDB = $this->get("SELECT DISTINCT idLevel FROM $this->nameTable");

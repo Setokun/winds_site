@@ -428,7 +428,7 @@ class ApiController {
 		$level[0]["id"] = $rawLevel->getId();
 		echo json_encode($level);
 	}
-	static function getBasicLevels(User $user, array $params=[]){
+    static function getBasicLevels(User $user, array $params=[]){
 		$basics = AddonController::getLevel(NULL, LEVEL_TYPE::BASIC);
 		echo json_encode($basics);
     }
@@ -458,6 +458,22 @@ class ApiController {
         
         $nbScores =  sizeof($scores, null);
         
+        
+        $t = array();
+        $t["trophy"] = "Finish 3 levels"; 
+        $t["ok"] = ($nbScores >= 3)?"ok":"no";
+        $trophies[] = $t;
+        
+        $t = array();
+        $t["trophy"] = "Finish 5 levels"; 
+        $t["ok"] = ($nbScores >= 5)?"ok":"no";
+        $trophies[] = $t;
+        
+        $t = array();
+        $t["trophy"] = "Finish 10 levels"; 
+        $t["ok"] = ($nbScores >= 10)?"ok":"no";
+        $trophies[] = $t;
+        /*
         for($i=0; $i<$nbScores; $i++){
             foreach ($scores[$i] as $key => $value) {
                 if($key == 'idLevel')
@@ -520,7 +536,7 @@ class ApiController {
                         break;
                 }
             }
-        }
+        }*/
         echo json_encode($trophies);
         
     }
