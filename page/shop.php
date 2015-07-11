@@ -24,7 +24,7 @@ include_once "../common/menu.php";
                         <div class="modal-body">
                             <p>First, you need to have JRE installed on your computer.<br/>
                                 You can download it <a href="http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html" target="_blank">here</a></p>
-                            <p>To download the game, please follow this <a href="#">link</a>.</p>
+                            <p>To download the game, please follow this <a href="../Winds.jar">link</a>.</p>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-info" data-dismiss="modal">Close</button>
