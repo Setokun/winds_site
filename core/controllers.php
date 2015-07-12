@@ -279,12 +279,12 @@ define("NB_NEWS_TO_DISPLAY", 5);
         $creators    = LevelManager::init()->getCreators();
         
         foreach($tomoderates as $level){
-            echo "<tr data-idlevel='".$level->getId()."'>
+            echo "<tr data-idlevel='".$level['id']."'>
                     <td style='vertical-align: middle;' class='col-xs-2 col-sm-1 image-column'>
-                        <img class='logo-level' src='".$imagePaths[ $level->getIdTheme() ]."'/></td>
+                        <img class='logo-level' src='".$imagePaths[ $level['idTheme'] ]."'/></td>
                     <td style='vertical-align: middle;' class='col-xs-6 col-sm-7'>"
-                        .Tools::capitalize($level->getName())." by "
-                        .Tools::capitalize($creators[ $level->getIdCreator() ])."</td>
+                        .Tools::capitalize($level['name'])." by "
+                        .Tools::capitalize($creators[ $level['idCreator'] ])."</td>
                     <td style='vertical-align: middle;'>
                     <div class='col-xs-12 col-md-6' style='margin-bottom:5px;'>
                         <button class='btn btn-success'>Accept</button></div>
