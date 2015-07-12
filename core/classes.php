@@ -458,10 +458,11 @@ interface Winds_News {
         $level->creationDate = $data['date'];
         $level->filePath     = str_replace($_SERVER['DOCUMENT_ROOT'].'/', '', $data['path']);
         $level->timeMax      = $data['timeMax'];
-        $level->levelType    = $data['type'];
         $level->levelMode    = LEVEL_MODE::STANDARD;
         $level->idTheme      = $data['idTheme'];
         $level->idCreator    = $infosCreator['id'];
+        $level->levelType    = $infosCreator['userType'] == USER_TYPE::ADMINISTRATOR
+                             ? $data['type'] : LEVEL_TYPE::CUSTOM;
         $level->levelStatus  = $infosCreator['userType'] == USER_TYPE::ADMINISTRATOR
                              ? LEVEL_STATUS::ACCEPTED : LEVEL_STATUS::TOMODERATE;
         
