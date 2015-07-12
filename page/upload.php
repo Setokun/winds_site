@@ -1,4 +1,10 @@
 <?php
+/**
+ * Description of upload page
+ * @author Damien.D & Stephane.G
+ *
+ * File used to manage theme and level uploads from addon management age.
+ */
 
 require_once "../core/config.php";
 

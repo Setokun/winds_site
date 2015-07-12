@@ -1,4 +1,10 @@
 <?php
+/**
+ * Description of session page
+ * @author Damien.D & Stephane.G
+ *
+ * File used to manage user session onto Winds site.
+ */
 
 require_once '../core/config.php';
 

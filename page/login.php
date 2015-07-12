@@ -1,4 +1,11 @@
 <?php
+/**
+ * Description of login page
+ * @author Damien.D & Stephane.G
+ *
+ * File used to interact with the user about his access to Winds site.
+ */
+
 require_once '../core/config.php';
 include_once '../common/header.php';
 
