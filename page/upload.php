@@ -29,12 +29,12 @@ function uploadTheme(){
         $idThm ? NULL : "Unable to store the theme in the database");
 }
 function uploadLevel(){
-    /*global $addonFile;
+    global $addonFile;
     
     $manip = LevelManipulator::init($addonFile)->run();
-    Tools::displayResponse($manip->getResult(), $manip->getError());*/
+    Tools::displayResponse($manip->getResult(), $manip->getError());
 }
 
 if($addonType === "theme"){ uploadTheme(); }
-//if($addonType === "level"){ uploadLevel(); }
+if($addonType === "level"){ uploadLevel(); }
 ?>

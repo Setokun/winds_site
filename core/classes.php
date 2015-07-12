@@ -255,25 +255,30 @@ interface Winds_News {
         $level->idTheme      = $idTheme;
         return $level;
     }
-    static public function initFromUpload($data){
+    static public function initFromUpload($data, $idLvl){
+        $infosCreator = UserManager::init()->get("SELECT id, userType FROM "
+                      . "user WHERE pseudo='".$data['creator']."'")[0];
+        
         $level = new self();
-        $level->id           = NULL;
+        $level->id           = $idLvl;
         $level->name         = $data['name'];
         $level->description  = $data['description'];
         $level->creationDate = $data['date'];
-        $level->filePath     = $data['path'];
+        $level->filePath     = str_replace($_SERVER['DOCUMENT_ROOT'].'/', '', $data['path']);
         $level->timeMax      = $data['timeMax'];
-        $level->levelType    = LEVEL_TYPE::CUSTOM;
-        $level->levelStatus  = LEVEL_STATUS::TOMODERATE;
+        $level->levelType    = $data['type'];
         $level->levelMode    = LEVEL_MODE::STANDARD;
-        $level->idCreator    = UserManager::init()->get("SELECT id FROM user"
-                             . " WHERE pseudo='".$data['creator']."'")[0]['id'];
         $level->idTheme      = $data['idTheme'];
+        $level->idCreator    = $infosCreator['id'];
+        $level->levelStatus  = $infosCreator['userType'] == USER_TYPE::ADMINISTRATOR
+                             ? LEVEL_STATUS::ACCEPTED : LEVEL_STATUS::TOMODERATE;
         
+        $level->gameData['creator'] = $data['creator'];
         $level->gameData['startPosition'] = $data['startPosition'];
         $level->gameData['endPosition'] = $data['endPosition'];
         $level->gameData['matrix'] = $data['matrix'];
         $level->gameData['interactions'] = $data['interactions'];
+        $level->gameData['uploaded'] = 'true';
         
         return $level;
     }
@@ -306,7 +311,7 @@ interface Winds_News {
     }
     public function values_toZipFile(){
         $data = [
-            'creator' => UserManager::init()->getByID($this->idCreator)->getPseudo(),
+            'creator' => $this->gameData['creator'],
             'date' => $this->creationDate,
             'name' => $this->name,
             'description' => $this->description,
@@ -340,10 +345,7 @@ interface Winds_News {
     public function getIdTheme() {
         return $this->idTheme;
     }
-    public function setId($id){
-		$this->id = $id;
-		}
-	public function setLevelStatus($levelStatus) {
+    public function setLevelStatus($levelStatus) {
         $this->levelStatus = $levelStatus;
     }
 
@@ -587,18 +589,18 @@ class LevelManipulator {
     
     // -- METHODS --
     public function run(){
-        $dest = $_SERVER['DOCUMENT_ROOT']."/addons/levels/".$this->file['name'];
-        $idLvl = NULL;
+        $inserted = FALSE;
+        $idLvl = LevelManager::init()->get("SELECT MAX(id)+1 AS 'max' FROM level")[0]['max'];
+        $dest = Tools::getLevelsPath()."$idLvl.jar";
         try {
             $this->file = $this->file['tmp_name'];
             $data = $this->extractLevelData();
             $data['path'] = $dest;
-            $this->lvl = Level::initFromUpload($data);
             
-            $idLvl = LevelManager::init()->insert($this->lvl);
-            $this->lvl->setId($idLvl);
+            $this->lvl = Level::initFromUpload($data, $idLvl);
             $this->updateZip();
             
+            $inserted = is_numeric( LevelManager::init()->insert($this->lvl) );
             $moved = move_uploaded_file($this->file, $dest);
             if( !$moved ){
                 // overwrite if exists
@@ -611,7 +613,7 @@ class LevelManipulator {
             $this->output['error'] = "Uploaded level removed :\n"
                                    . "This level file already exists";
         } catch (Exception $e){
-            if( !is_null($idLvl) ){
+            if( !is_null($inserted) ){
                 LevelManager::init()->deleteMulti([$idLvl]);
             }
             $this->output['error'] = "Uploaded level removed :\n"
@@ -624,7 +626,7 @@ class LevelManipulator {
         if( !$zip->open($this->file) ){
             throw new Exception("Unable to open the level file to extract its content");
         }
-        $data = $zip->getFromName('level.src');
+        $data = $zip->getFromName(self::filename);
         $zip->close();
         return json_decode($data, true);
     }
@@ -634,7 +636,7 @@ class LevelManipulator {
             throw new Exception("Unable to open the level file to update its content");
         }
         $zip->deleteName(LevelManipulator::filename);
-        $written = $zip->addFromString(LevelManipulator::filename, $this->lvl->values_toZipFile());
+        $written = $zip->addFromString(self::filename, $this->lvl->values_toZipFile());
         $zip->close();
         if( !$written ){
             throw new Exception("Unable to update the level file");
@@ -650,7 +652,7 @@ class LevelManipulator {
     }
     
 }
-class ThemeManipulator {
+/*OK*/class ThemeManipulator {
     private $zipPath, $name;
     
     // -- CONSTRUCTORS --

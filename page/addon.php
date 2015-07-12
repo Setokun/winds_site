@@ -42,8 +42,7 @@ include_once "../common/menu.php";
                     <label>Name :</label>
                 </div>
                 <div class="col-xs-12 col-md-9">
-                    <input name="addon-name" class="form-control" type="text" placeholder="Addon name"
-                           value="test">
+                    <input name="addon-name" class="form-control" type="text" placeholder="Addon name">
                 </div>
             </div>
             <div class="col-xs-12 form-row">
@@ -51,8 +50,7 @@ include_once "../common/menu.php";
                     <label>Description :</label>
                 </div>
                 <div class="col-xs-12 col-md-9">
-                    <input name="addon-description" class="form-control" type="text" placeholder="Addon description"
-                           value="test_upload">
+                    <input name="addon-description" class="form-control" type="text" placeholder="Addon description">
                 </div>
             </div>
             <div class="col-xs-12 form-row">
@@ -62,7 +60,7 @@ include_once "../common/menu.php";
                 <div class="col-xs-12 col-md-4">
                     <select name="addon-type" class="form-control">
                         <option value="-1">Type of addon</option>
-                        <option value="theme" selected="selected">Theme</option>
+                        <option value="theme">Theme</option>
                         <option value="level">Level</option>
                     </select>
                 </div>
