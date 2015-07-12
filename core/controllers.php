@@ -116,7 +116,7 @@ class AddonController {
             array_push($params, "levelType='$levelType'");
         }
         array_push($params, "levelStatus='$levelStatus'", "levelMode='$levelMode'");
-        return LevelManager::init()->get("SELECT timeMax, idTheme, name, description, creationDate, user.pseudo AS creator, level.id AS idLevel FROM `level` JOIN `user` ON idCreator = user.id WHERE ".implode(" AND ", $params));        
+        return LevelManager::init()->get("SELECT level.id, timeMax, idTheme, name, description, creationDate, user.pseudo AS creator, level.id AS idLevel FROM `level` JOIN `user` ON idCreator = user.id WHERE ".implode(" AND ", $params));        
     }
     
     // -- WEBSITE --
@@ -159,12 +159,12 @@ class AddonController {
         foreach($basics as $level){
             echo "<tr class='custom-level'>"
                     ."<td class='image-column'><img class='logo-level' "
-                        ."src='".$images[ $level->getIdTheme() ]."'/></td>"
+                        ."src='".$images[ $level['idTheme'] ]."'/></td>"
                     ."<td style='vertical-align: middle'>"
-                        .Tools::capitalize($level->getName())
-                        ." created by ".$creators[ $level->getId() ]
+                        .Tools::capitalize($level['name'])
+                        ." created by ".$creators[ $level['id'] ]
                         ."<br><span class='description'>"
-                        .$level->getDescription()."</td></tr>";
+                        .$level['description']."</td></tr>";
         }
     }
     static function displayCustomLevels($source){
@@ -176,24 +176,24 @@ class AddonController {
             if($source == "shop"){
                 echo "<tr class='custom-level'>"
                         ."<td class='image-column'><img class='logo-level' "
-                            ."src='".$images[ $level->getIdTheme() ]."'/></td>"
+                            ."src='".$images[ $level['idTheme'] ]."'/></td>"
                         ."<td style='vertical-align: middle'>"
-                            .Tools::capitalize($level->getName())
-                            ." created by ".$creators[ $level->getId() ]
+                            .Tools::capitalize($level['name'])
+                            ." created by ".$creators[ $level['id'] ]
                             ."<br><span class='description'>"
-                            .$level->getDescription()."</td></tr>";
+                            .$level['description']."</td></tr>";
             }
             if($source == "addon"){
                 echo "<tr>"
                         ."<td style='line-height:3.5' class='col-xs-1 col-md-1'>"
                             ."<input type='checkbox' data-idlevel='"
-                            .$level->getId()."'></input></td>"
+                            .$level['id']."'></input></td>"
                         ."<td style='line-height:3.5' class='col-xs-2 col-md-2'>"
                             ."<img class='logo-level' src='"
-                            .$images[ $level->getIdTheme() ]."'/></td>"
+                            .$images[ $level['idTheme'] ]."'/></td>"
                         ."<td style='line-height:3.5' class='col-xs-8 col-md-9'>"
-                            .Tools::capitalize($level->getName())." created by "
-                            .$creators[ $level->getId() ]."</td></tr>";
+                            .Tools::capitalize($level['name'])." created by "
+                            .$creators[ $level['id'] ]."</td></tr>";
             }
         }
     }
