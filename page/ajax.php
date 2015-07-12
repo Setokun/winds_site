@@ -14,7 +14,7 @@ class AjaxOperator {
             $user,
             $response = array();
     
-    /*OK*/static function init(array $data){
+    static function init(array $data){
         $operator = new self();
         $operator->params = $data;
         $operator->action = $data['action'];
@@ -22,8 +22,8 @@ class AjaxOperator {
             UserManager::init()->getByID($data['idUser']);
         return $operator;
     }
-    /*OK*/private function __construct(){}
-    /*OK*/public function treat(){
+    private function __construct(){}
+    public function treat(){
         if(empty($this->params)){
             $this->response['error'] = "Missing parameters";
             return $this;
@@ -33,7 +33,7 @@ class AjaxOperator {
         $this->$action();
         return $this;
     }
-    /*OK*/public function getResponse(){
+    public function getResponse(){
         return json_encode($this->response,JSON_UNESCAPED_SLASHES);
     }
     
@@ -91,7 +91,7 @@ class AjaxOperator {
         
         $this->response['created'] = TRUE;
     }
-    /*OK*/private function resetPassword(){
+    private function resetPassword(){
         $token     = $this->params['token'];
         $today     = Tools::today();
         $forgotDay = (new DateTime($this->user->getForgotPassword()))->format("Y-m-d");
@@ -146,7 +146,7 @@ class AjaxOperator {
     }
     
     // -- PROFILE --
-    /*OK*/private function askDeletion(){
+    private function askDeletion(){
         $this->user->setUserStatus(USER_STATUS::DELETING);
         UserManager::init()->update($this->user) ?
             $this->response['deleting'] = TRUE :
@@ -154,7 +154,7 @@ class AjaxOperator {
     }
     
     // -- FORUM --
-    /*OK*/private function createSubject(){sleep(2);
+    private function createSubject(){sleep(2);
         $subject = Subject::init( $this->params['title'],
                                   $this->params['message'],
                                   $this->user->getId() );
@@ -163,14 +163,14 @@ class AjaxOperator {
         $insertedID ? $this->response['created'] = ForumController::formateSubject($subject) :
                       $this->response['error'] = "Subject insertion failed";
     }
-    /*OK*/private function closeSubject(){
+    private function closeSubject(){
         $subject = SubjectManager::init()->getByID($this->params['idSubject']);
         $subject->setSubjectStatus(SUBJECT_STATUS::CLOSED);
         SubjectManager::init()->update($subject) ?
             $this->response['closed'] = TRUE :
             $this->response['error'] = "Subject closing failed";
     }
-    /*OK*/private function deleteSubject(){
+    private function deleteSubject(){
         $subject  = SubjectManager::init()->getByID($this->params['idSubject']);
         $posts    = PostManager::init()->getAll("WHERE idSubject=".$subject->getId());
         $postIds  = array_map(function($post){ return $post->getId(); }, $posts);
@@ -182,7 +182,7 @@ class AjaxOperator {
             $this->response['deleted'] = TRUE :
             $this->response['error'] = "Subject deletion failed";
     }
-    /*OK*/private function createPost(){
+    private function createPost(){
         $post = Post::init( $this->params['message'],
                             $this->user->getId(),
                             $this->params['idSubject'] );
@@ -193,7 +193,7 @@ class AjaxOperator {
                         $this->user->isSuperUser()) :
                     $this->response['error'] = "Post insertion failed";
     }
-    /*OK*/private function deletePost(){
+    private function deletePost(){
         $post = PostManager::init()->getByID($this->params['idPost']);
         PostManager::init()->delete($post) ?
             $this->response['deleted'] = TRUE :
@@ -201,13 +201,13 @@ class AjaxOperator {
     }
     
     // -- ACCOUNT --
-    /*OK*/private function updateRights(){
+    private function updateRights(){
         $this->user->setUserType($this->params['userType']);
         UserManager::init()->update($this->user) ?
             $this->response['updated'] = TRUE :
             $this->response['error'] = "Right updating failed";
     }
-    /*OK*/private function deleteAccount(){
+    private function deleteAccount(){
         $scores    = ScoreManager::init()->getAll("WHERE idPlayer="
                    . $this->user->getID());
         $scoreIds  = array_map(function($score){ return $score->getId(); }, $scores);
@@ -221,13 +221,13 @@ class AjaxOperator {
             $this->response['deleted'] = TRUE :
             $this->response['error'] = "Deletion failed";
     }
-    /*OK*/private function banishAccount(){
+    private function banishAccount(){
         $this->user->setUserStatus(USER_STATUS::BANISHED);
         UserManager::init()->update($this->user)  ?
             $this->response['banished'] = TRUE :
             $this->response['error'] = "Banishment failed";
     }
-    /*OK*/private function unbanishAccount(){
+    private function unbanishAccount(){
         $this->user->setUserStatus(USER_STATUS::ACTIVATED);
         UserManager::init()->update($this->user)  ?
             $this->response['unbanished'] = TRUE :
@@ -235,14 +235,14 @@ class AjaxOperator {
     }
     
     // -- MODERATION --
-    /*OK*/private function acceptLevel(){
+    private function acceptLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
         $level->setLevelStatus(LEVEL_STATUS::ACCEPTED);
         LevelManager::init()->update($level) ?
             $this->response['accepted'] = TRUE :
             $this->response['error']    = "Level acceptance failed";
     }
-    /*OK*/private function refuseLevel(){
+    private function refuseLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
         $level->setLevelStatus(LEVEL_STATUS::REFUSED);
         LevelManager::init()->update($level) ?
@@ -251,18 +251,7 @@ class AjaxOperator {
     }
     
     // -- ADDON --
-    //to finsih
-    private function uploadAddon(){
-        $addonType = $this->params['addonType'];
-        
-        
-        
-        
-        true ?
-            $this->response['uploaded'] = TRUE :
-            $this->response['error']   = "Addon uploading failed";
-    }
-    /*OK*/private function removeAddons(){
+    private function removeAddons(){
         $levelIds = $this->params['idLevels'];
         $scores   = ScoreManager::init()->getAll("WHERE idLevel in ("
                    .implode(',',$levelIds).")");
