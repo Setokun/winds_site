@@ -196,7 +196,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         usort($merge, function($addon1,$addon2){
             $addon1->compareCreationDateTo($addon2);
         });
-        $addons = array_slice($merge, 0, NB_NEWS_TO_DISPLAY);
+        $addons = array_reverse(array_slice($merge, 0, NB_NEWS_TO_DISPLAY));
         
         // formate the news
         foreach($addons as $addon){
