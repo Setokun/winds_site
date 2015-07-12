@@ -1,3 +1,14 @@
+<?php
+/**
+ * Description of header file
+ * @author Damien.D & Stephane.G
+ */
+ 
+/**
+ * File used at first in all pages which interact with the users.
+ */
+?>
+
 <!DOCTYPE HTML>
 <html>
     <head>

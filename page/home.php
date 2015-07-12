@@ -1,4 +1,11 @@
 <?php
+/**
+ * Description of home page
+ * @author Damien.D & Stephane.G
+ *
+ * File used to display last Winds news about forum and add-ons.
+ */
+
 session_start();
 require_once "../core/config.php";
 isset($_SESSION['user']) ? $user = User::initFrom($_SESSION['user']) : Tools::goToLogin();

@@ -1,4 +1,11 @@
 <?php
+/**
+ * Description of score page
+ * @author Damien.D & Stephane.G
+ *
+ * File used to interact with the user about level scores.
+ */
+
 session_start();
 require_once "../core/config.php";
 isset($_SESSION['user']) ? $user = User::initFrom($_SESSION['user']) : Tools::goToLogin();

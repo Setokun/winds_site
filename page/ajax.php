@@ -1,4 +1,11 @@
 <?php
+/**
+ * Description of ajax page
+ * @author Damien.D & Stephane.G
+ *
+ * File used for interactions with javascript of pages.
+ */
+
 require_once '../core/config.php';
 
 class AjaxOperator {

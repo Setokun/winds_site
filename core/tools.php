@@ -1,20 +1,41 @@
 <?php
 /**
- * Description of tools
+ * Description of tools file
  * @author Damien.D & Stephane.G
  */
 
-abstract class Tools {
-    /*OK*/static public function today(){
+/**
+ * Class which contains utility methods.
+ */
+/*OK*/abstract class Tools {
+    
+    /**
+     * Get the current date in "Y-m-d" format.
+     * @return string
+     */
+    static public function today(){
         return date("Y-m-d");
     }
-    /*OK*/static public function now(){
+    /**
+     * Get the current datetime in "Y-m-d H:i:s" format.
+     * @return string
+     */
+    static public function now(){
         return date("Y-m-d H:i:s");
     }
-    /*OK*/static public function capitalize($string){
+    /**
+     * Get the upper case string from the specified string.
+     * @param string $string The string to get in upper case
+     * @return string
+     */
+    static public function capitalize($string){
         return strtoupper(substr($string,0,1)).substr($string,1);
     }
-    /*OK*/static function getIncomingParams(){
+    /**
+     * Get an associative array of parameters sended to the server.
+     * @return array
+     */
+    static function getIncomingParams(){
         $params = array();
         
         // collect parameters from URL request
@@ -39,26 +60,38 @@ abstract class Tools {
 
         return $params;
     }
-    /*OK*/static function getParams($request){
+    /**
+     * Returns the cleaned parameters from the specified array request.
+     * @param array $request The array-formatted request coming from the game
+     * @return array
+     */
+    static function getParams($request){
         $params = array();
         if( !empty($request) ){
             foreach($request as $key => $value){
-				if($key != "300gpBAK" && $key != "300gp"){
-					$params[$key] = $value;
-				}
+                if($key != "300gpBAK" && $key != "300gp"){
+                        $params[$key] = $value;
+                }
             }
         }
-		//var_dump($params);
-		//die;
         return $params;
     }
-    /*OK*/static function goToLogin(){
+    /**
+     * Redirect the browser to the login page.
+     */
+    static function goToLogin(){
         header('location: login.php');
     }
-    /*OK*/static function goToHome(){
+    /**
+     * Redirect the browser to the home page of the current logged user.
+     */
+    static function goToHome(){
         header('location: home.php');
     }
-    /*OK*/static function generateRandomString(){
+    /**
+     * Generates a random string which contains 64 alphanumeric characters.
+     */
+    static function generateRandomString(){
         $chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $charsLen = strlen($chars);
         $rndStr = '';
@@ -67,8 +100,9 @@ abstract class Tools {
         }
         return $rndStr;
     }
+    
     // to finish
-    /*OK*/static function sendActivationMail(User $user, $idUser){
+    static function sendActivationMail(User $user, $idUser){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
         $link = "http://www.winds-game.com/page/login.php"
@@ -128,6 +162,11 @@ abstract class Tools {
         return mail($user->getEmail(), $subject, $message);
     }
     
+    /**
+     * Display the JSON-formatted ajax response from the specified parameters.
+     * @param string $data Data to be displayed if the ajax operation succeed
+     * @param string $error Data to be displayed if the ajax operation fail
+     */
     static function displayResponse($data, $error=NULL){
         $response = array();
         if($data){  $response['data']  = $data;  }
@@ -135,16 +174,33 @@ abstract class Tools {
         echo json_encode($response);
         die;
     }
+    /**
+     * Get the themes folder path into the server.
+     * @return string
+     */
     static function getThemesPath(){
         return $_SERVER['DOCUMENT_ROOT']."/addons/themes/";
     }
+    /**
+     * Get the levels folder path into the server.
+     * @return string
+     */
     static function getLevelsPath(){
         return $_SERVER['DOCUMENT_ROOT']."/addons/levels/";
     }
+    /**
+     * Get the resources folder path into the server.
+     * @return string
+     */
     static function getResourcesPath(){
         return $_SERVER['DOCUMENT_ROOT']."/resources/";
     }
+    /**
+     * Get the name of the empty logo.
+     * @return string
+     */
     static function getEmptyLogoName(){
         return "logo-empty.png";
     }
+    
 }
