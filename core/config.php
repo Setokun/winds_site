@@ -1,7 +1,11 @@
 <?php
 /**
- * Description of config
+ * Description of config file
  * @author Damien.D & Stephane.G
+ */
+
+/**
+ * File used to autoload main files.
  */
 
 require_once 'classes.php';
