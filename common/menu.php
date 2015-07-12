@@ -1,3 +1,14 @@
+<?php
+/**
+ * Description of header file
+ * @author Damien.D & Stephane.G
+ */
+ 
+/**
+ * File used to display the menu in all pages which interact with the users.
+ */
+?>
+
 <div id="page" class="container">
     <div class="col-sm-4 col-md-3 col-lg-2">
         <nav class="navbar navbar-default" role="navigation">

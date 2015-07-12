@@ -1,4 +1,15 @@
-	</div>
+<?php
+/**
+ * Description of footer file
+ * @author Damien.D & Stephane.G
+ */
+ 
+/**
+ * File used at last in all pages which interact with the users.
+ */
+?>
+
+        </div>
 	<div class="container"  style="padding:0">
 			<footer class="text-center">
 				<a class="btn btn-default" href="#"><i class="fa fa-twitter fa-2x"></i></a>
