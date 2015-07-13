@@ -392,6 +392,96 @@
         //==========
         
     }
+    //to test
+    static function sendAccountDeletionMail(User $user){
+        $mail = $user->getEmail();
+        $pseudo = $user->getPseudo();
+        
+        $message_html = "<html><head></head><body><h1 style='margin-bottom:20px;'>Your account has been deleted, ".$pseudo." !</h1>";
+        
+        $message_html .= "<p>Thank you for being part if Winds community, but we decided to delete your account.</p>";
+        $message_html .= "<br><p><em>The Winds Team</em></p>";
+        $message_html .= "</body></html>";
+        
+        
+        $passage_ligne = "\r\n";
+
+        //=====Création de la boundary
+        $boundary = "-----=".md5(rand());
+        //==========
+
+        //=====Définition du sujet.
+        $subject = "Winds - Account deletion";
+        //=========
+
+        //=====Création du header de l'e-mail.
+        $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
+        $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
+        $header.= "MIME-Version: 1.0".$passage_ligne;
+        $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
+        //==========
+
+        //=====Création du message.
+        $message.= $passage_ligne."--".$boundary.$passage_ligne;
+        //=====Ajout du message au format HTML
+        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+        $message.= $passage_ligne.$message_html.$passage_ligne;
+        //==========
+        $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
+        $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
+        //==========
+
+        //=====Envoi de l'e-mail.
+        return mail($mail,$subject,$message,$header);
+        //==========
+    }
+    // to test
+    static function sendUnbanishMail(User $user){
+        $mail = $user->getEmail();
+        $pseudo = $user->getPseudo();
+        $link = "http://www.winds-game.com";
+        
+        $message_html = "<html><head></head><body><h1 style='margin-bottom:20px;'>You've been unbanished, ".$pseudo." !</h1>";
+        
+        $message_html .= "<p>Your account has been re-activated, welcome back into the Winds Community !</p>";
+        $message_html .= "<br><p><em>The Winds Team</em></p>";
+        $message_html .= "</body></html>";
+        
+        
+        $passage_ligne = "\r\n";
+
+        //=====Création de la boundary
+        $boundary = "-----=".md5(rand());
+        //==========
+
+        //=====Définition du sujet.
+        $subject = "Winds - Unbashishment";
+        //=========
+
+        //=====Création du header de l'e-mail.
+        $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
+        $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
+        $header.= "MIME-Version: 1.0".$passage_ligne;
+        $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
+        //==========
+
+        //=====Création du message.
+        $message.= $passage_ligne."--".$boundary.$passage_ligne;
+        //=====Ajout du message au format HTML
+        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+        $message.= $passage_ligne.$message_html.$passage_ligne;
+        //==========
+        $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
+        $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
+        //==========
+
+        //=====Envoi de l'e-mail.
+        return mail($mail,$subject,$message,$header);
+        //==========
+        
+    }
     // to test
     static function sendLevelAcceptedMail(User $user, Level $level){
         $mail = $user->getEmail();
