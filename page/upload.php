@@ -3,14 +3,14 @@
  * Description of upload page
  * @author Damien.D & Stephane.G
  *
- * File used to manage theme and level uploads from addon management age.
+ * File used to manage theme and level uploads from addon page.
  */
 
 require_once "../core/config.php";
 
 $idUser    = $_POST["idUser"];
-$addonName = $_POST["addon-name"];
-$addonDesc = $_POST["addon-description"];
+$addonName = htmlentities($_POST["addon-name"], ENT_QUOTES);
+$addonDesc = htmlentities($_POST["addon-description"], ENT_QUOTES);
 $addonType = $_POST["addon-type"];
 $addonFile = $_FILES["addon-file"];
 

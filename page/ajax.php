@@ -39,8 +39,8 @@ class AjaxOperator {
     
     // -- LOGIN --
     private function checkLogin(){
-        $email  = $this->params['email'];
-        $pwd    = $this->params['password'];
+        $email  = htmlentities($this->params['email'], ENT_QUOTES);
+        $pwd    = htmlentities($this->params['password'], ENT_QUOTES);
         
         $logged = AccountController::checkIDs($email, $pwd);
         if( !$logged ){
@@ -57,9 +57,9 @@ class AjaxOperator {
     }
     // manque gestion du mail
     /*to finish*/private function createAccount(){
-        $email  = $this->params['email'];
-        $pwd    = $this->params['password1'];
-        $pseudo = $this->params['pseudo'];
+        $email  = htmlentities($this->params['email'], ENT_QUOTES);
+        $pwd    = htmlentities($this->params['password1'], ENT_QUOTES);
+        $pseudo = htmlentities($this->params['pseudo'], ENT_QUOTES);
         
         if(count(UserManager::init()->getAll("WHERE email='$email'")) > 0){
             $this->response['errorEmail'] = "This e-mail address already exists";
@@ -92,7 +92,7 @@ class AjaxOperator {
         $this->response['created'] = TRUE;
     }
     private function resetPassword(){
-        $token     = $this->params['token'];
+        $token     = htmlentities($this->params['token'], ENT_QUOTES);
         $today     = Tools::today();
         $forgotDay = (new DateTime($this->user->getForgotPassword()))->format("Y-m-d");
         
@@ -107,7 +107,7 @@ class AjaxOperator {
         }
         
         // reset password allowed
-        $this->user->setPassword($this->params['password1']);
+        $this->user->setPassword( htmlentities($this->params['password1'], ENT_QUOTES) );
         $this->user->setForgotPassword(NULL);
         $this->user->setToken(NULL);
         UserManager::init()->update($this->user) ?
@@ -119,7 +119,7 @@ class AjaxOperator {
     // -- LOGIN & PROFILE --
     // manque gestion du mail
     /*to finish*/private function forgotPassword(){
-        $email = $this->params['email'];
+        $email = htmlentities($this->params['email'], ENT_QUOTES);
         $users = UserManager::init()->getAll("WHERE email='$email'");
         
         if( empty($users) ){
@@ -155,8 +155,8 @@ class AjaxOperator {
     
     // -- FORUM --
     private function createSubject(){sleep(2);
-        $subject = Subject::init( $this->params['title'],
-                                  $this->params['message'],
+        $subject = Subject::init( htmlentities($this->params['title'], ENT_QUOTES),
+                                  htmlentities($this->params['message'], ENT_QUOTES),
                                   $this->user->getId() );
         $insertedID = SubjectManager::init()->insert($subject);
         $insertedID ? $subject->setId($insertedID) : NULL;
@@ -183,7 +183,7 @@ class AjaxOperator {
             $this->response['error'] = "Subject deletion failed";
     }
     private function createPost(){
-        $post = Post::init( $this->params['message'],
+        $post = Post::init( htmlentities($this->params['message'], ENT_QUOTES),
                             $this->user->getId(),
                             $this->params['idSubject'] );
         $inserted = PostManager::init()->insert($post);

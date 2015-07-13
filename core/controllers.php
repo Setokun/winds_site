@@ -21,7 +21,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
      */
     static function checkIDs($email,$password){
         $mgr = UserManager::init();
-        $test = $mgr->getAll("WHERE email='$email' AND password='".md5($password)."'");//echo "test3<br>";
+        $test = $mgr->getAll("WHERE email='$email' AND password='".md5($password)."'");
         return !empty($test);
     }
     /**
