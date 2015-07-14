@@ -161,23 +161,25 @@ define("NB_NEWS_TO_DISPLAY", 5);
     }
     /**
      * Get the levels which match the specified parameters.
+     * A null value indicates all possible values.
      * @param int $id
      * @param string $levelType a constant of LEVEL_TYPE
-     * @param string $levelStatus a constant of LEVEL_STATUS
      * @param string $levelMode a constant of LEVEL_MODE
+     * @param string $levelStatus a constant of LEVEL_STATUS    
      * @return mixed : array or Level
      */
-    static function getLevel($id=NULL, $levelType=NULL, $levelStatus=LEVEL_STATUS::ACCEPTED, $levelMode=LEVEL_MODE::STANDARD){
+    static function getLevel($id=NULL, $levelType=NULL, $levelMode=NULL, $levelStatus=LEVEL_STATUS::ACCEPTED){
         if( !is_null($id) ){
             return LevelManager::init()->getByID($id);
         }
         
         $params = array();
-        if( !is_null($levelType) ){
-            array_push($params, "levelType='$levelType'");
-        }
-        array_push($params, "levelStatus='$levelStatus'", "levelMode='$levelMode'");
-        return LevelManager::init()->get("SELECT level.id, timeMax, idTheme, name, description, creationDate, user.pseudo AS creator, level.id AS idLevel FROM `level` JOIN `user` ON idCreator = user.id WHERE ".implode(" AND ", $params));        
+        if( !is_null($levelType)   ){ array_push($params, "levelType='$levelType'"); }
+        if( !is_null($levelMode)   ){ array_push($params, "levelMode='$levelMode'"); }
+        if( !is_null($levelStatus) ){ array_push($params, "levelStatus='$levelStatus'"); }
+        return LevelManager::init()->get("SELECT level.id AS idLevel, timeMax, idTheme, "
+            ."name, description, creationDate, user.pseudo AS creator FROM `level` JOIN "
+            ."`user` ON idCreator = user.id WHERE ".implode(" AND ", $params));        
     }
     
     // -- WEBSITE --
@@ -232,7 +234,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
                         ."src='".$images[ $level['idTheme'] ]."'/></td>"
                     ."<td style='vertical-align: middle'>"
                         .Tools::capitalize($level['name'])
-                        ." created by ".$creators[ $level['id'] ]
+                        ." created by ".$creators[ $level['idLevel'] ]
                         ."<br><span class='description'>"
                         .$level['description']."</td></tr>";
         }
@@ -241,7 +243,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
      * Displays in shop or addon page the available custom levels list.
      */
     static function displayCustomLevels($source){
-        $customs  = self::getLevel(NULL, LEVEL_TYPE::CUSTOM);
+        $customs  = self::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_MODE::STANDARD);
         $images   = ThemeManager::init()->getImagePath();
         $creators = LevelManager::init()->getCreators();
         
@@ -252,7 +254,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
                             ."src='".$images[ $level['idTheme'] ]."'/></td>"
                         ."<td style='vertical-align: middle'>"
                             .Tools::capitalize($level['name'])
-                            ." created by ".$creators[ $level['id'] ]
+                            ." created by ".$creators[ $level['idLevel'] ]
                             ."<br><span class='description'>"
                             .$level['description']."</td></tr>";
             }
@@ -260,13 +262,13 @@ define("NB_NEWS_TO_DISPLAY", 5);
                 echo "<tr>"
                         ."<td style='line-height:3.5' class='col-xs-1 col-md-1'>"
                             ."<input type='checkbox' data-idlevel='"
-                            .$level['id']."'></input></td>"
+                            .$level['idLevel']."'></input></td>"
                         ."<td style='line-height:3.5' class='col-xs-2 col-md-2'>"
                             ."<img class='logo-level' src='"
                             .$images[ $level['idTheme'] ]."'/></td>"
                         ."<td style='line-height:3.5' class='col-xs-8 col-md-9'>"
                             .Tools::capitalize($level['name'])." created by "
-                            .$creators[ $level['id'] ]."</td></tr>";
+                            .$creators[ $level['idLevel'] ]."</td></tr>";
             }
         }
     }
@@ -274,7 +276,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
      * Displays in shop page the available to-moderate levels list.
      */
     static function displayLevelsToModerate(){
-        $tomoderates = self::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_STATUS::TOMODERATE);
+        $tomoderates = self::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_MODE::STANDARD, LEVEL_STATUS::TOMODERATE);
         $imagePaths  = ThemeManager::init()->getImagePath();
         $creators    = LevelManager::init()->getCreators();
         
@@ -284,7 +286,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
                         <img class='logo-level' src='".$imagePaths[ $level['idTheme'] ]."'/></td>
                     <td style='vertical-align: middle;' class='col-xs-6 col-sm-7'>"
                         .Tools::capitalize($level['name'])." by "
-                        .Tools::capitalize($creators[ $level['idCreator'] ])."</td>
+                        .Tools::capitalize($creators[ $level['idLevel'] ])."</td>
                     <td style='vertical-align: middle;'>
                     <div class='col-xs-12 col-md-6' style='margin-bottom:5px;'>
                         <button class='btn btn-success'>Accept</button></div>
@@ -578,7 +580,8 @@ define("NB_NEWS_TO_DISPLAY", 5);
      * @param array $params An array of paramaters given to the API
      */
     static function getLevelInfos(User $user, array $params=[]){
-        $rawLevel = AddonController::getLevel($params['idLevel'], NULL);
+        $rawLevel = AddonController::getLevel($params['idLevel']);
+        $level = array();
         $level[0]["timeMax"] = $rawLevel->getTimeMax();
         $level[0]["levelType"] = $rawLevel->getLevelType();
         $level[0]["levelStatus"] = $rawLevel->getLevelStatus();
@@ -589,7 +592,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         $level[0]["creationDate"] = $rawLevel->getCreationDate();
         $level[0]["filePath"] = $rawLevel->getFilePath();
         $level[0]["creator"] = AccountController::getPseudoById($rawLevel->getIdCreator());
-        $level[0]["id"] = $rawLevel->getId();
+        $level[0]["idLevel"] = $rawLevel->getId();
         echo json_encode($level);
     }
     /**
@@ -607,7 +610,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
      * @param array $params An array of paramaters given to the API
      */
     static function getCustomLevels(User $user, array $params=[]){
-        $customs = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM);
+        $customs = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_MODE::STANDARD);
         echo json_encode($customs);
     }
     /**
@@ -616,7 +619,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
      * @param array $params An array of paramaters given to the API
      */
     static function getLevelsToModerate(User $user, array $params=[]){
-        $toModerates = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_STATUS::TOMODERATE);
+        $toModerates = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_MODE::STANDARD, LEVEL_STATUS::TOMODERATE);
         echo json_encode($toModerates);
     }
     /**
