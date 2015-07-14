@@ -177,8 +177,8 @@ define("NB_NEWS_TO_DISPLAY", 5);
         if( !is_null($levelType)   ){ array_push($params, "levelType='$levelType'"); }
         if( !is_null($levelMode)   ){ array_push($params, "levelMode='$levelMode'"); }
         if( !is_null($levelStatus) ){ array_push($params, "levelStatus='$levelStatus'"); }
-        return LevelManager::init()->get("SELECT level.id AS idLevel, timeMax, idTheme, "
-            ."name, description, creationDate, user.pseudo AS creator FROM `level` JOIN "
+        return LevelManager::init()->get("SELECT level.id AS idLevel, timeMax, idTheme, name, "
+            ."description, creationDate, levelMode, user.pseudo AS creator FROM `level` JOIN "
             ."`user` ON idCreator = user.id WHERE ".implode(" AND ", $params));        
     }
     
@@ -233,10 +233,11 @@ define("NB_NEWS_TO_DISPLAY", 5);
                     ."<td class='image-column'><img class='logo-level' "
                         ."src='".$images[ $level['idTheme'] ]."'/></td>"
                     ."<td style='vertical-align: middle'>"
+                        .($level['levelMode'] == LEVEL_MODE::BOSS ? "<span style='color:indianred'><b>[BOSS]</b></span> " : "")
                         .Tools::capitalize($level['name'])
                         ." created by ".$creators[ $level['idLevel'] ]
-                        ."<br><span class='description'>"
-                        .$level['description']."</td></tr>";
+                        ."<br><span class='description'>".$level['description']."</span>"
+                    ."</td></tr>";
         }
     }
     /**
@@ -354,8 +355,9 @@ define("NB_NEWS_TO_DISPLAY", 5);
         $creator   = UserManager::init()->getByID($level->getIdCreator())->getPseudo();
         $imagePath = ThemeManager::init()->getImagePath($level->getIdTheme());
         
-        echo "<h4><img class='logo-level' src='$imagePath'> Ranking of \""
-            .Tools::capitalize($level->getName())."\" created by "
+        echo "<h4><img class='logo-level' src='$imagePath'>"
+            .($level->getLevelMode() == LEVEL_MODE::BOSS ? "<span style='color:indianred'><b>[BOSS]</b></span> " : "")
+            ." Ranking of \"".Tools::capitalize($level->getName())."\" created by "
             .Tools::capitalize($creator)."</h4>";
     }
     /**
@@ -387,7 +389,9 @@ define("NB_NEWS_TO_DISPLAY", 5);
             echo "<tr class='level' data-idlevel='".$level['id']."'>"
                 ."<td class='image-column'><img class='logo-level' src='"
                 .$imagePaths[ $level['idTheme'] ]."'/></td>"
-                ."<td style='vertical-align: middle'>".Tools::capitalize($level['name'])
+                ."<td style='vertical-align: middle'>"
+                .($level['levelMode'] == LEVEL_MODE::BOSS ? "<span style='color:indianred'><b>[BOSS]</b></span> " : "")
+                .Tools::capitalize($level['name'])
                 ."</td></tr>";
         }
     }
