@@ -86,7 +86,7 @@ include_once "../common/menu.php";
         <div class="row-scroll">
             <table class="table">
                 <tr><th colspan="100%" class="th-winds">Available custom levels</th></tr>
-                <div class="row-scroll"><?php AddonController::displayCustomLevels("addon"); ?>
+                <?php AddonController::displayCustomLevels("addon"); ?>
             </table>
         </div>
         <div class="col-xs-12 form-row">

@@ -71,10 +71,12 @@ function uploadControls(){
                 inp_description.val(undefined);
                 select_addonType.find('option').first().prop('selected',true);
                 inp_file.val(undefined);
+                setTimeout(function(){ location.reload(); }, 5000);
             }
             message.html( response.data ?
-                "<h4 class='ajax-success'>"+ response.data +".</h4>" :
+                "<h4 class='ajax-success'>"+ response.data +".</h4><p>Auto-reload this page in few times.</p>" :
                 "<h4 class='ajax-error'>Error</h4><p>"+ response.error +".</p>" );
+        
         };
         $.ajax({
             url        : "upload.php",
