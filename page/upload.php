@@ -37,7 +37,7 @@ function uploadTheme(){
 function uploadLevel(){
     global $addonFile;
     
-    $manip = LevelManipulator::init($addonFile)->run();
+    $manip = LevelManipulator::init($addonFile)->run(TRUE);
     Tools::displayResponse($manip->getResult(), $manip->getError());
 }
 

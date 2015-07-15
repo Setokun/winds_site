@@ -454,11 +454,12 @@ interface Winds_News {
      * Instanciate a new level from the specified array given by upload process.
      * @param array $data The array of data contained in the level file
      * @param int $idLvl The ID to set to the level
+     * @param boolean $addonPage The upload source is the addon page
      * @return Level
      */
-    static public function initFromUpload($data, $idLvl){
-        $infosCreator = UserManager::init()->get("SELECT id, userType FROM "
-                      . "user WHERE pseudo='".$data['creator']."'")[0];
+    static public function initFromUpload($data, $idLvl, $addonPage){
+        $idCreator = UserManager::init()->get("SELECT id FROM user "
+                   . "WHERE pseudo='".$data['creator']."'")[0]['id'];
         
         $level = new self();
         $level->id           = $idLvl;
@@ -467,13 +468,11 @@ interface Winds_News {
         $level->creationDate = $data['date'];
         $level->filePath     = str_replace($_SERVER['DOCUMENT_ROOT'].'/', '', $data['path']);
         $level->timeMax      = $data['timeMax'];
-        $level->levelMode    = LEVEL_MODE::STANDARD;
+        $level->levelMode    = $addonPage ? $data['mode'] : LEVEL_MODE::STANDARD;
         $level->idTheme      = $data['idTheme'];
-        $level->idCreator    = $infosCreator['id'];
-        $level->levelType    = $infosCreator['userType'] == USER_TYPE::ADMINISTRATOR
-                             ? $data['type'] : LEVEL_TYPE::CUSTOM;
-        $level->levelStatus  = $infosCreator['userType'] == USER_TYPE::ADMINISTRATOR
-                             ? LEVEL_STATUS::ACCEPTED : LEVEL_STATUS::TOMODERATE;
+        $level->idCreator    = $idCreator;
+        $level->levelType    = $addonPage ? $data['type'] : LEVEL_TYPE::CUSTOM;
+        $level->levelStatus  = $addonPage ? LEVEL_STATUS::ACCEPTED : LEVEL_STATUS::TOMODERATE;
         
         $level->gameData['creator'] = $data['creator'];
         $level->gameData['startPosition'] = $data['startPosition'];
@@ -989,9 +988,10 @@ interface Winds_News {
     /**
      * Stores the uploaded level file into the server,<br>
      * inserts it into DB and updates its content.
+     * @param boolean $addonPage The upload source is the addon page
      * @return LevelManipulator
      */
-    public function run(){
+    public function run($addonPage=FALSE){
         $inserted = FALSE;
         $idLvl = LevelManager::init()->get("SELECT MAX(id)+1 AS 'max' FROM level")[0]['max'];
         $dest = Tools::getLevelsPath()."$idLvl.jar";
@@ -1000,7 +1000,7 @@ interface Winds_News {
             $data = $this->extractLevelData();
             $data['path'] = $dest;
             
-            $this->lvl = Level::initFromUpload($data, $idLvl);
+            $this->lvl = Level::initFromUpload($data, $idLvl, $addonPage);
             $this->updateZip();
             
             $inserted = is_numeric( LevelManager::init()->insert($this->lvl) );
@@ -1054,7 +1054,7 @@ interface Winds_News {
             throw new Exception("Unable to update the level file");
         }
     }
-	
+    
     // -- ACCESSORS --
     /**
      * Get the manipulation's result.
