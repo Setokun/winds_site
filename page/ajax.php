@@ -156,7 +156,7 @@ class AjaxOperator {
     }
     
     // -- FORUM --
-    private function createSubject(){sleep(2);
+    private function createSubject(){
         $subject = Subject::init( htmlentities($this->params['title'], ENT_QUOTES),
                                   htmlentities($this->params['message'], ENT_QUOTES),
                                   $this->user->getId() );

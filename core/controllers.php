@@ -489,35 +489,37 @@ define("NB_NEWS_TO_DISPLAY", 5);
      * Displays the posts list for the specified subject.
      * If $isSuperUser is TRUE, some buttons which manage this post are displayed too.
      * @param Subject $subject
-     * @param boolean $isSuperUser A boolean which indicates if the user is a moderator or administrator
+     * @param User $user The user who wants to display the post
      */
-    static function displayPosts(Subject $subject, $isSuperUser){
+    static function displayPosts(Subject $subject, $user){
         $authors = UserManager::init()->getPseudos();
         $posts   = PostManager::init()->getAll("WHERE idSubject=".$subject->getId()." ORDER BY date ASC");
         array_unshift($posts, $subject);
-
+        
         foreach($posts as $post){
-            echo self::formatePost($post, $authors[$post->getIdAuthor()], $isSuperUser);
-        }        
+            $displayDelete = !($post instanceof Subject)      // do not display the button for the first item
+                && ($user->isSuperUser() || $post->getIdAuthor() == $user->getId());
+            echo self::formatePost($post, $authors[$post->getIdAuthor()], $displayDelete);
+        }
     }
     /**
      * Returns the formated string of the specified post which must be displayed.
      * @param Post $post The post to formate
      * @param string $author The pseudonym of the user
-     * @param boolean $isSuperUser A boolean which indicates if the user is a moderator or administrator
+     * @param boolean $displayDelete A boolean which represents if the Delete button must be displayed
      * @return string
      */
-    static function formatePost($post, $author, $isSuperUser){
+    static function formatePost($post, $author, $displayDelete){
         $date = (new DateTime($post->getDate()))->format("d-m-Y H:i:s");
-        $echo = "<div class='row-post'><div class='col-xs-8 col-sm-9 col-md-10' "
+        $echo = "\n<div class='row-post'>\n<div class='col-xs-8 col-sm-9 col-md-10' "
               . "style='border-top: 2px solid #aaa; padding-top:10px;'>"
               . "$date by $author :<br>".$post->getMessage()."</div>";
-        if($isSuperUser && !$post instanceof Subject){
-            $echo .= "<div class='col-xs-4 col-sm-3 col-md-2'><button class='btn "
+        if($displayDelete){
+            $echo .= "\n<div class='col-xs-4 col-sm-3 col-md-2'><button class='btn "
                     ."btn-danger' style='margin-top:15px' data-idpost='"
                     .$post->getId()."'>Delete</button></div>";
         }
-        $echo .= "</div>";
+        $echo .= "\n</div>\n";
         return $echo;
     }
     
