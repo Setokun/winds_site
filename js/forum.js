@@ -1,5 +1,5 @@
 // -- Ajax --
-var idUser, message;
+var ajax, idUser, message;
 
 // -- Subject --
 var div_newSubject, title_newSubject, msg_newSubject,
@@ -14,7 +14,7 @@ var div_post, p_statusSubject, btn_newPost,
     
 /*OK*/function ajaxControls(){
     // -- affectations --
-    var ajax   = $("section #ajax");
+    ajax   = $("section #ajax");
     var loader = ajax.find("#ajax-loader");
     var closer = ajax.find("#ajax-closer");
     message    = ajax.find("#ajax-message");
@@ -80,14 +80,14 @@ var div_post, p_statusSubject, btn_newPost,
         };
         var callback = function(data){
             var response = $.parseJSON(data);
-            if(response.created){
-                table_subjects.append(response.created);
-                btn_newSubject.click();
+            if(!response.created){
+                message.html("<h4 class='ajax-error'>Internal error</h4>"
+                           + "<p>Unable to create this subject.</p>" );
+                return;
             }
-            message.html( response.created ?
-                "<h4 class='ajax-success'>Subject created</h4>" :
-                "<h4 class='ajax-error'>Internal error</h4><p>Unable to "
-                          + "create this subject.</p>" );
+            ajax.modal('hide');
+            table_subjects.append(response.created);
+            btn_newSubject.click();            
         };
         ajaxOperator(data, callback);
     });
@@ -161,14 +161,14 @@ var div_post, p_statusSubject, btn_newPost,
         };
         var callback = function(data){
             var response = $.parseJSON(data);
-            if(response.created){
-                table_posts.append(response.created);
-                btn_newPost.click();
-            }
-            message.html( response.created ?
-                "<h4 class='ajax-success'>Post created</h4>" :
-                "<h4 class='ajax-error'>Internal error</h4><p>"
-                    +"Unable to create this new post.</p>");
+            if(!response.created){
+                message.html("<h4 class='ajax-error'>Internal error</h4><p>"
+                            +"Unable to create this new post.</p>");
+                return;
+            }            
+            ajax.modal('hide');
+            table_posts.append(response.created);
+            btn_newPost.click();
         };
         ajaxOperator(data, callback);
     });
