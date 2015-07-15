@@ -535,6 +535,22 @@ interface Winds_News {
         ];
         return json_encode($data);
     }
+    /**
+     * Removes the level archive files which match the specified IDs<br>
+     * and returns the deleted levels' number.
+     * @param array $idLevels The array of level IDs to delete
+     * @return boolean
+     */
+    static public function deleteFiles(array $idLevels){
+        $levels = LevelManager::init()->getAll("WHERE id in (".implode(',',$idLevels).")");
+        $paths  = array_map(function($level){ return $level->getFilePath(); }, $levels);
+        
+        $nbDel = 0;
+        foreach($paths as $path){
+            $nbDel += unlink($_SERVER['DOCUMENT_ROOT']."/$path") ? 1 : 0;
+        }
+        return count($idLevels) == $nbDel;
+    }
     
     // -- ACCESSORS --
     /**

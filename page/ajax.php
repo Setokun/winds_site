@@ -302,14 +302,14 @@ class AjaxOperator {
     // -- ADDON --
     private function removeAddons(){
         $levelIds = $this->params['idLevels'];
-        $scores   = ScoreManager::init()->getAll("WHERE idLevel in ("
-                   .implode(',',$levelIds).")");
+        $scores   = ScoreManager::init()->getAll("WHERE idLevel in (".implode(',',$levelIds).")");
         $scoreIds = array_map(function($score){ return $score->getId(); }, $scores);
         
-        $delScores = empty($scoreIds) ? TRUE : ScoreManager::init()->deleteMulti($scoreIds);
+        $delFiles  = Level::deleteFiles($levelIds);
         $delLevels = LevelManager::init()->deleteMulti($levelIds);
+        $delScores = empty($scoreIds) ? TRUE : ScoreManager::init()->deleteMulti($scoreIds);
         
-        $delScores && $delLevels ?
+        $delFiles && $delLevels && $delScores ?
             $this->response['deleted'] = TRUE :
             $this->response['error']   = "Scores and levels deletion failed";
     }
