@@ -43,10 +43,13 @@ if( ApiController::existsAction($action) === FALSE){
     ApiController::displayResponse(NULL, "Unknown action");
 }
 
-// -- Check if the current account has been banished
+// -- Check if the current account can interact
 $user = AccountController::getUserProfile($email);
 if($user->isBanished()){
     ApiController::displayResponse(NULL, "Banished account");
+}
+if($user->isDeleted()){
+    ApiController::displayResponse(NULL, "Deleted account");
 }
 
 // -- Get the result for the asked action --

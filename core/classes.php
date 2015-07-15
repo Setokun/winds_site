@@ -237,6 +237,13 @@ interface Winds_News {
         return $this->userStatus === USER_STATUS::BANISHED;
     }
     /**
+     * Checks if the user is deleted.
+     * @return boolean
+     */
+    public function isDeleted(){
+        return $this->userStatus === USER_STATUS::DELETED;
+    }
+    /**
      * Get an associative array which represents the user.
      * @return array
      */
