@@ -86,14 +86,16 @@ interface Winds_News {
         return (object) get_object_vars($this);
     }
     /**
-     * Compares the creation date between the current addon and the specified addon.
-     * @param Addon $addon The addon to compare with 
+     * Compares the creation date between the specified addons.
+     * @param Addon $a The first addon to compare
+     * @param Addon $b The second addon to compare
      * @return int
      */
-    public function compareCreationDateTo(Addon $addon){
-        $currentDate = new DateTime($this->creationDate);
-        $addonDate   = new DateTime($addon->creationDate);;
-        return $currentDate->getTimestamp() - $addonDate->getTimestamp();
+    static public function compareCreationDate(Addon $a, Addon $b){
+        $aDate = new DateTime($a->creationDate);
+        $bDate = new DateTime($b->creationDate);
+        $diff  = $aDate->getTimestamp() - $bDate->getTimestamp();
+        return $diff == 0 ? 0 : $diff/abs($diff);
     }
     
     // -- ACCESSORS --

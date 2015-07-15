@@ -195,10 +195,8 @@ define("NB_NEWS_TO_DISPLAY", 5);
       
         // extract the 5 recent addons (theme or level)
         $merge = array_merge($themes, $levels);
-        usort($merge, function($addon1,$addon2){
-            $addon1->compareCreationDateTo($addon2);
-        });
-        $addons = array_reverse(array_slice($merge, 0, NB_NEWS_TO_DISPLAY));
+        usort($merge, array("Addon", "compareCreationDate"));        
+        $addons = array_slice(array_reverse($merge), 0, NB_NEWS_TO_DISPLAY);
         
         // formate the news
         foreach($addons as $addon){
