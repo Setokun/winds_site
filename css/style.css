@@ -26,6 +26,7 @@ table{background: #fff;}
 
 /*account*/
 #row-scroll-accounts{max-height:250px; overflow-y: scroll; margin-bottom: 20px}
+#deletions-list tr:hover{cursor:pointer}
 
 /* forum */
 #btn-new-subject{margin-bottom:20px}

@@ -2,7 +2,7 @@
 var idUser, message;
 
 // -- Users list --
-var usersList, accounts, btn_update, btn_delete, btn_banish, btn_unbanish;
+var usersList, usersScroll, accounts, btn_update, btn_delete, btn_banish, btn_unbanish;
 
 // -- Deletions list --
 var deletionsList;
@@ -45,7 +45,8 @@ var deletionsList;
     }).done(callback);
 }
 /*OK*/function scrollTo(account){
-    $('body').animate({scrollTop: account.offset().top -44}, 600);
+    $('body').animate({scrollTop: usersList.offset().top}, 600);
+    usersScroll.animate({scrollTop: usersScroll.scrollTop() + account.position().top -65}, 600);
 }
 /*OK*/function focusAccount(account){
     accounts.find(".account-actions")
@@ -58,6 +59,7 @@ var deletionsList;
 /*OK*/function userControls(){
     // -- affectations --
     usersList    = $("section #users-list");
+    usersScroll  = usersList.find("#row-scroll-accounts");
     accounts     = usersList.find(".account");
     btn_update   = usersList.find(".btn-success");
     btn_delete   = usersList.find(".btn-danger");
