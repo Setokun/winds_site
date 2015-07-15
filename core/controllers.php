@@ -282,7 +282,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         $creators    = LevelManager::init()->getCreators();
         
         foreach($tomoderates as $level){
-            echo "<tr data-idlevel='".$level['id']."'>
+            echo "<tr data-idlevel='".$level['idLevel']."'>
                     <td style='vertical-align: middle;' class='col-xs-2 col-sm-1 image-column'>
                         <img class='logo-level' src='".$imagePaths[ $level['idTheme'] ]."'/></td>
                     <td style='vertical-align: middle;' class='col-xs-6 col-sm-7'>"
