@@ -59,13 +59,11 @@ if($action === 'activate'){
             <input name="login" type="hidden" value="true">
             <div class="input-group">
                 <span class="input-group-addon">Email address</span>
-                <input id="login-email" name="email" type="text" class="form-control" placeholder="Email"
-                       value="administrator1@winds.net">
+                <input id="login-email" name="email" type="text" class="form-control" placeholder="Email">
             </div>
             <div class="input-group" style="margin-top:10px">
                 <span class="input-group-addon">Password</span>
-                <input id="login-password" name="password" type="password" class="form-control" placeholder="Password"
-                       value="administrator">
+                <input id="login-password" name="password" type="password" class="form-control" placeholder="Password">
             </div>
             <div class="col-sm-12 controls" style="margin-top:10px; padding:0 0" >
                 <span id="btn-login" class="btn btn-success">Login  </span>
@@ -90,25 +88,25 @@ if($action === 'activate'){
             <div class="form-group" >
                 <label for="signup-email" class="col-md-3 control-label">Email</label>
                 <div class="col-md-9">
-                    <input value="s.guardo@live.fr" id="signup-email" type="text" class="form-control" placeholder="Email address">
+                    <input id="signup-email" type="text" class="form-control" placeholder="Email address">
                 </div>
             </div>
             <div class="form-group" >
                 <label for="signup-pseudo" class="col-md-3 control-label">Pseudo</label>
                 <div class="col-md-9">
-                    <input value="setokun" id="signup-pseudo" type="text" class="form-control" placeholder="Pseudo">
+                    <input id="signup-pseudo" type="text" class="form-control" placeholder="Pseudo">
                 </div>
             </div>
             <div class="form-group" >
                 <label for="signup-password1" class="col-md-3 control-label">Password</label>
                 <div class="col-md-9">
-                    <input value="toto" id="signup-password1" type="password" class="form-control" placeholder="Password">
+                    <input id="signup-password1" type="password" class="form-control" placeholder="Password">
                 </div>
             </div>
             <div class="form-group" >
                 <label for="signup-password2" class="col-md-3 control-label">Confirm Password</label>
                 <div class="col-md-9">
-                    <input value="toto" id="signup-password2" type="password" class="form-control" placeholder="Confirm password" >
+                    <input id="signup-password2" type="password" class="form-control" placeholder="Confirm password" >
                 </div>
             </div>
             <div class="form-group" >
@@ -130,7 +128,7 @@ if($action === 'activate'){
         <div style="padding-top:30px" class="panel-body" >
             <div class="input-group">
                 <span class="input-group-addon">Email address</span>
-                <input value="player1@winds.net" id="forgot-email" type="text" class="form-control" placeholder="Email">
+                <input id="forgot-email" type="text" class="form-control" placeholder="Email">
             </div>
             <div class="col-sm-12 controls" style="margin-top:10px; padding:0 0" >
                 <span id="btn-send" class="btn btn-success">Send me a mail  </span>
