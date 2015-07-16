@@ -7,7 +7,7 @@ var upload_addon, inp_name, inp_description, select_type, inp_file, btn_upload;
 // -- Remove --
 var remove_addon, table, btn_remove;
 
-/*OK*/function ajaxControls(){
+function ajaxControls(){
     // -- affectations --
     var ajax   = $("section #ajax");
     var loader = ajax.find("#ajax-loader");
@@ -16,7 +16,7 @@ var remove_addon, table, btn_remove;
     idUser     = ajax.find("#idUser");
     
     // -- events --
-    /*OK*/$(document).ajaxStart(function(){
+    $(document).ajaxStart(function(){
         loader.css('display','block');
         closer.removeClass('btn-info');
         closer.addClass('disabled');
@@ -25,7 +25,7 @@ var remove_addon, table, btn_remove;
                     +"</h4><p>Timeout reached.</p>");
         ajax.modal({backdrop: false});
     });
-    /*OK*/$(document).ajaxStop(function(){
+    $(document).ajaxStop(function(){
         loader.toggle();
         closer.removeClass('disabled');
         closer.addClass('btn-info');
@@ -35,7 +35,7 @@ var remove_addon, table, btn_remove;
         setTimeout(function(){ ajax.modal('hide'); }, 5000);
     });
 }
-/*OK*/function ajaxOperator(data, callback){
+function ajaxOperator(data, callback){
     $.ajax({
         url     : "ajax.php",
         data    : data,
@@ -47,46 +47,55 @@ var remove_addon, table, btn_remove;
 function uploadControls(){
     // -- affectations --
     upload_addon     = $('section #upload-addon');
-    inp_name         = upload_addon.find('#addon-name');
-    inp_description  = upload_addon.find('#addon-description');
-    select_addonType = upload_addon.find('#addon-type');
-    inp_file         = upload_addon.find('#addon-file');
+    form             = upload_addon.find("form")[0];
+    inp_name         = upload_addon.find("[name='addon-name']");
+    inp_description  = upload_addon.find("[name='addon-description']");
+    select_addonType = upload_addon.find("[name='addon-type']");
+    inp_file         = upload_addon.find("[name='addon-file']");
     btn_upload       = upload_addon.find('#btn-upload');
     
     // -- events --
     btn_upload.click(function(){
-        var data = {
-            action     : "uploadAddon",
-            idUser     : idUser.val(),
-            name       : inp_name.val(),
-            description: inp_description.val(),
-            addonType  : select_type.find(':selected').val(),
-            file       : inp_file.val()
-        };
+        // checks
+        var valid = inp_name.val() !== '' && inp_description !== ''
+                 && select_addonType.find(':selected').val() !== "-1"
+                 && inp_file.prop('files').length === 1;
+        if( !valid ){ return; }
+        
+        // upload
+        var formData = new FormData(form);
         var callback = function(data){
             var response = $.parseJSON(data);
-            if(response.uploaded){
+            if(response.data){
                 inp_name.val(undefined);
                 inp_description.val(undefined);
-                select_type.find('option').first().prop('selected',true);
+                select_addonType.find('option').first().prop('selected',true);
                 inp_file.val(undefined);
+                setTimeout(function(){ location.reload(); }, 5000);
             }
-            message.html( response.uploaded ?
-                "<h4 class='ajax-success'>Level uploaded</h4>" :
-                "<h4 class='ajax-error'>Internal error</h4><p>"
-                          + "Unable to upload this level.</p>" );
+            message.html( response.data ?
+                "<h4 class='ajax-success'>"+ response.data +".</h4><p>Auto-reload this page in few times.</p>" :
+                "<h4 class='ajax-error'>Error</h4><p>"+ response.error +".</p>" );
+        
         };
-        //ajaxOperator(data, callback);
+        $.ajax({
+            url        : "upload.php",
+            data       : formData,
+            method     : "post",
+            cache      : false,
+            processData: false,
+            contentType: false
+        }).done(callback);
     });
 }
-/*OK*/function removeControls(){
+function removeControls(){
     // -- affectations --
     remove_addon = $("section #remove-addon");
     table        = remove_addon.find("table");
     btn_remove   = remove_addon.find("#btn-remove");
     
     // -- events --
-    /*OK*/btn_remove.click(function(){
+    btn_remove.click(function(){
         var checkeds   = table.find(":checked");
         var checkedIds = checkeds.map(function(){
                               return $(this).data('idlevel');
@@ -110,7 +119,7 @@ function uploadControls(){
         ajaxOperator(data, callback);
     });
 }
-/*OK*/$(document).ready(function(){
+$(document).ready(function(){
     ajaxControls();
     uploadControls();
     removeControls();

@@ -1,4 +1,11 @@
 <?php
+/**
+ * Description of ajax page
+ * @author Damien.D & Stephane.G
+ *
+ * File used for interactions with javascript of pages.
+ */
+
 require_once '../core/config.php';
 
 class AjaxOperator {
@@ -7,7 +14,7 @@ class AjaxOperator {
             $user,
             $response = array();
     
-    /*OK*/static function init(array $data){
+    static function init(array $data){
         $operator = new self();
         $operator->params = $data;
         $operator->action = $data['action'];
@@ -15,8 +22,8 @@ class AjaxOperator {
             UserManager::init()->getByID($data['idUser']);
         return $operator;
     }
-    /*OK*/private function __construct(){}
-    /*OK*/public function treat(){
+    private function __construct(){}
+    public function treat(){
         if(empty($this->params)){
             $this->response['error'] = "Missing parameters";
             return $this;
@@ -26,14 +33,14 @@ class AjaxOperator {
         $this->$action();
         return $this;
     }
-    /*OK*/public function getResponse(){
+    public function getResponse(){
         return json_encode($this->response,JSON_UNESCAPED_SLASHES);
     }
     
     // -- LOGIN --
-    /*OK*/private function checkLogin(){
-        $email  = $this->params['email'];
-        $pwd    = $this->params['password'];
+    private function checkLogin(){
+        $email  = htmlentities($this->params['email'], ENT_QUOTES);
+        $pwd    = htmlentities($this->params['password'], ENT_QUOTES);
         
         $logged = AccountController::checkIDs($email, $pwd);
         if( !$logged ){
@@ -48,11 +55,10 @@ class AjaxOperator {
         $refusedStatus ? $this->response['errorStatus'] = "Forbidden account status"
                        : $this->response['allowed'] = "Your will be redirected to your home page";
     }
-    // manque gestion du mail
-    /*to finish*/private function createAccount(){
-        $email  = $this->params['email'];
-        $pwd    = $this->params['password1'];
-        $pseudo = $this->params['pseudo'];
+    /*mail*/private function createAccount(){
+        $email  = htmlentities($this->params['email'], ENT_QUOTES);
+        $pwd    = htmlentities($this->params['password1'], ENT_QUOTES);
+        $pseudo = htmlentities($this->params['pseudo'], ENT_QUOTES);
         
         if(count(UserManager::init()->getAll("WHERE email='$email'")) > 0){
             $this->response['errorEmail'] = "This e-mail address already exists";
@@ -73,7 +79,7 @@ class AjaxOperator {
             return;
         }
         else{
-            Tools::sendActivationMail($user, $idUser);
+            //Tools::sendActivationMail($user, $idUser);
         }
 
 //        $sended = Tools::sendActivationMail($user);
@@ -84,8 +90,8 @@ class AjaxOperator {
         
         $this->response['created'] = TRUE;
     }
-    /*OK*/private function resetPassword(){
-        $token     = $this->params['token'];
+    private function resetPassword(){
+        $token     = htmlentities($this->params['token'], ENT_QUOTES);
         $today     = Tools::today();
         $forgotDay = (new DateTime($this->user->getForgotPassword()))->format("Y-m-d");
         
@@ -100,7 +106,7 @@ class AjaxOperator {
         }
         
         // reset password allowed
-        $this->user->setPassword($this->params['password1']);
+        $this->user->setPassword( htmlentities($this->params['password1'], ENT_QUOTES) );
         $this->user->setForgotPassword(NULL);
         $this->user->setToken(NULL);
         UserManager::init()->update($this->user) ?
@@ -110,9 +116,8 @@ class AjaxOperator {
     }
     
     // -- LOGIN & PROFILE --
-    // manque gestion du mail
-    /*to finish*/private function forgotPassword(){
-        $email = $this->params['email'];
+    /*mail*/private function forgotPassword(){
+        $email = htmlentities($this->params['email'], ENT_QUOTES);
         $users = UserManager::init()->getAll("WHERE email='$email'");
         
         if( empty($users) ){
@@ -128,18 +133,19 @@ class AjaxOperator {
         if( !$updated ){
             $this->response['error'] = "Password forgot failed";
         }
-        
-//        $sended = Tools::sendResetMail($user);
-//        if( !$sended ){
-//            $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
-//            return;
-//        }
+        else{
+            /*$sended = Tools::sendResetMail($user);
+            if( !$sended ){
+                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                return;
+            }*/
+        }
         
         $this->response['forgotten'] = TRUE;            
     }
     
     // -- PROFILE --
-    /*OK*/private function askDeletion(){
+    private function askDeletion(){
         $this->user->setUserStatus(USER_STATUS::DELETING);
         UserManager::init()->update($this->user) ?
             $this->response['deleting'] = TRUE :
@@ -147,23 +153,23 @@ class AjaxOperator {
     }
     
     // -- FORUM --
-    /*OK*/private function createSubject(){sleep(2);
-        $subject = Subject::init( $this->params['title'],
-                                  $this->params['message'],
+    private function createSubject(){
+        $subject = Subject::init( htmlentities($this->params['title'], ENT_QUOTES),
+                                  htmlentities($this->params['message'], ENT_QUOTES),
                                   $this->user->getId() );
         $insertedID = SubjectManager::init()->insert($subject);
         $insertedID ? $subject->setId($insertedID) : NULL;
         $insertedID ? $this->response['created'] = ForumController::formateSubject($subject) :
                       $this->response['error'] = "Subject insertion failed";
     }
-    /*OK*/private function closeSubject(){
+    private function closeSubject(){
         $subject = SubjectManager::init()->getByID($this->params['idSubject']);
         $subject->setSubjectStatus(SUBJECT_STATUS::CLOSED);
         SubjectManager::init()->update($subject) ?
             $this->response['closed'] = TRUE :
             $this->response['error'] = "Subject closing failed";
     }
-    /*OK*/private function deleteSubject(){
+    private function deleteSubject(){
         $subject  = SubjectManager::init()->getByID($this->params['idSubject']);
         $posts    = PostManager::init()->getAll("WHERE idSubject=".$subject->getId());
         $postIds  = array_map(function($post){ return $post->getId(); }, $posts);
@@ -175,8 +181,8 @@ class AjaxOperator {
             $this->response['deleted'] = TRUE :
             $this->response['error'] = "Subject deletion failed";
     }
-    /*OK*/private function createPost(){
-        $post = Post::init( $this->params['message'],
+    private function createPost(){
+        $post = Post::init( htmlentities($this->params['message'], ENT_QUOTES),
                             $this->user->getId(),
                             $this->params['idSubject'] );
         $inserted = PostManager::init()->insert($post);
@@ -186,7 +192,7 @@ class AjaxOperator {
                         $this->user->isSuperUser()) :
                     $this->response['error'] = "Post insertion failed";
     }
-    /*OK*/private function deletePost(){
+    private function deletePost(){
         $post = PostManager::init()->getByID($this->params['idPost']);
         PostManager::init()->delete($post) ?
             $this->response['deleted'] = TRUE :
@@ -194,13 +200,21 @@ class AjaxOperator {
     }
     
     // -- ACCOUNT --
-    /*OK*/private function updateRights(){
+    /*mail*/private function updateRights(){
         $this->user->setUserType($this->params['userType']);
         UserManager::init()->update($this->user) ?
             $this->response['updated'] = TRUE :
             $this->response['error'] = "Right updating failed";
+        
+        if($this->response['updated'] == TRUE){
+            /*$sended = Tools::sendPromotionMail($user, $this->params['userType']);
+            if( !$sended ){
+                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                return;
+            }*/
+        }
     }
-    /*OK*/private function deleteAccount(){
+    /*mail*/private function deleteAccount(){
         $scores    = ScoreManager::init()->getAll("WHERE idPlayer="
                    . $this->user->getID());
         $scoreIds  = array_map(function($score){ return $score->getId(); }, $scores);
@@ -213,58 +227,89 @@ class AjaxOperator {
         $delScores && $delAccount ?
             $this->response['deleted'] = TRUE :
             $this->response['error'] = "Deletion failed";
+        
+        if($this->response['deleted'] == TRUE){
+            /*$sended = Tools::sendAccountDeletionMail($user);
+            if( !$sended ){
+                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                return;
+            }*/
+        }
     }
-    /*OK*/private function banishAccount(){
+    /*mail*/private function banishAccount(){
         $this->user->setUserStatus(USER_STATUS::BANISHED);
         UserManager::init()->update($this->user)  ?
             $this->response['banished'] = TRUE :
             $this->response['error'] = "Banishment failed";
+        
+        if($this->response['banished'] == TRUE){
+            /*$sended = Tools::sendBanishMail($user);
+            if( !$sended ){
+                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                return;
+            }*/
+        }
     }
-    /*OK*/private function unbanishAccount(){
+    /*mail*/private function unbanishAccount(){
         $this->user->setUserStatus(USER_STATUS::ACTIVATED);
         UserManager::init()->update($this->user)  ?
             $this->response['unbanished'] = TRUE :
             $this->response['error'] = "Banishment failed";
+        
+        if($this->response['unbanished'] == TRUE){
+            /*$sended = Tools::sendUnbanishMail($user, $level);
+            if( !$sended ){
+                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                return;
+            }*/
+        }
     }
     
     // -- MODERATION --
-    /*OK*/private function acceptLevel(){
+    /*mail*/private function acceptLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
         $level->setLevelStatus(LEVEL_STATUS::ACCEPTED);
+        
         LevelManager::init()->update($level) ?
             $this->response['accepted'] = TRUE :
             $this->response['error']    = "Level acceptance failed";
+        
+        if($this->response['accepted'] == TRUE){
+            /*$sended = Tools::sendLevelAcceptedMail($user, $level);
+            if( !$sended ){
+                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                return;
+            }*/
+        }
     }
-    /*OK*/private function refuseLevel(){
+    /*mail*/private function refuseLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
         $level->setLevelStatus(LEVEL_STATUS::REFUSED);
         LevelManager::init()->update($level) ?
             $this->response['refused'] = TRUE :
             $this->response['error']   = "Level refusal failed";
+        
+        if($this->response['refused'] = TRUE){
+            /*$sended = Tools::sendLevelDeclinedMail($user, $level);
+            if( !$sended ){
+                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                return;
+            }*/
+        }
+        
     }
     
     // -- ADDON --
-    //to finsih
-    private function uploadAddon(){
-        $addonType = $this->params['addonType'];
-        
-        
-        
-        
-        true ?
-            $this->response['uploaded'] = TRUE :
-            $this->response['error']   = "Addon uploading failed";
-    }
-    /*OK*/private function removeAddons(){
+    private function removeAddons(){
         $levelIds = $this->params['idLevels'];
-        $scores   = ScoreManager::init()->getAll("WHERE idLevel in ("
-                   .implode(',',$levelIds).")");
+        $scores   = ScoreManager::init()->getAll("WHERE idLevel in (".implode(',',$levelIds).")");
         $scoreIds = array_map(function($score){ return $score->getId(); }, $scores);
         
-        $delScores = empty($scoreIds) ? TRUE : ScoreManager::init()->deleteMulti($scoreIds);
+        $delFiles  = Level::deleteFiles($levelIds);
         $delLevels = LevelManager::init()->deleteMulti($levelIds);
+        $delScores = empty($scoreIds) ? TRUE : ScoreManager::init()->deleteMulti($scoreIds);
         
-        $delScores && $delLevels ?
+        $delFiles && $delLevels && $delScores ?
             $this->response['deleted'] = TRUE :
             $this->response['error']   = "Scores and levels deletion failed";
     }

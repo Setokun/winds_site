@@ -1,4 +1,11 @@
 <?php
+/**
+ * Description of shop page
+ * @author Damien.D & Stephane.G
+ *
+ * File used to interact with the user about shop's available themes and levels.
+ */
+
 session_start();
 require_once "../core/config.php";
 isset($_SESSION['user']) ? $user = User::initFrom($_SESSION['user']) : Tools::goToLogin();
@@ -10,8 +17,7 @@ include_once "../common/menu.php";
 
 <script type="text/javascript" src="../js/shop.js" ></script>
     <section class="col-sm-8 col-md-9 col-lg-10">
-        <!-- download button
-        =============================-->
+        <!-- ===== download button ===== -->
         <div id="download-btn" class="row">
             <button data-toggle="modal" href="#infos" class="btn btn-primary modal-wide center-block"><span class="glyphicon glyphicon-download-alt"></span> Download Game</button>
             <div class="modal" id="infos">
@@ -24,7 +30,7 @@ include_once "../common/menu.php";
                         <div class="modal-body">
                             <p>First, you need to have JRE installed on your computer.<br/>
                                 You can download it <a href="http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html" target="_blank">here</a></p>
-                            <p>To download the game, please follow this <a href="#">link</a>.</p>
+                            <p>To download the game, please follow this <a href="../Winds.jar">link</a>.</p>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-info" data-dismiss="modal">Close</button>
@@ -34,8 +40,7 @@ include_once "../common/menu.php";
             </div>
         </div>
 	
-        <!-- themes table
-        =============================-->
+        <!-- ===== themes table ===== -->
         <div style="margin:0 -15px;" class="th-winds">
             <h3>Available themes</h3>
         </div>
@@ -47,8 +52,7 @@ include_once "../common/menu.php";
             </table>
         </div>
 
-        <!-- basic levels table
-        =============================-->
+        <!-- ===== basic levels table ===== -->
         <div style="margin:0 -15px;" class="th-winds">
             <h3>Available basic levels</h3>
         </div>
@@ -60,8 +64,7 @@ include_once "../common/menu.php";
             </table>
         </div>
         
-        <!-- custom levels table
-        =============================-->
+        <!-- ===== custom levels table ===== -->
         <div style="margin:0 -15px;" class="th-winds">
             <h3>Available custom levels <em style="font-size: 0.5em">(click&nbsp;on&nbsp;one&nbsp;item&nbsp;to&nbsp;show&nbsp;more&nbsp;details)</em></h3>
         </div>

@@ -1,15 +1,22 @@
 <?php
 /**
- * Description of managers
+ * Description of managers file
  * @author Damien.D & Stephane.G
  */
+
 require_once "config.php";
 require_once "tools.php";
 
+/**
+ * Interface used by final managers to initialize them.
+ */
 interface ManagerInit {
     static function init();
 }
 
+/**
+ * Abstract class which contains some common variables and methods between the final managers.
+ */
 /*OK*/abstract class ManagerDB implements ManagerInit {
     protected $PDO;			  
     
@@ -17,8 +24,14 @@ interface ManagerInit {
     protected $nameTable,           // the name of the table in DB and of the class to use to instanciate objects 
               $columns;             // must be in same order like in DB
     
-    /*OK*/protected function __construct(){}
-    /*OK*/protected function connectDB() {
+    /**
+     * Refuses the manager's initialization by the default way.
+     */
+    protected function __construct(){}
+    /**
+     * Connects the manager to the MySQL sever.
+     */
+    protected function connectDB() {
 		$host	= "windsgamqiwinds.mysql.db";
         $nameDB = "windsgamqiwinds";
 		$user	= "windsgamqiwinds";
@@ -34,21 +47,41 @@ interface ManagerInit {
         }
     }
     
-    /*OK*/public function getAll($clauses=NULL){
+    /**
+     * Get all entries from the managed table which match the specified conditions.
+     * $clauses can be null.
+     * @param string $clauses The string SQL conditions which filters the entries
+     * @return array
+     */
+    public function getAll($clauses=NULL){
 		return $this->parent_select("SELECT * FROM $this->nameTable $clauses")
                     ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $this->nameTable);
     }
-    /*OK*/public function getByID($id){
+    /**
+     * Get the entry from the managed table which match the specified ID.
+     * @param int $id The ID of the searched entry
+     * @return Object
+     */
+    public function getByID($id){
         $query  = "SELECT * FROM $this->nameTable WHERE id=$id";
         $result = $this->parent_select($query)
                     ->fetchAll(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $this->nameTable);
         return empty($result) ? NULL : $result[0];
     }
-    /*OK*/public function get($query){
+    /**
+     * Get all entries from the managed table which match the specified query.
+     * @param string $query The SQL query
+     * @return array
+     */
+    public function get($query){
         return $this->parent_select($query)->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    /*OK*/protected function query_insert(){
+    /**
+     * Prepares a SQL insertion query from the managed table.
+     * @return string
+     */
+    protected function query_insert(){
         $columns = $this->columns;
         array_shift($columns);    // delete the 'id' column
         $valuesPlaces = implode(',',  array_fill(0, count($columns), '?'));
@@ -57,7 +90,12 @@ interface ManagerInit {
                 implode(',', $columns).
                 ") VALUES ($valuesPlaces)";
     }
-    /*OK*/protected function query_update(WindsClass $item){
+    /**
+     * Prepares a SQL update query with the specified item.
+     * @param WindsClass $item The item to update
+     * @return string
+     */
+    protected function query_update(WindsClass $item){
         $fields = array_keys($item->valuesDB_toUpdate());
         $update = "UPDATE $this->nameTable SET ";
         $nbFields = count($fields);
@@ -68,17 +106,32 @@ interface ManagerInit {
         return $update." WHERE id=".$item->getId();
     }
     
-    /*OK*/protected function parent_select($query){
+    /**
+     * Returns the result of the executed select query.
+     * @param string $query The SQL select query to execute
+     * @return array
+     */
+    protected function parent_select($query){
         $request = $this->PDO->prepare($query);
         $request->execute();
         return $request;
     }
-    /*OK*/protected function parent_insert(WindsClass $item){
+    /**
+     * Returns the ID of the specified item which has been inserted into DB.
+     * @param WindsClass $item The item to insert
+     * @return int
+     */
+    protected function parent_insert(WindsClass $item){
         $this->PDO->prepare($this->query_insert())
                   ->execute($item->valuesDB_toInsert());
         return $this->PDO->lastInsertId();
     }
-    /*OK*/protected function parent_update(WindsClass $item){
+    /**
+     * Returns the number of modified entries after the update query execution for the specified item.
+     * @param WindsClass $item The item to update
+     * @return int
+     */
+    protected function parent_update(WindsClass $item){
 		$values  = array_values($item->valuesDB_toUpdate());
         $query   = $this->query_update($item);
         $request = $this->PDO->prepare($query);
@@ -86,40 +139,77 @@ interface ManagerInit {
         return $request->rowCount();
                          
     }
-    /*OK*/protected function parent_delete(WindsClass $item){
+    /**
+     * Returns the number of deleted entries after the delete query execution for the specified item.
+     * @param WindsClass $item The item to delete
+     * @return int
+     */
+    protected function parent_delete(WindsClass $item){
         $query   = "DELETE FROM $this->nameTable WHERE id=".$item->getId();
         $request = $this->PDO->prepare($query);
         $request->execute();
         return $request->rowCount();                    
     }
-    /*OK*/protected function parent_execute($query){
+    /**
+     * Returns the request object after the specified query has been executed.
+     * @param string $query The SQL query to execute
+     * @return PDOStatement
+     */
+    protected function parent_execute($query){
         $request = $this->PDO->prepare($query);
         $request->execute();
         return $request;
     }
+
 }
+
+/**
+ * Class used to manage User objects into DB.
+ */
 /*OK*/class UserManager extends ManagerDB {
-    /*OK*/static public function init(){
+    
+    /**
+     * Initializes a new manager of users.
+     */
+    static public function init(){
         $mgr = new self();
         $mgr->nameTable = "user";
         $mgr->columns   = User::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    /*OK*/public function insert(User $user){
+    /**
+     * Returns the ID of the specified user insertion into DB.
+     * @param User $user The user to insert
+     * @return int
+     */
+    public function insert(User $user){
         return $this->parent_insert($user);
         
     }
-    /*OK*/public function update(User $user){
+    /**
+     * Returns the success statement of the specified user update onto DB.
+     * @param User $user The user to update
+     * @return int
+     */
+    public function update(User $user){
         if(is_null($user->getId())){  return FALSE;  }
         return $this->parent_update($user);
     }
-    /*OK*/public function delete(User $user){
+    /**
+     * Returns the success statement of the specified user deletion from DB.
+     * @param User $user The user to delete
+     * @return int
+     */
+    public function delete(User $user){
         if(is_null($user->getId())){  return FALSE;  }
         return $this->parent_delete($user);
     }
-    
-    /*OK*/public function getPseudos(){
+    /**
+     * Get an array of IDs and pseudos of all users into DB.
+     * @return array
+     */
+    public function getPseudos(){
         $values = $this->get("SELECT id, pseudo FROM user");
         $data = array();
         foreach($values as $value){
@@ -127,23 +217,46 @@ interface ManagerInit {
         }
         return $data;
     }
+
 }
+
+/**
+ * Class used to manage User objects into DB.
+ */
 /*OK*/class ThemeManager extends ManagerDB {
-    /*OK*/static public function init(){
+    
+    /**
+     * Initializes a new manager of themes.
+     */
+    static public function init(){
         $mgr = new self();
         $mgr->nameTable = "theme";
         $mgr->columns   = Theme::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    /*OK*/public function insert(Theme $theme){
+    /**
+     * Returns the ID of the specified theme insertion into DB.
+     * @param Theme $theme The theme to insert
+     * @return int
+     */
+    public function insert(Theme $theme){
         return $this->parent_insert($theme);
     }
-    /*OK*/public function delete(Theme $theme){
+    /**
+     * Returns the success statement of the specified theme deletion from DB.
+     * @param Theme $theme The theme to delete
+     * @return int
+     */
+    public function delete(Theme $theme){
         if(is_null($theme->getId())){  return FALSE;  }
         return $this->parent_delete($theme);
     }
-    
+    /**
+     * Get the image path of all themes in DB or for the theme which matches the specified ID.
+     * @param int $idTheme The theme ID which the image path must be found
+     * @return mixed : array or string
+     */
     function getImagePath($idTheme=NULL){
         $query = "SELECT theme.id, imagePath FROM theme "
                 .(is_null($idTheme) ? NULL :" WHERE id=$idTheme");
@@ -159,28 +272,58 @@ interface ManagerInit {
         }
         
     }
+    
 }
+
+/**
+ * Class used to manage Level objects into DB.
+ */
 /*OK*/class LevelManager extends ManagerDB {
-    /*OK*/static public function init(){
+    
+    /**
+     * Initializes a new manager of levels.
+     */
+    static public function init(){
         $mgr = new self();
         $mgr->nameTable = "level";
         $mgr->columns   = Level::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    /*OK*/public function insert(Level $level){
+    /**
+     * Returns the ID of the specified level insertion into DB.
+     * @param Level $level The level to insert
+     * @return int
+     */
+    public function insert(Level $level){
         return $this->parent_insert($level);
     }
-    /*OK*/public function update(Level $level){
+    /**
+     * Returns the success statement of the specified level update onto DB.
+     * @param Level $level The level to update
+     * @return int
+     */
+    public function update(Level $level){
         if(is_null($level->getId())){  return FALSE;  }
         return $this->parent_update($level);
     }
-    /*OK*/public function delete(Level $level){
+    /**
+     * Returns the success statement of the specified level deletion from DB.
+     * @param Level $level The level to delete
+     * @return int
+     */
+    public function delete(Level $level){
         if(is_null($level->getId())){  return FALSE;  }
         return $this->parent_delete($level);
     }
     
-    /*OK*/public function getLevelsHavingScores($levelType=NULL){
+    /**
+     * Get an array of levels having scores into DB.
+     * The search can be filtered by the type of levels to found.
+     * @param string $levelType a constant of LEVEL_TYPE
+     * @return array
+     */
+    public function getLevelsHavingScores($levelType=NULL){
         $query = "SELECT DISTINCT level.* FROM level JOIN score "
                 ."WHERE score.idLevel=level.id "
                 ."AND levelStatus='".LEVEL_STATUS::ACCEPTED."' "
@@ -188,7 +331,11 @@ interface ManagerInit {
         $query .= is_null($levelType) ? NULL : " AND levelType='$levelType'";
         return $this->get($query);
     }
-    /*OK*/public function getLevelsTimeMax(){
+    /**
+     * Get an array of IDs and maximum times of all levels into DB.
+     * @return array
+     */
+    public function getLevelsTimeMax(){
         $dataDB = $this->get("SELECT id, timeMax FROM level ORDER BY id");
         $times  = array();
         foreach($dataDB as $data){
@@ -196,7 +343,11 @@ interface ManagerInit {
         }        
         return $times;
     }
-    /*OK*/public function getCreators(){
+    /**
+     * Get an array of IDs and pseudos of all users into DB which had made some levels.
+     * @return array
+     */
+    public function getCreators(){
         $query  = "SELECT level.id AS idLevel, pseudo FROM level "
                  ."JOIN user WHERE level.idCreator=user.id ";
         $values = $this->get($query);
@@ -207,21 +358,41 @@ interface ManagerInit {
         }
         return $data;
     }
+    
+    /**
+     * Returns the success statement of the specified level deletions from DB.
+     * @param array $levelIds The array of level IDs to delete
+     * @return boolean
+     */
     public function deleteMulti(array $levelIds){
         $query = "DELETE FROM level WHERE id IN (".implode(',', $levelIds).")";
         $nbDel = $this->parent_execute($query)->rowCount();
         return $nbDel === count($levelIds);
     }
+    
 }
+
+/**
+ * Class used to manage Score objects into DB.
+ */
 /*OK*/class ScoreManager extends ManagerDB {
-    /*OK*/static public function init() {
+    
+    /**
+     * Initializes a new manager of scores.
+     */
+    static public function init() {
         $score = new self();
         $score->nameTable = "score";
         $score->columns   = Score::$columns;
         $score->connectDB();
         return $score;
     }
-    /*OK*/public function insert(Score $score){
+    /**
+     * Returns the ID of the specified score insertion into DB.
+     * @param Score $score The score to insert
+     * @return int
+     */
+    public function insert(Score $score){
 
         $query = "INSERT INTO score (time, nbClicks, nbItems, idPlayer, idLevel) VALUES (?,?,?,?,?)";
 		/*$query = "INSERT INTO score (time, nbClicks, nbItems, idPlayer, idLevel) VALUES (:time,:nbclicks,:nbitems,:idplayer,:idlevel)";
@@ -239,7 +410,12 @@ interface ManagerInit {
 		$request->execute($values);
 		return $request->rowCount();
     }
-    /*OK*/public function update(Score $score){
+    /**
+     * Returns the success statement of the specified score update onto DB.
+     * @param Score $score The score to update
+     * @return int
+     */
+    public function update(Score $score){
 
 		$query = "UPDATE $this->nameTable SET time=?, nbClicks=?, nbItems=? where idPlayer=? AND idLevel=?";
 		$values = array($score->getTime(), $score->getNbClicks(), $score->getNbItems(), $score->getIdPlayer(), $score->getIdLevel());
@@ -248,31 +424,57 @@ interface ManagerInit {
 		$request->execute($values);
 		return $request->rowCount();
     }
-    /*OK*/public function delete(Score $score){
+    /**
+     * Returns the success statement of the specified score deletion from DB.
+     * @param Score $score The score to delete
+     * @return int
+     */
+    public function delete(Score $score){
         if(is_null($score->getIdPlayer()) || is_null($score->getIdLevel())){  return FALSE;  }
         $query = "DELETE FROM $this->nameTable where idPlayer=? AND idLevel=?";
 		$values = array($score->getIdPlayer(), $score->getIdLevel());
 		$request->execute($values);
 		return $request->rowCount();
     }
-    /*KO*/public function deleteMulti(array $scoreIds){
+    /**
+     * Returns the success statement of the specified score deletions from DB.
+     * @param array $scoreIds The array of score IDs to delete
+     * @return boolean
+     */
+    public function deleteMulti(array $scoreIds){
         $query = "DELETE FROM score WHERE id IN (".implode(',', $scoreIds).")";
         $nbDel = $this->parent_execute($query)->rowCount();
         return $nbDel === count($scoreIds);
     }
-	
-	public function getScoreById($idPlayer, $idLevel){
+    
+    /**
+     * Get the score which matches with the specified user and level IDs.
+     * @param int $idPlayer The user ID of the score which must be found
+     * @param int $idLevel The level ID of the score which must be found
+     * @return Score
+     */
+    public function getScoreById($idPlayer, $idLevel){
 		$query = "SELECT * from score WHERE idPLayer=$idPlayer AND idLevel=$idLevel";
 		$dataDB = $this->get($query)[0];
 		if(!$dataDB) return null;
 		return Score::init((int)$dataDB['idPlayer'],(int)$dataDB['idLevel'],(int)$dataDB['time'],(int)$dataDB['nbClicks'],(int)$dataDB['nbItems']);
 	}
-	
-    /*OK*/public function getAllByPlayer($idPlayer){
+
+    /**
+     * Get all scores which matches with the specified user ID.
+     * @param int $idPlayer The user ID of the score which must be found
+     * @return Score
+     */
+    public function getAllByPlayer($idPlayer){
 		return $this->get("SELECT idLevel, nbClicks, nbItems, time, name "
-                        . "AS levelName FROM `score` JOIN `level` ON idLevel = level.id WHERE idPlayer = $idPlayer");
+                        . "AS levelName FROM `score` JOIN `level` ON idLevel = level.id WHERE idPlayer = $idPlayer ORDER BY idLevel");
     }
-    /*OK*/public function getRanksByPlayer($idPlayer){
+    /**
+     * Get all level rankings which matches with the specified user ID.
+     * @param int $idPlayer The user ID of the ranks which must be found
+     * @return array
+     */
+    public function getRanksByPlayer($idPlayer){
         $dataDB = $this->get("SELECT DISTINCT idLevel FROM $this->nameTable");
         $idsLevel = array_map(function($value){ return $value['idLevel']; },$dataDB);
 
@@ -294,7 +496,13 @@ interface ManagerInit {
         }
         return $playerRanks;
     }
-    /*OK*/public function getRanking($idLevel=NULL){
+    /**
+     * Get the players ranking of all levels.
+     * The search can be filtered by the ID of a level.
+     * @param int $idLevel The level ID of the ranks which must be found
+     * @return array
+     */
+    public function getRanking($idLevel=NULL){
         $query = "SELECT pseudo, score.* FROM score JOIN user, level "
                 ."WHERE score.idPlayer=user.id AND score.idLevel=level.id "
                 ."AND levelStatus='".LEVEL_STATUS::ACCEPTED."' "
@@ -303,7 +511,13 @@ interface ManagerInit {
         $dataDB = $this->get($query);
         return $this->formateRanking($dataDB, is_null($idLevel));
     }
-    /*OK*/private function formateRanking($dataDB, $nullIdLevel){
+    /**
+     * Formates the ranking for the specified data.
+     * @param array $dataDB The values given by "getRanking" method.
+     * @param boolean $nullIdLevel The existance of the level ID
+     * @return array
+     */
+    private function formateRanking($dataDB, $nullIdLevel){
         $times = LevelManager::init()->getLevelsTimeMax();
         $ranks = array();
         foreach($dataDB as $data){
@@ -325,53 +539,107 @@ interface ManagerInit {
         });
         return $sorted;
     }
+    
 }
+
+/**
+ * Class used to manage forum Subject objects into DB.
+ */
 /*OK*/class SubjectManager extends ManagerDB {
-    /*OK*/static public function init() {
+    
+    /**
+     * Initializes a new manager of subjects.
+     */
+    static public function init() {
         $mgr = new self();
         $mgr->nameTable = "subject";
         $mgr->columns   = Subject::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    /*OK*/public function insert(Subject $subject){
+    /**
+     * Returns the ID of the specified subject insertion into DB.
+     * @param Subject $subject The subject to insert
+     * @return int
+     */
+    public function insert(Subject $subject){
         return $this->parent_insert($subject);
     }
-    /*OK*/public function update(Subject $subject){
+    /**
+     * Returns the success statement of the specified subject update onto DB.
+     * @param Subject $subject The subject to update
+     * @return int
+     */
+    public function update(Subject $subject){
         if(is_null($subject->getId())){  return FALSE;  }
         return $this->parent_update($subject);
     }
-    /*OK*/public function delete(Subject $subject){
+    /**
+     * Returns the success statement of the specified subject deletion from DB.
+     * @param Subject $subject The subject to delete
+     * @return int
+     */
+    public function delete(Subject $subject){
         if(is_null($subject->getId())){  return FALSE;  }
         return $this->parent_delete($subject);
     }
     
-    /*OK*/public function getLastUpdate(Subject $subject){
+    /**
+     * Get an array of last posts into DB for the specified subject.
+     * @param Subject $subject The subjects which the last posts must be found
+     * @return array
+     */
+    public function getLastUpdate(Subject $subject){
         $posts   = PostManager::init()->getAll("WHERE idSubject=".$subject->getId()." ORDER BY date DESC");
         $authors = UserManager::init()->getPseudos();
         return empty($posts) ?
                array("date"=> $subject->getDate() ,"author"=> $authors[ $subject->getIdAuthor() ]) :
                array("date"=> $posts[0]->getDate(),"author"=> $authors[ $posts[0]->getIdAuthor() ]);
     }
+    
 }
+
+/**
+ * Class used to manage forum Post objects into DB.
+ */
 /*OK*/class PostManager extends ManagerDB {
-    /*OK*/static public function init() {
+    
+    /**
+     * Initializes a new manager of posts.
+     */
+    static public function init() {
         $mgr = new self();
         $mgr->nameTable = "post";
         $mgr->columns = Post::$columns;
         $mgr->connectDB();
         return $mgr;
     }
-    /*OK*/public function insert(Post $post){
+    /**
+     * Returns the ID of the specified post insertion into DB.
+     * @param Post $post The post to insert
+     * @return int
+     */
+    public function insert(Post $post){
         return $this->parent_insert($post);
     }
-    /*OK*/public function delete(Post $post){
+    /**
+     * Returns the success statement of the specified post deletion from DB.
+     * @param Post $post The post to delete
+     * @return int
+     */
+    public function delete(Post $post){
          if(is_null($post->getId())){  return FALSE;  }
         return $this->parent_delete($post);
     }
-    /*OK*/public function deleteMulti(array $postIds){
+    /**
+     * Returns the success statement of the specified post deletions from DB.
+     * @param array $postIds The array of post IDs to delete
+     * @return boolean
+     */
+    public function deleteMulti(array $postIds){
         $query = "DELETE FROM post WHERE id IN (".implode(',', $postIds).")";
         $nbDel = $this->parent_execute($query)->rowCount();
         return $nbDel === count($postIds);
     }
+    
 }

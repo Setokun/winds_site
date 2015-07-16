@@ -1,15 +1,20 @@
 <?php
-/*
-PRINCIPE :
-recoit une requete en GET composée des paramètres obligatoires :
-	- user email
-	- user password
-	- action (constante de API_ACTION)
-et d'autres optionnels selon l'action désirée
+/**
+ * Description of API file
+ * @author Damien.D & Stephane.G
+ */
 
-RETOUR : JSON
-{error: message d'erreur} ou {data: valeur des données à retourner}
+/**
+ * File used to interact with the java Winds game.<br><br>
+ * USAGE : receives a GET request containing mandatory<br>
+ * parameters (user e-mail address, user password and action<br>
+ * defined in API_ACTION enumeration) and some other optionnal<br>
+ * parameters depending the specified action.<br><br>
+ * RETURN : a JSON-formated string as below :<br>
+ * {error : the_error_message} or {data : returned_data}<br>
+ * The returned data can be string or array (associative or not).
 */
+
 require_once 'core/config.php';
 
 $params = Tools::getIncomingParams();
@@ -26,12 +31,10 @@ if(!$hasMandatoryParams){
 }
 
 // -- Check the match between IDs --
-//$email	  = substr($params['email'], 0, -2);
 $email	  = str_replace("\r\n","",$params['email']);
 $password = $params['password'];
 if(AccountController::checkIDs($email,$password) === FALSE){
-    //ApiController::displayResponse(NULL, "Bad identifiants");
-	ApiController::displayResponse(NULL, "Identifiant: ".$email." et pwd: ".$password);
+    ApiController::displayResponse(NULL, "Bad identifiants");
 }
 
 // -- Check if the asked action exists --
@@ -40,10 +43,13 @@ if( ApiController::existsAction($action) === FALSE){
     ApiController::displayResponse(NULL, "Unknown action");
 }
 
-// -- Check if the current account has been banished
+// -- Check if the current account can interact
 $user = AccountController::getUserProfile($email);
 if($user->isBanished()){
     ApiController::displayResponse(NULL, "Banished account");
+}
+if($user->isDeleted()){
+    ApiController::displayResponse(NULL, "Deleted account");
 }
 
 // -- Get the result for the asked action --

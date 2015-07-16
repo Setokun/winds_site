@@ -2,12 +2,12 @@
 var idUser, message;
 
 // -- Users list --
-var usersList, accounts, btn_update, btn_delete, btn_banish, btn_unbanish;
+var usersList, usersScroll, accounts, btn_update, btn_delete, btn_banish, btn_unbanish;
 
 // -- Deletions list --
 var deletionsList;
 
-/*OK*/function ajaxControls(){
+function ajaxControls(){
     // -- affectations --
     var ajax   = $("section #ajax");
     var loader = ajax.find("#ajax-loader");
@@ -16,7 +16,7 @@ var deletionsList;
     idUser     = ajax.find("#idUser");
     
     // -- events --
-    /*OK*/$(document).ajaxStart(function(){
+    $(document).ajaxStart(function(){
         loader.css('display','block');
         closer.removeClass('btn-info');
         closer.addClass('disabled');
@@ -25,7 +25,7 @@ var deletionsList;
                     +"</h4><p>Timeout reached.</p>");
         ajax.modal({backdrop: false});
     });
-    /*OK*/$(document).ajaxStop(function(){
+    $(document).ajaxStop(function(){
         loader.toggle();
         closer.removeClass('disabled');
         closer.addClass('btn-info');
@@ -35,7 +35,7 @@ var deletionsList;
         setTimeout(function(){ ajax.modal('hide'); }, 5000);
     });
 }
-/*OK*/function ajaxOperator(data, callback){
+function ajaxOperator(data, callback){
     $.ajax({
         url     : "ajax.php",
         data    : data,
@@ -44,10 +44,11 @@ var deletionsList;
         timeout : 5000
     }).done(callback);
 }
-/*OK*/function scrollTo(account){
-    $('body').animate({scrollTop: account.offset().top -44}, 600);
+function scrollTo(account){
+    $('body').animate({scrollTop: usersList.offset().top}, 600);
+    usersScroll.animate({scrollTop: usersScroll.scrollTop() + account.position().top -65}, 600);
 }
-/*OK*/function focusAccount(account){
+function focusAccount(account){
     accounts.find(".account-actions")
             .filter(':not(.collapse)')
             .addClass('collapse');
@@ -55,9 +56,10 @@ var deletionsList;
     account.find(".account-actions").removeClass('collapse');
     scrollTo(account);
 }
-/*OK*/function userControls(){
+function userControls(){
     // -- affectations --
     usersList    = $("section #users-list");
+    usersScroll  = usersList.find("#row-scroll-accounts");
     accounts     = usersList.find(".account");
     btn_update   = usersList.find(".btn-success");
     btn_delete   = usersList.find(".btn-danger");
@@ -65,7 +67,7 @@ var deletionsList;
     btn_unbanish = usersList.find(".btn-primary");
 
     // -- events --
-    /*OK*/usersList.on("click",".panel-heading",function(){
+    usersList.on("click",".panel-heading",function(){
         var account = $(this).parent();
         account.find("[type='radio'][value='"+ account.data('usertype') +"']")
                .prop("checked",true);
@@ -73,7 +75,7 @@ var deletionsList;
                 focusAccount(account) :
                 account.find(".account-actions").addClass('collapse');
     });
-    /*OK*/btn_update.click(function(){
+    btn_update.click(function(){
         var account     = $(this).parents(".account");
         var newUserType = account.find(":checked").val();
         var data = {
@@ -93,7 +95,7 @@ var deletionsList;
         };
         ajaxOperator(data, callback);
     });
-    /*OK*/btn_delete.click(function(){
+    btn_delete.click(function(){
         var account = $(this).parents(".account");
         var data = {
             action   : "deleteAccount",
@@ -114,7 +116,7 @@ var deletionsList;
         };
         ajaxOperator(data, callback);
     });
-    /*OK*/btn_banish.click(function(){
+    btn_banish.click(function(){
         var account = $(this).parents(".account");
         var data = {
             action   : "banishAccount",
@@ -136,7 +138,7 @@ var deletionsList;
         };
         ajaxOperator(data, callback);
     });
-    /*OK*/btn_unbanish.click(function(){
+    btn_unbanish.click(function(){
         var account = $(this).parents(".account");
         var title   = account.find("h3");
         var data = {
@@ -160,12 +162,12 @@ var deletionsList;
         ajaxOperator(data, callback);
     });
 }
-/*OK*/function deletionControls(){
+function deletionControls(){
     // -- affectations --
     deletionsList = $("section #deletions-list");
     
     // -- events --
-    /*OK*/deletionsList.on("click","tr",function(){
+    deletionsList.on("click","tr",function(){
         var idUser = $(this).data('iduser');
         var account = accounts.filter("[data-iduser="+idUser+"]");
         account.find(".account-actions").hasClass('collapse') ?
@@ -173,7 +175,7 @@ var deletionsList;
             scrollTo(account);
     });
 }
-/*OK*/$(document).ready(function(){
+$(document).ready(function(){
     ajaxControls();
     userControls();
     deletionControls();
