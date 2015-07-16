@@ -12,7 +12,7 @@ var div_post, p_statusSubject, btn_newPost,
     btn_closeSubject, btn_deleteSubject, btn_back,
     table_posts, btn_deletePost, idSubject;
     
-/*OK*/function ajaxControls(){
+function ajaxControls(){
     // -- affectations --
     ajax   = $("section #ajax");
     var loader = ajax.find("#ajax-loader");
@@ -21,7 +21,7 @@ var div_post, p_statusSubject, btn_newPost,
     idUser     = ajax.find("#idUser");
     
     // -- events --
-    /*OK*/$(document).ajaxStart(function(){
+    $(document).ajaxStart(function(){
         loader.css('display','block');
         closer.removeClass('btn-info');
         closer.addClass('disabled');
@@ -30,7 +30,7 @@ var div_post, p_statusSubject, btn_newPost,
                     +"</h4><p>Timeout reached.</p>");
         ajax.modal({backdrop: false});
     });
-    /*OK*/$(document).ajaxStop(function(){
+    $(document).ajaxStop(function(){
         loader.toggle();
         closer.removeClass('disabled');
         closer.addClass('btn-info');
@@ -40,7 +40,7 @@ var div_post, p_statusSubject, btn_newPost,
         setTimeout(function(){ ajax.modal('hide'); }, 5000);
     });
 }
-/*OK*/function ajaxOperator(data, callback){
+function ajaxOperator(data, callback){
     $.ajax({
         url     : "ajax.php",
         data    : data,
@@ -49,7 +49,7 @@ var div_post, p_statusSubject, btn_newPost,
         timeout : 5000
     }).done(callback);
 }
-/*OK*/function subjectControls(){
+function subjectControls(){
     // -- affectations --
     div_newSubject    = $("section #subject #new-subject");
     title_newSubject  = div_newSubject.find("#title-new-subject");
@@ -61,17 +61,17 @@ var div_post, p_statusSubject, btn_newPost,
     table_subjects    = div_subject.find("#table-subjects");
 
     // -- events --
-    /*OK*/table_subjects.on("click",".subject",function(){
+    table_subjects.on("click",".subject",function(){
         document.location = "forum.php?id=" + $(this).data('idsubject');
     });
-    /*OK*/btn_newSubject.click(function(){
+    btn_newSubject.click(function(){
         div_subject.slideToggle();
         div_newSubject.slideToggle(400,function(){
             title_newSubject.val(undefined);
             msg_newSubject.val(undefined);
         });
     });
-    /*OK*/btn_createSubject.click(function(){
+    btn_createSubject.click(function(){
         var data = {
             action  : "createSubject",
             idUser  : idUser.val(),
@@ -91,11 +91,11 @@ var div_post, p_statusSubject, btn_newPost,
         };
         ajaxOperator(data, callback);
     });
-    /*OK*/btn_cancelSubject.click(function(){
+    btn_cancelSubject.click(function(){
         btn_newSubject.click();
     });
 }
-/*OK*/function postControls(){
+function postControls(){
     // -- affectations --
     div_newPost       = $("section #post #new-post");
     msg_newPost       = div_newPost.find("#message-new-post");
@@ -111,8 +111,8 @@ var div_post, p_statusSubject, btn_newPost,
     idSubject         = $("section #post #idSubject");
     
     // -- events --
-    /*OK*/btn_back.click(function(){ backToForum(); });
-    /*OK*/btn_closeSubject.click(function(){
+    btn_back.click(function(){ backToForum(); });
+    btn_closeSubject.click(function(){
         var data = {
             action   : "closeSubject",
             idSubject: idSubject.val()
@@ -131,7 +131,7 @@ var div_post, p_statusSubject, btn_newPost,
         };
         ajaxOperator(data, callback);
     });
-    /*OK*/btn_deleteSubject.click(function(){
+    btn_deleteSubject.click(function(){
         var data = {
             action   : "deleteSubject",
             idSubject: idSubject.val()
@@ -146,13 +146,13 @@ var div_post, p_statusSubject, btn_newPost,
         };
         ajaxOperator(data,callback);
     });
-    /*OK*/btn_newPost.click(function(){
+    btn_newPost.click(function(){
         div_post.slideToggle();
         div_newPost.slideToggle(400,function(){
             msg_newPost.val(undefined);
         });
     });
-    /*OK*/btn_createPost.click(function(){
+    btn_createPost.click(function(){
         var data = {
             action   : "createPost",
             idUser   : idUser.val(),
@@ -172,10 +172,10 @@ var div_post, p_statusSubject, btn_newPost,
         };
         ajaxOperator(data, callback);
     });
-    /*OK*/btn_cancelPost.click(function(){
+    btn_cancelPost.click(function(){
         btn_newPost.click();
     });
-    /*OK*/table_posts.on('click','.btn-danger',function(){
+    table_posts.on('click','.btn-danger',function(){
         var row = $(this).parents(".row-post");
         var data = {
             action : "deletePost",
@@ -194,10 +194,10 @@ var div_post, p_statusSubject, btn_newPost,
         ajaxOperator(data,callback);
     });
 }
-/*OK*/function backToForum(){
+function backToForum(){
     document.location = "forum.php";
 }
-/*OK*/$(document).ready(function(){
+$(document).ready(function(){
     ajaxControls();
     subjectControls();
     postControls();

@@ -1,4 +1,4 @@
-/*OK*/function ajaxControls(){
+function ajaxControls(){
     // -- affectations --
     ajax       = $("#ajax");
     loader     = ajax.find("#ajax-loader");
@@ -6,7 +6,7 @@
     message    = ajax.find("#ajax-message");
     
     // -- events --
-    /*OK*/$(document).ajaxStart(function(){
+    $(document).ajaxStart(function(){
         loader.css('display','block');
         closer.removeClass('btn-info');
         closer.addClass('disabled');
@@ -15,7 +15,7 @@
                     +"</h4><p>Timeout reached.</p>");
         ajax.modal({backdrop: false});
     });
-    /*OK*/$(document).ajaxStop(function(){
+    $(document).ajaxStop(function(){
         loader.toggle();
         closer.removeClass('disabled');
         closer.addClass('btn-info');
@@ -25,7 +25,7 @@
         setTimeout(function(){ ajax.modal('hide'); }, 5000);
     });
 }
-/*OK*/function ajaxOperator(data, callback){
+function ajaxOperator(data, callback){
     $.ajax({
         url     : "ajax.php",
         data    : data,
@@ -35,7 +35,7 @@
     }).done(callback);
 }
 
-/*OK*/function loginControls(){
+function loginControls(){
     // -- affectations --
     div_login          = $('#login-box');
     var email          = div_login.find('#login-email');
@@ -46,15 +46,15 @@
     var form           = div_login.find("form");
     
     // -- events --
-    /*OK*/login_toForgot.click(function(){
+    login_toForgot.click(function(){
         div_login.toggle();
         div_forgot.toggle();
     });
-    /*OK*/login_toSignup.click(function(){
+    login_toSignup.click(function(){
         div_login.toggle();
         div_signup.toggle();
     });
-    /*OK*/btn_login.click(function(){
+    btn_login.click(function(){
         if( !requiredFilled(div_login) ){ return; }
         
         // checks account
@@ -81,7 +81,7 @@
         ajaxOperator(data, callback);       
     });
 }
-/*OK*/function signupControls(){
+function signupControls(){
     // -- affectations --
     div_signup         = $('#signup-box');
     var signup_toLogin = div_signup.find('#signup-to-login');
@@ -92,11 +92,11 @@
     var password2      = div_signup.find('#signup-password2');
     
     // -- events --
-    /*OK*/signup_toLogin.click(function(){
+    signup_toLogin.click(function(){
         div_signup.toggle();
         div_login.toggle();
     });
-    /*OK*/btn_signup.click(function(){
+    btn_signup.click(function(){
         // checks
         if( !requiredFilled(div_signup) ){ return; }
         if( !checkPwdFields(password1, password2) ){ return; }
@@ -141,7 +141,7 @@
         ajaxOperator(data, callback);
     });
 }
-/*OK*/function forgotControls(){
+function forgotControls(){
     // -- affectations --
     div_forgot         = $('#forgot-box');
     var forgot_toLogin = div_forgot.find('#forgot-to-login');
@@ -149,11 +149,11 @@
     var email          = div_forgot.find('#forgot-email');
     
     // -- events --
-    /*OK*/forgot_toLogin.click(function(){
+    forgot_toLogin.click(function(){
         div_forgot.toggle();
         div_login.toggle();
     });
-    /*OK*/btn_send.click(function(){
+    btn_send.click(function(){
         if( !requiredFilled(div_forgot) ){ return; }
         
         // passwords match
@@ -182,7 +182,7 @@
         ajaxOperator(data, callback);
     });
 }
-/*OK*/function resetControls(){
+function resetControls(){
     // -- affectations --
     var div_reset     = $("#reset-box");
     var reset_toLogin = div_reset.find("#reset-to-login");
@@ -193,10 +193,10 @@
     var btn_valid     = div_reset.find("#btn-valid");
     
     // -- events --
-    /*OK*/reset_toLogin.click(function(){
+    reset_toLogin.click(function(){
        document.location = "login.php";
     });
-    /*OK*/btn_valid.click(function(){
+    btn_valid.click(function(){
         // check passwords
         if( !requiredFilled(div_reset) ){ return; }
         if( !checkPwdFields(password1, password2) ){ return; }
@@ -238,7 +238,7 @@
     });
 }
 
-/*OK*/function requiredFilled(div){
+function requiredFilled(div){
     var inputs = div.find("input[type=text], input[type=password]");
     var emptys = inputs.filter(function(){ return !this.value; });
     
@@ -251,7 +251,7 @@
     setTimeout(function(){ ajax.modal('hide'); }, 5000);
     return false;
 }
-/*OK*/function checkPwdFields(pwd1, pwd2){
+function checkPwdFields(pwd1, pwd2){
     if(pwd1.val() !== pwd2.val()){
         loader.css('display','none');
         message.html("<h4>Operation cancelled</h4>"
@@ -264,7 +264,7 @@
     }
     return true;
 }
-/*OK*/$(document).ready(function(){
+$(document).ready(function(){
     ajaxControls();
     loginControls();
     signupControls();

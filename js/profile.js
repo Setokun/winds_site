@@ -1,4 +1,4 @@
-/*OK*/function ajaxControls(){
+function ajaxControls(){
     // -- affectations --
     var ajax   = $("section #ajax");
     var loader = ajax.find("#ajax-loader");
@@ -7,7 +7,7 @@
     idUser     = ajax.find("#idUser");
     
     // -- events --
-    /*OK*/$(document).ajaxStart(function(){
+    $(document).ajaxStart(function(){
         loader.css('display','block');
         closer.removeClass('btn-info');
         closer.addClass('disabled');
@@ -16,7 +16,7 @@
                     +"</h4><p>Timeout reached.</p>");
         ajax.modal({backdrop: false});
     });
-    /*OK*/$(document).ajaxStop(function(){
+    $(document).ajaxStop(function(){
         loader.toggle();
         closer.removeClass('disabled');
         closer.addClass('btn-info');
@@ -26,7 +26,7 @@
         setTimeout(function(){ ajax.modal('hide'); }, 5000);
     });
 }
-/*OK*/function ajaxOperator(data, callback){
+function ajaxOperator(data, callback){
     $.ajax({
         url     : "ajax.php",
         data    : data,
@@ -36,14 +36,14 @@
     }).done(callback);
 }
 
-/*OK*/function profileControls(){
+function profileControls(){
     // -- afectations --
     btn_changePwd  = $("section #change-pwd");
     btn_accountDel = $("section #account-deletion");
     var email      = $("section #profile [type='email']");
     
     // -- events --
-    /*OK*/btn_changePwd.click(function(){
+    btn_changePwd.click(function(){
         var data = {
             action: "forgotPassword",
             email : email.val()
@@ -58,7 +58,7 @@
         };
         ajaxOperator(data, callback);
     });
-    /*OK*/btn_accountDel.click(function(){
+    btn_accountDel.click(function(){
         var data = {
             action   : "askDeletion",
             idUser   : idUser.val()
@@ -76,7 +76,7 @@
         ajaxOperator(data, callback);
     });
 }
-/*OK*/$(document).ready(function(){
+$(document).ready(function(){
     ajaxControls();
     profileControls();    
 });

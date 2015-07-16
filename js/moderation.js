@@ -4,7 +4,7 @@ var message;
 // -- Moderation --
 var table_moderate, btn_accept, btn_refuse;
 
-/*OK*/function ajaxControls(){
+function ajaxControls(){
     // -- affectations --
     var ajax   = $("section #ajax");
     var loader = ajax.find("#ajax-loader");
@@ -13,7 +13,7 @@ var table_moderate, btn_accept, btn_refuse;
     idUser     = ajax.find("#idUser");
     
     // -- events --
-    /*OK*/$(document).ajaxStart(function(){
+    $(document).ajaxStart(function(){
         loader.css('display','block');
         closer.removeClass('btn-info');
         closer.addClass('disabled');
@@ -22,7 +22,7 @@ var table_moderate, btn_accept, btn_refuse;
                     +"</h4><p>Timeout reached.</p>");
         ajax.modal({backdrop: false});
     });
-    /*OK*/$(document).ajaxStop(function(){
+    $(document).ajaxStop(function(){
         loader.toggle();
         closer.removeClass('disabled');
         closer.addClass('btn-info');
@@ -32,7 +32,7 @@ var table_moderate, btn_accept, btn_refuse;
         setTimeout(function(){ ajax.modal('hide'); }, 5000);
     });
 }
-/*OK*/function ajaxOperator(data, callback){
+function ajaxOperator(data, callback){
     $.ajax({
         url     : "ajax.php",
         data    : data,
@@ -85,7 +85,7 @@ function moderationControls(){
         ajaxOperator(data, callback);
     });
 }
-/*OK*/$(document).ready(function(){
+$(document).ready(function(){
     ajaxControls();
     moderationControls();    
 });

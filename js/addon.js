@@ -7,7 +7,7 @@ var upload_addon, inp_name, inp_description, select_type, inp_file, btn_upload;
 // -- Remove --
 var remove_addon, table, btn_remove;
 
-/*OK*/function ajaxControls(){
+function ajaxControls(){
     // -- affectations --
     var ajax   = $("section #ajax");
     var loader = ajax.find("#ajax-loader");
@@ -16,7 +16,7 @@ var remove_addon, table, btn_remove;
     idUser     = ajax.find("#idUser");
     
     // -- events --
-    /*OK*/$(document).ajaxStart(function(){
+    $(document).ajaxStart(function(){
         loader.css('display','block');
         closer.removeClass('btn-info');
         closer.addClass('disabled');
@@ -25,7 +25,7 @@ var remove_addon, table, btn_remove;
                     +"</h4><p>Timeout reached.</p>");
         ajax.modal({backdrop: false});
     });
-    /*OK*/$(document).ajaxStop(function(){
+    $(document).ajaxStop(function(){
         loader.toggle();
         closer.removeClass('disabled');
         closer.addClass('btn-info');
@@ -35,7 +35,7 @@ var remove_addon, table, btn_remove;
         setTimeout(function(){ ajax.modal('hide'); }, 5000);
     });
 }
-/*OK*/function ajaxOperator(data, callback){
+function ajaxOperator(data, callback){
     $.ajax({
         url     : "ajax.php",
         data    : data,
@@ -88,14 +88,14 @@ function uploadControls(){
         }).done(callback);
     });
 }
-/*OK*/function removeControls(){
+function removeControls(){
     // -- affectations --
     remove_addon = $("section #remove-addon");
     table        = remove_addon.find("table");
     btn_remove   = remove_addon.find("#btn-remove");
     
     // -- events --
-    /*OK*/btn_remove.click(function(){
+    btn_remove.click(function(){
         var checkeds   = table.find(":checked");
         var checkedIds = checkeds.map(function(){
                               return $(this).data('idlevel');
@@ -119,7 +119,7 @@ function uploadControls(){
         ajaxOperator(data, callback);
     });
 }
-/*OK*/$(document).ready(function(){
+$(document).ready(function(){
     ajaxControls();
     uploadControls();
     removeControls();
