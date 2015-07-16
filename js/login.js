@@ -66,8 +66,7 @@
         var callback = function(data){
             var response = $.parseJSON(data);
             if(response.allowed){
-                message.html("<h4 class='ajax-success'>Allowed account</h4>"
-                           + "<p>"+ response.allowed +".</p>");
+                ajax.modal('hide');
                 form.submit();
             }
             if(response.errorID){
