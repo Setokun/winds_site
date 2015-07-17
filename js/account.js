@@ -130,6 +130,7 @@ function userControls(){
                 account.find(".btn-warning").css("display","none");
                 account.find(".btn-primary").removeAttr("style");
                 account.find("h3").append(" (banished)");
+                setTimeout(function(){ location.reload(); }, 5000);
             }
             message.html( response.banished ?
                 "<h4 class='ajax-success'>Account banished</h4>" :
