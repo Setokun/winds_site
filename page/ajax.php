@@ -188,14 +188,12 @@ class AjaxOperator {
         }
         
         $post = Post::init( htmlentities($this->params['message'], ENT_QUOTES),
-                            $this->user->getId(),
-                            $this->params['idSubject'] );
+                            $this->user->getId(), $this->params['idSubject'] );
         $inserted = PostManager::init()->insert($post);
         $inserted ? $post->setId($inserted) : NULL;
         $inserted ? $this->response['created'] = ForumController::formatePost(
-                        $post, $this->user->getPseudo(),
-                        $this->user->isSuperUser()) :
-                    $this->response['error'] = "Post insertion failed";
+                    $post, $this->user->getPseudo(),TRUE)
+                  : $this->response['error'] = "Post insertion failed";
     }
     private function deletePost(){
         $post = PostManager::init()->getByID($this->params['idPost']);
