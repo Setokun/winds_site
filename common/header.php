@@ -7,6 +7,8 @@
 /**
  * File used at first in all pages which interact with the users.
  */
+
+require_once "../core/config.php";
 ?>
 
 <!DOCTYPE HTML>
@@ -30,4 +32,25 @@
         </script>
     </head>
     <body>
-    
+    <?php
+        if( !ManagerDB::availableDB() ){
+            include_once "../common/banner.php"; ?>
+            <div class="container">
+                <section style="padding:20px" class="col-sm-9 col-md-10">
+                    <div class="mainbox col-xs-12 col-sm-6 col-sm-offset-3 col-lg-offset-3 col-lg-8" >
+                        <div class="panel panel-info">
+                            <div class="panel-heading">
+                                <div class="panel-title">Unavailable database</div>
+                            </div>
+                            <div class="panel-body form-horizontal" >
+                                <div class="form-group col-md-12" >
+                                    <h4>The Winds team apologizes for any inconvenience caused.</h4>
+                                    <p>We try to fix it as soon as possible.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section><?php
+            include "../common/footer.php";
+            die;
+        } ?>
