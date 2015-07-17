@@ -154,6 +154,11 @@ class AjaxOperator {
     
     // -- FORUM --
     private function createSubject(){
+        if(empty($this->params['title']) || empty($this->params['message'])){
+            $this->response['empty'] = "Empty message";
+            return;
+        }
+        
         $subject = Subject::init( htmlentities($this->params['title'], ENT_QUOTES),
                                   htmlentities($this->params['message'], ENT_QUOTES),
                                   $this->user->getId() );

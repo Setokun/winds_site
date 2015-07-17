@@ -80,6 +80,11 @@ function subjectControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.empty){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The input fields are empty.</p>");
+                return;
+            }
             if(!response.created){
                 message.html("<h4 class='ajax-error'>Internal error</h4>"
                            + "<p>Unable to create this subject.</p>" );
