@@ -375,7 +375,7 @@ class AjaxOperator {
         if($this->response['accepted'] == TRUE){
             $sended = Tools::sendLevelAcceptedMail($user, $level);
             if( !$sended ){
-                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                $this->response['errorMailing'] = "Level accepted, but the mail didn't arrive in the mailbox";
                 return;
             }
         }

@@ -164,7 +164,6 @@
      */
     static function sendResetMail(User $user){
         $mail = $user->getEmail();
-        $pseudo = $user->getPseudo();
         $link = "http://www.winds-game.com/page/login.php"
               . "?action=reset&id=".$user->getId()
                 ."&token=".$user->getToken();
