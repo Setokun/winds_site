@@ -75,8 +75,15 @@ define("NB_NEWS_TO_DISPLAY", 5);
      * @param User $current the object of the current user to not display
      */
     static function displayList(User $current){
+        $typeToFind = array();
+        switch($current->getUserType()) {
+            case USER_TYPE::ADMINISTRATOR: $typeToFind[] = USER_TYPE::ADMINISTRATOR;
+            case USER_TYPE::MODERATOR:     $typeToFind[] = USER_TYPE::MODERATOR;
+            default:                       $typeToFind[] = USER_TYPE::PLAYER;
+        }
         $users = UserManager::init()->getAll("WHERE id<>".$current->getId()
-                ." AND userStatus<>'deleted'");
+                ." AND userStatus<>'".USER_STATUS::DELETED."' AND userType"
+                ." IN ('".implode("','", $typeToFind)."')");
         foreach($users as $user){
             echo "<div class='align-mobile-left panel panel-default account'"
                     ."style='margin-bottom:2px' data-iduser='".$user->getId()."'"
@@ -130,9 +137,16 @@ define("NB_NEWS_TO_DISPLAY", 5);
      * @param User $current the object of the current user to not display
      */
     static function displayDeletionList(User $current){
+        $typeToFind = array();
+        switch($current->getUserType()) {
+            case USER_TYPE::ADMINISTRATOR: $typeToFind[] = USER_TYPE::ADMINISTRATOR;
+            case USER_TYPE::MODERATOR:     $typeToFind[] = USER_TYPE::MODERATOR;
+            default:                       $typeToFind[] = USER_TYPE::PLAYER;
+        }
         $users = UserManager::init()->getAll("WHERE id<>"
                 .$current->getId()." AND userStatus='"
-                .USER_STATUS::DELETING."'");
+                .USER_STATUS::DELETING."' AND userType IN"
+                ." ('".implode("','", $typeToFind)."')");
         foreach($users as $user){
             echo "<tr data-iduser='".$user->getId()."'><td class='col-xs-12 bold' "
                 ."colspan='100%'><span><h5>".Tools::capitalize($user->getPseudo())
