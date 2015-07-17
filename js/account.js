@@ -85,6 +85,11 @@ function userControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.updated){
                 account.data('usertype', newUserType);
             }
@@ -103,6 +108,11 @@ function userControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.deleted){
                 account.remove();
                 var accountDel = deletionsList.find("[data-iduser='"
@@ -124,6 +134,11 @@ function userControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.banished){
                 account.find("[type='radio']").attr("disabled",true);
                 account.find(".btn-success").css("display","none");
@@ -148,6 +163,11 @@ function userControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.unbanished){
                 account.find("[type='radio']").removeAttr("disabled");
                 account.find(".btn-success").removeAttr("style");

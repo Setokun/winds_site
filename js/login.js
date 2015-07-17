@@ -65,6 +65,11 @@ function loginControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.allowed){
                 ajax.modal('hide');
                 form.submit();
@@ -111,6 +116,11 @@ function signupControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.created){
                 div_signup.find("input[type=text], input[type=password]")
                           .each(function(){ this.value = ''; });
@@ -163,6 +173,11 @@ function forgotControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.forgotten){
                 div_forgot.toggle();
                 div_login.toggle();
@@ -211,6 +226,11 @@ function resetControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.updated || response.errorTime || response.errorToken){
                 btn_valid.add(password1).add(password2).css('cursor','not-allowed');
                 btn_valid.add(password1).add(password2).attr("disabled",true);

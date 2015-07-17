@@ -23,6 +23,10 @@ interface ManagerInit {
     // VARIABLES - MUST BE OVERRIDEN IN CONSTRUCTOR OF THE DERIVED CLASS
     protected $nameTable,           // the name of the table in DB and of the class to use to instanciate objects 
               $columns;             // must be in same order like in DB
+    static  $host   = "windsgamqiwinds.mysql.db",
+            $nameDB = "windsgamqiwinds",
+            $user   = "windsgamqiwinds",
+            $pwd    = "Wind2084";
     
     /**
      * Refuses the manager's initialization by the default way.
@@ -32,19 +36,22 @@ interface ManagerInit {
      * Connects the manager to the MySQL sever.
      */
     protected function connectDB() {
-		$host	= "windsgamqiwinds.mysql.db";
-        $nameDB = "windsgamqiwinds";
-		$user	= "windsgamqiwinds";
-		$pwd	= "Wind2084";
-	
         try {
-            $this->PDO = new PDO("mysql:host=$host;dbname=$nameDB", $user, $pwd);
+            $this->PDO = new PDO("mysql:host=".self::$host.";dbname=".self::$nameDB, self::$user, self::$pwd);
             $this->PDO->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
-        catch (Exception $e) {
-            die('Erreur : ' . $e->getMessage());
-            exit;
+        catch (Exception $e) {}
+    }
+    /**
+     * Checks if the database is available.
+     * @return boolean
+     */
+    static public function availableDB(){
+        try {
+            new PDO("mysql:host=".self::$host.";dbname=".self::$nameDB, self::$user, self::$pwd);
+            return TRUE;
         }
+        catch (Exception $e){ return FALSE; }
     }
     
     /**

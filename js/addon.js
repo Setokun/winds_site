@@ -66,6 +66,11 @@ function uploadControls(){
         var formData = new FormData(form);
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.data){
                 inp_name.val(undefined);
                 inp_description.val(undefined);
@@ -106,6 +111,11 @@ function removeControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.deleted){
                 checkeds.each(function(){
                     $(this).parents('tr').remove();

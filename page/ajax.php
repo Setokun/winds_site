@@ -15,12 +15,19 @@ class AjaxOperator {
             $response = array();
     
     static function init(array $data){
+        self::isAvailableDB();
         $operator = new self();
         $operator->params = $data;
         $operator->action = $data['action'];
         $operator->user   = !isset($data['idUser']) ? NULL :
             UserManager::init()->getByID($data['idUser']);
         return $operator;
+    }
+    static function isAvailableDB(){
+        if( !ManagerDB::availableDB() ){
+            echo json_encode(['DBdown' => "Unavailable database"],JSON_UNESCAPED_SLASHES);
+            die;
+        }
     }
     private function __construct(){}
     public function treat(){

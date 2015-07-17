@@ -14,6 +14,12 @@ $addonDesc = htmlentities($_POST["addon-description"], ENT_QUOTES);
 $addonType = $_POST["addon-type"];
 $addonFile = $_FILES["addon-file"];
 
+function isAvailableDB(){
+    if( !ManagerDB::availableDB() ){
+        echo json_encode(['DBdown' => "Unavailable database"],JSON_UNESCAPED_SLASHES);
+        die;
+    }
+}
 function uploadTheme(){
     global $idUser, $addonName, $addonDesc, $addonFile;
     
@@ -41,6 +47,7 @@ function uploadLevel(){
     Tools::displayResponse($manip->getResult(), $manip->getError());
 }
 
+isAvailableDB();
 if($addonType === "theme"){ uploadTheme(); }
 if($addonType === "level"){ uploadLevel(); }
 ?>
