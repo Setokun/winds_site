@@ -101,7 +101,12 @@
         return $rndStr;
     }
     
-    // OK
+    /**
+     * Sends an email with a link to activate the account
+     * @param User $user the object representing the user
+     * @param int $idUser the new id created for the new player
+     * @return boolean
+     */
     static function sendActivationMail(User $user, $idUser){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
@@ -152,7 +157,11 @@
         //==========
         
     }
-    // OK
+    /**
+     * Sends an email with a link to reset the password
+     * @param User $user the object representing the user
+     * @return boolean
+     */
     static function sendResetMail(User $user){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
@@ -200,7 +209,11 @@
         //==========
         
     }
-    // to test
+    /**
+     * Sends an email to confirm the account was successfully activated
+     * @param User $user the object representing the user
+     * @return boolean
+     */
     static function sendInscriptionConfirmationMail(User $user){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
@@ -250,7 +263,12 @@
         //==========
         
     }
-    // OK
+    /**
+     * Sends an email to inform the user his account has been promoted
+     * @param User $user the object representing the user
+     * @param String $newStatus the new status of the user
+     * @return boolean
+     */
     static function sendPromotionMail(User $user, $newStatus){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
@@ -298,54 +316,11 @@
         //==========
         
     }
-    //to test
-    static function sendRegressionMail(User $user){
-        $mail = $user->getEmail();
-        $pseudo = $user->getPseudo();
-        $link = "http://www.winds-game.com";
-              
-        $message_html = "<html><head></head><body><header><img src='http://www.winds-game.com/resources/banniere3.png'></header>";
-        $message_html .= "<h1 style='margin-bottom:20px;'>You're a simpler player now, ".$pseudo." !</h1>";
-        $message_html .= "<h2>Back to the players !</h2>";
-        $message_html .= "<p>Thank you for your involvement in <a href='".$link."'>www.winds-game.com</a>, but we decided you'll be just a player from now.</p>";
-        $message_html .= "<br><p><em>The Winds Team</em></p>";
-        $message_html .= "</body></html>";
-        
-        
-        $passage_ligne = "\r\n";
-
-        //=====Création de la boundary
-        $boundary = "-----=".md5(rand());
-        //==========
-
-        //=====Définition du sujet.
-        $subject = "Winds - Important information about your Winds account";
-        //=========
-
-        //=====Création du header de l'e-mail.
-        $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
-        $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
-        $header.= "MIME-Version: 1.0".$passage_ligne;
-        $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
-
-        //=====Création du message.
-        $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
-        $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
-
-        //=====Envoi de l'e-mail.
-        return mail($mail,$subject,$message,$header);
-        //==========
-        
-    }
-    //to test
+    /**
+     * Sends an email to inform the user his account has been banished
+     * @param User $user the object representing the user
+     * @return boolean
+     */
     static function sendBanishMail(User $user){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
@@ -391,7 +366,11 @@
         //==========
         
     }
-    // OK
+    /**
+     * Sends an email to inform the user his account has been deleted
+     * @param User $user the object representing the user
+     * @return boolean
+     */
     static function sendAccountDeletionMail(User $user){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
@@ -435,7 +414,11 @@
         return mail($mail,$subject,$message,$header);
         //==========
     }
-    // to test
+    /**
+     * Sends an email to inform the user his account has been unbanished
+     * @param User $user the object representing the user
+     * @return boolean
+     */
     static function sendUnbanishMail(User $user){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
@@ -481,7 +464,12 @@
         //==========
         
     }
-    // to test
+    /**
+     * Sends an email to inform the user a level he submited was accepted
+     * @param User $user the object representing the user
+     * @param Level $level the object representing the level accepted
+     * @return boolean
+     */
     static function sendLevelAcceptedMail(User $user, Level $level){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
@@ -529,7 +517,12 @@
         return mail($mail,$subject,$message,$header);
         //==========
     }
-    // to test
+    /**
+     * Sends an email to inform the user a level he submited was refused
+     * @param User $user the object representing the user
+     * @param Level $level the object representing the level refused
+     * @return boolean
+     */
     static function sendLevelDeclinedMail(User $user, Level $level){
         $mail = $user->getEmail();
         $pseudo = $user->getPseudo();
