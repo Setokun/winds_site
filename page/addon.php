@@ -74,7 +74,7 @@ include_once "../common/menu.php";
                 </div>
             </div>
             <div class="col-xs-12 form-row">
-                <input name="addon-file" type="file" class="custom-file-input">
+                <input name="addon-file" type="file" class="custom-file-input" accept=".jar">
             </div>
         </form>
         <div class="col-xs-12 form-row">
