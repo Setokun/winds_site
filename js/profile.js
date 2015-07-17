@@ -50,6 +50,11 @@ function profileControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             message.html( response.forgotten ?
                 "<h4 class='ajax-success'>Password forgotten</h4><p>An "
                     +"e-mail has been sended to reset your password.</p>" :
@@ -65,6 +70,11 @@ function profileControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.deleting){
                 
             }

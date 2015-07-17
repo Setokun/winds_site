@@ -589,13 +589,27 @@ interface Winds_News {
         return $this->idTheme;
     }
     /**
+     * Get the level creator's id.
+     * @return int
+     */
+    public function getIdCreator() {
+        return $this->idCreator;
+    }
+    /**
+     * Get the level's name.
+     * @return String
+     */
+    public function getName() {
+        return $this->name;
+    }
+    /**
      * Set the level's status.
      * @param String $levelStatus A constant of LEVEL_STATUS
      */
     public function setLevelStatus($levelStatus) {
         $this->levelStatus = $levelStatus;
     }
-
+    
 }
 
 /**

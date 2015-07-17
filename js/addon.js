@@ -1,5 +1,5 @@
 // -- Ajax --
-var idUser, message;
+var idUser, ajax, loader, message;
 
 // -- Upload --
 var upload_addon, inp_name, inp_description, select_type, inp_file, btn_upload;
@@ -9,8 +9,8 @@ var remove_addon, table, btn_remove;
 
 function ajaxControls(){
     // -- affectations --
-    var ajax   = $("section #ajax");
-    var loader = ajax.find("#ajax-loader");
+    ajax   = $("section #ajax");
+    loader = ajax.find("#ajax-loader");
     var closer = ajax.find("#ajax-closer");
     message    = ajax.find("#ajax-message");
     idUser     = ajax.find("#idUser");
@@ -56,16 +56,17 @@ function uploadControls(){
     
     // -- events --
     btn_upload.click(function(){
-        // checks
-        var valid = inp_name.val() !== '' && inp_description !== ''
-                 && select_addonType.find(':selected').val() !== "-1"
-                 && inp_file.prop('files').length === 1;
-        if( !valid ){ return; }
+        if( !checkUploadValidity() ){ return; }
         
         // upload
         var formData = new FormData(form);
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.data){
                 inp_name.val(undefined);
                 inp_description.val(undefined);
@@ -74,9 +75,8 @@ function uploadControls(){
                 setTimeout(function(){ location.reload(); }, 5000);
             }
             message.html( response.data ?
-                "<h4 class='ajax-success'>"+ response.data +".</h4><p>Auto-reload this page in few times.</p>" :
+                "<h4 class='ajax-success'>"+ response.data +".</h4><p>Auto-reload this page in few time.</p>" :
                 "<h4 class='ajax-error'>Error</h4><p>"+ response.error +".</p>" );
-        
         };
         $.ajax({
             url        : "upload.php",
@@ -106,6 +106,11 @@ function removeControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.deleted){
                 checkeds.each(function(){
                     $(this).parents('tr').remove();
@@ -118,6 +123,22 @@ function removeControls(){
         };
         ajaxOperator(data, callback);
     });
+}
+function checkUploadValidity(){
+    var valid = inp_name.val() !== '' && inp_description.val() !== ''
+             && select_addonType.find(':selected').val() !== "-1"
+             && inp_file.prop('files').length === 1;
+    
+    if( !valid ){
+        loader.css('display','none');
+        message.html("<h4>Operation cancelled</h4><p>Empty fields found."
+                    +"</p><span style='color:red'><em>This window will "
+                    +"be closed automatically in 5 seconds.</em><span>");
+        ajax.modal({backdrop: false});
+        setTimeout(function(){ ajax.modal('hide'); }, 5000);
+    }
+    
+    return valid;
 }
 $(document).ready(function(){
     ajaxControls();

@@ -56,6 +56,11 @@ function moderationControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.accepted){
                 levelRow.remove();
             }
@@ -74,6 +79,11 @@ function moderationControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.refused){
                 levelRow.remove();
             }

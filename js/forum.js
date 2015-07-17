@@ -80,6 +80,16 @@ function subjectControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.empty){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The input fields are empty.</p>");
+                return;
+            }
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(!response.created){
                 message.html("<h4 class='ajax-error'>Internal error</h4>"
                            + "<p>Unable to create this subject.</p>" );
@@ -119,6 +129,11 @@ function postControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.closed){
                 btn_newPost.add(btn_closeSubject).parent().css("display","none");
                 p_statusSubject.html("Status : closed");
@@ -138,6 +153,11 @@ function postControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             response.deleted ?
                 backToForum() :
                 message.html("<h4 class='ajax-error'>Internal error</h4>"
@@ -161,9 +181,19 @@ function postControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.empty){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The input message is empty.</p>");
+                return;
+            }
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(!response.created){
-                message.html("<h4 class='ajax-error'>Internal error</h4><p>"
-                            +"Unable to create this new post.</p>");
+                message.html("<h4 class='ajax-error'>Internal error</h4>"
+                            +"<p>Unable to create this new post.</p>");
                 return;
             }            
             ajax.modal('hide');
@@ -183,6 +213,11 @@ function postControls(){
         };
         var callback = function(data){
             var response = $.parseJSON(data);
+            if(response.DBdown){
+                message.html("<h4 class='ajax-error'>Operation canceled</h4>"
+                            +"<p>The database is down.</p>");
+                return;
+            }
             if(response.deleted){
                 row.remove();
             }
