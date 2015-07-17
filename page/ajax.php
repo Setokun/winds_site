@@ -62,7 +62,7 @@ class AjaxOperator {
         $refusedStatus ? $this->response['errorStatus'] = "Forbidden account status"
                        : $this->response['allowed'] = "Your will be redirected to your home page";
     }
-    /*mail*/private function createAccount(){
+    /*OK*/private function createAccount(){
         $email  = htmlentities($this->params['email'], ENT_QUOTES);
         $pwd    = htmlentities($this->params['password1'], ENT_QUOTES);
         $pseudo = htmlentities($this->params['pseudo'], ENT_QUOTES);
@@ -86,14 +86,14 @@ class AjaxOperator {
             return;
         }
         else{
-            //Tools::sendActivationMail($user, $idUser);
+            $sended = Tools::sendActivationMail($user, $idUser);
+            if( !$sended ){
+                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                return;
+            }
         }
 
-//        $sended = Tools::sendActivationMail($user);
-//        if( !$sended ){
-//            $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
-//            return;
-//        }
+        
         
         $this->response['created'] = TRUE;
     }
@@ -123,7 +123,7 @@ class AjaxOperator {
     }
     
     // -- LOGIN & PROFILE --
-    /*mail*/private function forgotPassword(){
+    /*OK*/private function forgotPassword(){
         $email = htmlentities($this->params['email'], ENT_QUOTES);
         $users = UserManager::init()->getAll("WHERE email='$email'");
         
@@ -141,11 +141,11 @@ class AjaxOperator {
             $this->response['error'] = "Password forgot failed";
         }
         else{
-            /*$sended = Tools::sendResetMail($user);
+            $sended = Tools::sendResetMail($users[0]);
             if( !$sended ){
                 $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
                 return;
-            }*/
+            }
         }
         
         $this->response['forgotten'] = TRUE;            
@@ -215,21 +215,25 @@ class AjaxOperator {
     }
     
     // -- ACCOUNT --
-    /*mail*/private function updateRights(){
+    /*OK*/private function updateRights(){
         $this->user->setUserType($this->params['userType']);
-        UserManager::init()->update($this->user) ?
-            $this->response['updated'] = TRUE :
-            $this->response['error'] = "Right updating failed";
+        $updated = UserManager::init()->update($this->user);
         
-        if($this->response['updated'] == TRUE){
-            /*$sended = Tools::sendPromotionMail($user, $this->params['userType']);
+        if($updated){    
+            $sended = Tools::sendPromotionMail($this->user, $this->params['userType']);
+            
             if( !$sended ){
                 $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
                 return;
-            }*/
+            }else{
+                $this->response['updated'] = TRUE;
+            }
+        }
+        else{
+            $this->response['error'] = "Right updating failed";
         }
     }
-    /*mail*/private function deleteAccount(){
+    /*OK*/private function deleteAccount(){
         $scores    = ScoreManager::init()->getAll("WHERE idPlayer="
                    . $this->user->getID());
         $scoreIds  = array_map(function($score){ return $score->getId(); }, $scores);
@@ -244,39 +248,39 @@ class AjaxOperator {
             $this->response['error'] = "Deletion failed";
         
         if($this->response['deleted'] == TRUE){
-            /*$sended = Tools::sendAccountDeletionMail($user);
+            $sended = Tools::sendAccountDeletionMail($this->user);
             if( !$sended ){
                 $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
                 return;
-            }*/
+            }
         }
     }
-    /*mail*/private function banishAccount(){
+    /*OK*/private function banishAccount(){
         $this->user->setUserStatus(USER_STATUS::BANISHED);
         UserManager::init()->update($this->user)  ?
             $this->response['banished'] = TRUE :
             $this->response['error'] = "Banishment failed";
         
         if($this->response['banished'] == TRUE){
-            /*$sended = Tools::sendBanishMail($user);
+            $sended = Tools::sendBanishMail($this->user);
             if( !$sended ){
                 $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
                 return;
-            }*/
+            }
         }
     }
-    /*mail*/private function unbanishAccount(){
+    /*OK*/private function unbanishAccount(){
         $this->user->setUserStatus(USER_STATUS::ACTIVATED);
         UserManager::init()->update($this->user)  ?
             $this->response['unbanished'] = TRUE :
             $this->response['error'] = "Unbanishment failed";
         
         if($this->response['unbanished'] == TRUE){
-            /*$sended = Tools::sendUnbanishMail($user, $level);
+            $sended = Tools::sendUnbanishMail($this->user);
             if( !$sended ){
                 $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
                 return;
-            }*/
+            }
         }
     }
     
@@ -284,32 +288,34 @@ class AjaxOperator {
     /*mail*/private function acceptLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
         $level->setLevelStatus(LEVEL_STATUS::ACCEPTED);
+        $user = UserManager::init()->getByID($level->getIdCreator());
         
         LevelManager::init()->update($level) ?
             $this->response['accepted'] = TRUE :
             $this->response['error']    = "Level acceptance failed";
         
         if($this->response['accepted'] == TRUE){
-            /*$sended = Tools::sendLevelAcceptedMail($user, $level);
+            $sended = Tools::sendLevelAcceptedMail($user, $level);
             if( !$sended ){
                 $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
                 return;
-            }*/
+            }
         }
     }
     /*mail*/private function refuseLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
         $level->setLevelStatus(LEVEL_STATUS::REFUSED);
+        $user = UserManager::init()->getByID($level->getIdCreator());
         LevelManager::init()->update($level) ?
             $this->response['refused'] = TRUE :
             $this->response['error']   = "Level refusal failed";
         
-        if($this->response['refused'] = TRUE){
-            /*$sended = Tools::sendLevelDeclinedMail($user, $level);
+        if($this->response['refused'] == TRUE){
+            $sended = Tools::sendLevelDeclinedMail($user, $level);
             if( !$sended ){
                 $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
                 return;
-            }*/
+            }
         }
         
     }

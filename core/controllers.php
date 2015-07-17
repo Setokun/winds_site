@@ -53,8 +53,14 @@ define("NB_NEWS_TO_DISPLAY", 5);
         
         $user->setUserStatus(USER_STATUS::ACTIVATED);
         $user->setToken(NULL);
-        return UserManager::init()->update($user)
-            ?  TRUE : "Account activation failed";
+        
+        $activated = UserManager::init()->update($user);
+        if($activated){
+            Tools::sendInscriptionConfirmationMail($user);
+            return TRUE;
+        }else{
+            return "Account activation failed";
+        }
     }
     /**
      * Generates a token for the Winds account which matches the specified e-mail.
