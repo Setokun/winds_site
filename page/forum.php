@@ -113,8 +113,26 @@ $params = Tools::getIncomingParams();
             </div>
         </div>
         <?php }else {
-            /* Display "Unknown parameters" */
-        } ?>
+            /* Display "Unknown parameters" */ ?>
+            <div class="mainbox col-xs-12 col-sm-6 col-sm-offset-3 col-lg-offset-4 col-lg-4" >
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <div class="panel-title">Unknown parameters</div>
+                    </div>
+                    <div class="panel-body form-horizontal" >
+                        <div class="form-group col-md-12" >
+                            <h4>You wanna play :)</h4>
+                            <p>Same player plays again. Insert coins !</p>
+                        </div>
+                        <div class="col-md-12 controls" style="margin-top:10px;padding:0" >
+                            <div style="border-top:1px solid#888;padding-top:10px;font-size:85%" >
+                                <a class="link" href="login.php">Click here</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <?php } ?>
     </article>
 </section>
 

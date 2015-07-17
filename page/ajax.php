@@ -182,6 +182,11 @@ class AjaxOperator {
             $this->response['error'] = "Subject deletion failed";
     }
     private function createPost(){
+        if(empty($this->params['message'])){
+            $this->response['empty'] = "Empty message";
+            return;
+        }
+        
         $post = Post::init( htmlentities($this->params['message'], ENT_QUOTES),
                             $this->user->getId(),
                             $this->params['idSubject'] );
@@ -254,7 +259,7 @@ class AjaxOperator {
         $this->user->setUserStatus(USER_STATUS::ACTIVATED);
         UserManager::init()->update($this->user)  ?
             $this->response['unbanished'] = TRUE :
-            $this->response['error'] = "Banishment failed";
+            $this->response['error'] = "Unbanishment failed";
         
         if($this->response['unbanished'] == TRUE){
             /*$sended = Tools::sendUnbanishMail($user, $level);
