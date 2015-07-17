@@ -71,7 +71,7 @@ include_once "../common/menu.php";
         </div>
         <div class="col-xs-12 form-row">
             <button id="change-pwd" class="pull-left btn btn-primary"
-                    style="margin-bottom: 10px;" >Change password</button>
+                    style="margin-bottom: 10px;" >Reset password</button>
             <button id="account-deletion" class="pull-right btn btn-danger"
                     style="margin-bottom: 10px;" >Ask account deletion</button>
         </div>

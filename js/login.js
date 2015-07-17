@@ -234,10 +234,12 @@ function resetControls(){
             if(response.updated || response.errorTime || response.errorToken){
                 btn_valid.add(password1).add(password2).css('cursor','not-allowed');
                 btn_valid.add(password1).add(password2).attr("disabled",true);
+                setTimeout(function(){ document.location = "login.php"; }, 5000);
             }
             
             if(response.updated){
-                message.html("<h4 class='ajax-success'>Password updated</h4>");
+                message.html("<h4 class='ajax-success'>Password updated</h4>"
+                            +"<p>You will be redirected in few time.</p>");
             }
             if(response.error){
                 message.html("<h4 class='ajax-error'>Internal error</h4>"

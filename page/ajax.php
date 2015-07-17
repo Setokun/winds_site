@@ -62,7 +62,7 @@ class AjaxOperator {
         $refusedStatus ? $this->response['errorStatus'] = "Forbidden account status"
                        : $this->response['allowed'] = "Your will be redirected to your home page";
     }
-    /*OK*/private function createAccount(){
+    private function createAccount(){
         $email  = htmlentities($this->params['email'], ENT_QUOTES);
         $pwd    = htmlentities($this->params['password1'], ENT_QUOTES);
         $pseudo = htmlentities($this->params['pseudo'], ENT_QUOTES);
@@ -123,7 +123,7 @@ class AjaxOperator {
     }
     
     // -- LOGIN & PROFILE --
-    /*OK*/private function forgotPassword(){
+    private function forgotPassword(){
         $email = htmlentities($this->params['email'], ENT_QUOTES);
         $users = UserManager::init()->getAll("WHERE email='$email'");
         
@@ -215,7 +215,7 @@ class AjaxOperator {
     }
     
     // -- ACCOUNT --
-    /*OK*/private function updateRights(){
+    private function updateRights(){
         $this->user->setUserType($this->params['userType']);
         $updated = UserManager::init()->update($this->user);
         
@@ -233,7 +233,7 @@ class AjaxOperator {
             $this->response['error'] = "Right updating failed";
         }
     }
-    /*OK*/private function deleteAccount(){
+    private function deleteAccount(){
         $scores    = ScoreManager::init()->getAll("WHERE idPlayer="
                    . $this->user->getID());
         $scoreIds  = array_map(function($score){ return $score->getId(); }, $scores);
@@ -255,7 +255,7 @@ class AjaxOperator {
             }
         }
     }
-    /*OK*/private function banishAccount(){
+    private function banishAccount(){
         $this->user->setUserStatus(USER_STATUS::BANISHED);
         UserManager::init()->update($this->user)  ?
             $this->response['banished'] = TRUE :
@@ -269,7 +269,7 @@ class AjaxOperator {
             }
         }
     }
-    /*OK*/private function unbanishAccount(){
+    private function unbanishAccount(){
         $this->user->setUserStatus(USER_STATUS::ACTIVATED);
         UserManager::init()->update($this->user)  ?
             $this->response['unbanished'] = TRUE :
