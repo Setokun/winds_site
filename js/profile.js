@@ -37,7 +37,7 @@ function ajaxOperator(data, callback){
 }
 
 function profileControls(){
-    // -- afectations --
+    // -- affectations --
     btn_changePwd  = $("section #change-pwd");
     btn_accountDel = $("section #account-deletion");
     var email      = $("section #profile [type='email']");
