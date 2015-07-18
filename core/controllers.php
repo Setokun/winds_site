@@ -185,18 +185,19 @@ class AddonController {
      * @param int $id
      * @param string $levelType a constant of LEVEL_TYPE
      * @param string $levelMode a constant of LEVEL_MODE
-     * @param string $levelStatus a constant of LEVEL_STATUS    
      * @return mixed : array or Level
      */
-    static function getLevel($id=NULL, $levelType=NULL, $levelMode=NULL, $levelStatus=LEVEL_STATUS::ACCEPTED){
+    static function getLevel($id=NULL, $levelType=NULL){
         if( !is_null($id) ){
             return LevelManager::init()->getByID($id);
         }
         
         $params = array();
-        if( !is_null($levelType)   ){ array_push($params, "levelType='$levelType'"); }
-        if( !is_null($levelMode)   ){ array_push($params, "levelMode='$levelMode'"); }
-        if( !is_null($levelStatus) ){ array_push($params, "levelStatus='$levelStatus'"); }
+        if( !is_null($levelType) ){
+            $params[] = "levelType='$levelType'";
+            if($levelType !== LEVEL_TYPE::BASIC){       $params[] = "levelMode='".LEVEL_MODE::STANDARD."'"; }
+            if($levelType !== LEVEL_TYPE::TOMODERATE ){ $params[] = "levelStatus='".LEVEL_STATUS::ACCEPTED."'"; }
+        }
         return LevelManager::init()->get("SELECT level.id AS idLevel, timeMax, idTheme, name, "
             ."description, creationDate, levelMode, user.pseudo AS creator FROM `level` JOIN "
             ."`user` ON idCreator = user.id WHERE ".implode(" AND ", $params));        
@@ -262,7 +263,7 @@ class AddonController {
      * Displays in shop or addon page the available custom levels list.
      */
     static function displayCustomLevels($source){
-        $customs  = self::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_MODE::STANDARD);
+        $customs  = self::getLevel(NULL, LEVEL_TYPE::CUSTOM);
         $images   = ThemeManager::init()->getImagePath();
         $creators = LevelManager::init()->getCreators();
         
@@ -295,7 +296,7 @@ class AddonController {
      * Displays in shop page the available to-moderate levels list.
      */
     static function displayLevelsToModerate(){
-        $tomoderates = self::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_MODE::STANDARD, LEVEL_STATUS::TOMODERATE);
+        $tomoderates = self::getLevel(NULL, LEVEL_TYPE::TOMODERATE);
         $imagePaths  = ThemeManager::init()->getImagePath();
         $creators    = LevelManager::init()->getCreators();
         
@@ -634,7 +635,7 @@ class ApiController {
      * @param array $params An array of paramaters given to the API
      */
     static function getCustomLevels(User $user, array $params=[]){
-        $customs = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_MODE::STANDARD);
+        $customs = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM);
         echo json_encode($customs);
     }
     /**
@@ -643,7 +644,7 @@ class ApiController {
      * @param array $params An array of paramaters given to the API
      */
     static function getLevelsToModerate(User $user, array $params=[]){
-        $toModerates = AddonController::getLevel(NULL, LEVEL_TYPE::CUSTOM, LEVEL_MODE::STANDARD, LEVEL_STATUS::TOMODERATE);
+        $toModerates = AddonController::getLevel(NULL, LEVEL_TYPE::TOMODERATE);
         echo json_encode($toModerates);
     }
     /**
@@ -735,7 +736,7 @@ class ApiController {
         }
 		
         $basicLevel = LevelManager::init()->getByID($params['idBasicLevel']);
-        $name = $basicLevel->getFilePath();
+        $name = Tools::getLevelsPath().$basicLevel->getFilePath();
         // ouvre un fichier en mode binaire
         $fp = fopen($name, 'rb');
         // envoie les bons en-têtes
@@ -758,7 +759,7 @@ class ApiController {
         }
         
         $customLevel = LevelManager::init()->getByID($params['idCustomLevel']);
-        $name = $customLevel->getFilePath();
+        $name = Tools::getLevelsPath().$customLevel->getFilePath();
         // ouvre un fichier en mode binaire
         $fp = fopen($name, 'rb');
         // envoie les bons en-têtes
@@ -781,7 +782,7 @@ class ApiController {
         }
         
         $levelToModerate = LevelManager::init()->getByID($params['idLevelToModerate']);
-        $name = $levelToModerate->getFilePath();
+        $name = Tools::getLevelsPath().$levelToModerate->getFilePath();
         // ouvre un fichier en mode binaire
         $fp = fopen($name, 'rb');
         // envoie les bons en-têtes

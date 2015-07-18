@@ -42,17 +42,17 @@ abstract class USER_STATUS extends Enumeration {
  * Enumeration of the level's types.
  */
 abstract class LEVEL_TYPE extends Enumeration {
-    const BASIC  = 'basic',
-          CUSTOM = 'custom';
+    const BASIC      = 'basic',
+          CUSTOM     = 'custom',
+          TOMODERATE = 'tomoderate';
 }
 
 /**
  * Enumeration of the level's statuses.
  */
 abstract class LEVEL_STATUS extends Enumeration {
-    const ACCEPTED   = 'accepted',
-          REFUSED    = 'refused',
-          TOMODERATE = 'tomoderate';
+    const ACCEPTED = 'accepted',
+          REFUSED  = 'refused';
 }
 
 /**
