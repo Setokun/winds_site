@@ -671,15 +671,13 @@ class Score extends WindsClass
     /**
      * Compares the current score to the specified score.
      * @param Score $score The score to compare with
-     * @param int $timeMaxLevel The level's maximum time
      * @return int
      */
-    public function compareTo(Score $score, $timeMaxLevel){
+    public function compareTo(Score $score){
         return $this->calculate() > $score->calculate();
     }
     /**
      * Calculates the score.
-     * @param int $timeMaxLevel The level's maximum time
      * @return int
      */
     public function calculate(){
