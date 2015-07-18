@@ -422,7 +422,7 @@ class Level extends Addon
             $levelStatus,           // text : 20 char - use constant of LEVEL_STATUS
             $levelMode,             // text : 20 char - use constant of LEVEL_MODE
             $idTheme;               // int  : theme ID
-    private $gameData;
+    private $gameData;              // content of level file used during its manipulation
     
     // -- CONSTRUCTORS --
     /**
@@ -466,20 +466,18 @@ class Level extends Addon
         $level->name         = $data['name'];
         $level->description  = $data['description'];
         $level->creationDate = $data['date'];
-        $level->filePath     = str_replace($_SERVER['DOCUMENT_ROOT'].'/', '', $data['path']);
+        $level->filePath     = str_replace(Tools::getLevelsPath(), '', $data['path']);
         $level->timeMax      = $data['timeMax'];
         $level->levelMode    = $addonPage ? $data['mode'] : LEVEL_MODE::STANDARD;
         $level->idTheme      = $data['idTheme'];
         $level->idCreator    = $idCreator;
-        $level->levelType    = $addonPage ? $data['type'] : LEVEL_TYPE::CUSTOM;
-        $level->levelStatus  = $addonPage ? LEVEL_STATUS::ACCEPTED : LEVEL_STATUS::TOMODERATE;
+        $level->levelType    = $addonPage ? $data['type'] : LEVEL_TYPE::TOMODERATE;
         
         $level->gameData['creator'] = $data['creator'];
         $level->gameData['startPosition'] = $data['startPosition'];
         $level->gameData['endPosition'] = $data['endPosition'];
         $level->gameData['matrix'] = $data['matrix'];
         $level->gameData['interactions'] = $data['interactions'];
-        $level->gameData['uploaded'] = 'true';
         
         return $level;
     }
@@ -501,6 +499,7 @@ class Level extends Addon
     }
     public function valuesDB_toUpdate(){
         return array(
+            'levelType'   => $this->levelType,
             'levelStatus' => $this->levelStatus
         );
     }
@@ -534,6 +533,17 @@ class Level extends Addon
             'timeMax' => $this->timeMax
         ];
         return json_encode($data);
+    }
+    /**
+     * Affects the "Custom" type to this level and try to update this<br>
+     * field into the level file. Then, returns the success statement of<br>
+     * the manipulation in ZIP file.
+     * @return boolean
+     */
+    public function updateTypeToCustom(){
+        $this->levelType = LEVEL_TYPE::CUSTOM;
+        $path = Tools::getLevelsPath().$this->filePath;
+        return LevelManipulator::initFromModeration($path)->updateFileTypeToCustom();
     }
     /**
      * Removes the level archive files which match the specified IDs<br>
@@ -998,11 +1008,11 @@ class News {
  */
 class LevelManipulator {
     const filename = 'level.src';
-    private $file, $lvl, $output=['result'=>NULL, 'error'=>NULL];
+    private $file, $output=['result'=>NULL, 'error'=>NULL];
     
     // -- CONSTRUCTORS --
     /**
-     * Instanciante a new level manipulator with the specified uploaded level file.
+     * Instantiates a new level manipulator with the specified uploaded level file.
      * @param array $file The array of the uploaded file given by $_FILES
      * @return LevelManipulator
      */
@@ -1011,7 +1021,17 @@ class LevelManipulator {
         $manip->file = $file;
         return $manip;
     }
-    
+    /**
+     * Instantiates a new level manipulator with the specified level file's path.
+     * @param string $filePath The level file's path
+     * @return LevelManipulator
+     */
+    static public function initFromModeration($filePath){
+        $manip = new self();
+        $manip->file = $filePath;
+        return $manip;
+    }
+
     // -- METHODS --
     /**
      * Stores the uploaded level file into the server,<br>
@@ -1028,10 +1048,10 @@ class LevelManipulator {
             $data = $this->extractLevelData();
             $data['path'] = $dest;
             
-            $this->lvl = Level::initFromUpload($data, $idLvl, $addonPage);
-            $this->updateZip();
+            $lvl = Level::initFromUpload($data, $idLvl, $addonPage);
+            $this->updateZip( $lvl->values_toZipFile() );
             
-            $inserted = is_numeric( LevelManager::init()->insert($this->lvl) );
+            $inserted = is_numeric( LevelManager::init()->insert($lvl) );
             $moved = move_uploaded_file($this->file, $dest);
             if( !$moved ){
                 // overwrite if exists
@@ -1053,6 +1073,20 @@ class LevelManipulator {
         return $this;
     }
     /**
+     * Returns the success statement of the update's type field into the level ZIP file.
+     * @return boolean
+     */
+    public function updateFileTypeToCustom(){
+        try {
+            $data = $this->extractLevelData();
+            $data['type'] = LEVEL_TYPE::CUSTOM;
+            $this->updateZip( json_encode($data) );
+            return TRUE;
+        } catch (Exception $e){
+            return FALSE;
+        }        
+    }
+    /**
      * Extracts the level's content.
      * @return string The level's JSON-formated content
      * @throws Exception
@@ -1070,13 +1104,13 @@ class LevelManipulator {
      * Updates the level file.
      * @throws Exception
      */
-    private function updateZip(){
+    private function updateZip($data){
         $zip = new ZipArchive;
         if( !$zip->open($this->file) ){
             throw new Exception("Unable to open the level file to update its content");
         }
         $zip->deleteName(LevelManipulator::filename);
-        $written = $zip->addFromString(self::filename, $this->lvl->values_toZipFile());
+        $written = $zip->addFromString(self::filename, $data);
         $zip->close();
         if( !$written ){
             throw new Exception("Unable to update the level file");

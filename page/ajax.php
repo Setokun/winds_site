@@ -364,17 +364,23 @@ class AjaxOperator {
      */
     private function acceptLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
+        $fileUpdated = $level->updateTypeToCustom();
+        if( !$fileUpdated ){
+            $this->response['error'] = "Unable to update the level file";
+            return;
+        }
+        
         $level->setLevelStatus(LEVEL_STATUS::ACCEPTED);
         $user = UserManager::init()->getByID($level->getIdCreator());
         
         LevelManager::init()->update($level) ?
             $this->response['accepted'] = TRUE :
-            $this->response['error']    = "Level acceptance failed";
+            $this->response['error']    = "Unable to accept this level into DB";
         
         if($this->response['accepted'] == TRUE){
             $sended = Tools::sendLevelAcceptedMail($user, $level);
             if( !$sended ){
-                $this->response['errorMailing'] = "Level accepted, but the mail didn't arrive in the mailbox";
+                $this->response['error'] = "Level accepted, but the mail didn't arrive in the mailbox";
                 return;
             }
         }
@@ -385,16 +391,22 @@ class AjaxOperator {
      */
     private function refuseLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
+        $fileUpdated = $level->updateTypeToCustom();
+        if( !$fileUpdated ){
+            $this->response['error'] = "Unable to update the level file";
+            return;
+        }
+        
         $level->setLevelStatus(LEVEL_STATUS::REFUSED);
         $user = UserManager::init()->getByID($level->getIdCreator());
         LevelManager::init()->update($level) ?
             $this->response['refused'] = TRUE :
-            $this->response['error']   = "Level refusal failed";
+            $this->response['error']   = "Unable to accept this level into DB";
         
         if($this->response['refused'] == TRUE){
             $sended = Tools::sendLevelDeclinedMail($user, $level);
             if( !$sended ){
-                $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
+                $this->response['error'] = "Level refused, but the mail didn't arrive in the mailbox";
                 return;
             }
         }        

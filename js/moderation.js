@@ -66,8 +66,7 @@ function moderationControls(){
             }
             message.html( response.accepted ?
                 "<h4 class='ajax-success'>Level acceptance succeeded</h4>" :
-                "<h4 class='ajax-error'>Internal error</h4><p>Unable "
-                             + "to accept this level.</p>" );
+                "<h4 class='ajax-error'>Internal error</h4><p>"+ response.error +".</p>" );
         };
         ajaxOperator(data, callback);
     });
@@ -89,8 +88,7 @@ function moderationControls(){
             }
             message.html( response.refused ?
                 "<h4 class='ajax-success'>Level refusal succeeded</h4>" :
-                "<h4 class='ajax-error'>Internal error</h4><p>Unable "
-                             + "to refuse this level.</p>" );
+                "<h4 class='ajax-error'>Internal error</h4><p>"+ response.error +".</p>" );
         };
         ajaxOperator(data, callback);
     });
