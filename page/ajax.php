@@ -153,7 +153,6 @@ class AjaxOperator {
         UserManager::init()->update($this->user) ?
             $this->response['updated'] = TRUE :
             $this->response['error'] = "Password update failed";
-        
     }
     
     // -- LOGIN & PROFILE --
@@ -363,7 +362,7 @@ class AjaxOperator {
      * Accepts a custom level.
      * Required : idLevel
      */
-    /*mail*/private function acceptLevel(){
+    private function acceptLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
         $level->setLevelStatus(LEVEL_STATUS::ACCEPTED);
         $user = UserManager::init()->getByID($level->getIdCreator());
@@ -384,7 +383,7 @@ class AjaxOperator {
      * Refuses a custom level.
      * Required : idLevel
      */
-    /*mail*/private function refuseLevel(){
+    private function refuseLevel(){
         $level = LevelManager::init()->getByID($this->params['idLevel']);
         $level->setLevelStatus(LEVEL_STATUS::REFUSED);
         $user = UserManager::init()->getByID($level->getIdCreator());
@@ -398,8 +397,7 @@ class AjaxOperator {
                 $this->response['errorMailing'] = "The mail didn't arrive in your mailbox";
                 return;
             }
-        }
-        
+        }        
     }
     
     // -- ADDON --

@@ -17,7 +17,6 @@ include_once "../common/menu.php";
 
 <script type="text/javascript" src="../js/profile.js" ></script>
 <section class="col-sm-8 col-md-9 col-lg-10">
-			
     <article class="modal" id="ajax">
         <input id="idUser" type="hidden" value="<?php echo $user->getId(); ?>" >
         <div class="modal-dialog">
@@ -39,7 +38,6 @@ include_once "../common/menu.php";
             </div>
         </div>
     </article>
-
     <article id="profile" class="col-sm-12">
         <h2>My Winds account</h2>
         <div class="col-xs-12 form-row">
@@ -76,7 +74,6 @@ include_once "../common/menu.php";
                     style="margin-bottom: 10px;" >Ask account deletion</button>
         </div>
     </article>
-
 </section>
 
 <?php

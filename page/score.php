@@ -18,7 +18,6 @@ $params = Tools::getIncomingParams();
 ?>
 
 <script type="text/javascript" src="../js/score.js" ></script>
-
 <section id="score" style="padding-bottom:20px" class="col-sm-8 col-md-9 col-lg-10">
     <?php if( empty($params) ){ ?>
     <div class="align-mobile-left">
@@ -28,19 +27,16 @@ $params = Tools::getIncomingParams();
             <?php ScoreController::displayRanking(); ?>
         </table>
     </div>
-
     <div class="align-mobile-left">
         <h2>Ranking by level
             <span class="label-clickme">(Click&nbsp;on&nbsp;one&nbsp;item&nbsp;to&nbsp;show&nbsp;more&nbsp;details)</span>
         </h2>
-        
         <h4 id="basic-scores-title">Basic levels</h4>
         <div class="row-scroll">
             <table class="table">
                 <?php ScoreController::displayScoredBasicLevels(); ?>
             </table>
         </div>
-        
         <h4>Custom levels</h4>
         <div class="row-scroll">
             <table class="table">

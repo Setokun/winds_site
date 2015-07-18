@@ -19,7 +19,6 @@ $params = Tools::getIncomingParams();
 
 <script type="text/javascript" src="../js/moderation.js" ></script>
 <section class="col-sm-8 col-md-9 col-lg-10">
-    
     <article class="modal" id="ajax">
         <input id="idUser" type="hidden" value="<?php echo $user->getId(); ?>" >
         <div class="modal-dialog">
@@ -41,7 +40,6 @@ $params = Tools::getIncomingParams();
             </div>
         </div>
     </article>
-    
     <article class="col-xs-12">
         <table id="table-moderate" class="table">
             <tr><th colspan="100%" class="th-winds">Custom levels to moderate</th></tr>

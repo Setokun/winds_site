@@ -19,7 +19,6 @@ $params = Tools::getIncomingParams();
 
 <script type="text/javascript" src="../js/forum.js" ></script>
 <section class="col-sm-8 col-md-9 col-lg-10">
-    
     <article class="modal" id="ajax">
         <input id="idUser" type="hidden" value="<?php echo $user->getId(); ?>" >
         <div class="modal-dialog">
@@ -41,7 +40,6 @@ $params = Tools::getIncomingParams();
             </div>
         </div>
     </article>
-    
     <article id="forum">
         <?php if(empty($params)){
         /* Display the subjects */?>
@@ -61,7 +59,6 @@ $params = Tools::getIncomingParams();
                     <button id="cancel-subject" class="btn btn-danger">Cancel</button>
                 </div>
             </div>
-
             <div id="display-subject">
                 <button id="btn-new-subject" class="btn btn-success">Create a new subject</button>
                 <table id="table-subjects" class="table table-bordered">
@@ -112,8 +109,7 @@ $params = Tools::getIncomingParams();
                 </div>
             </div>
         </div>
-        <?php }else {
-            /* Display "Unknown parameters" */ ?>
+        <?php }else { /* Display "Unknown parameters" */ ?>
             <div class="mainbox col-xs-12 col-sm-6 col-sm-offset-3 col-lg-offset-4 col-lg-4" >
                 <div class="panel panel-info">
                     <div class="panel-heading">

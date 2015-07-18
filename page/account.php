@@ -17,7 +17,6 @@ include_once "../common/menu.php";
 
 <script type="text/javascript" src="../js/account.js" ></script>
 <section style="padding:20px" class="col-sm-9 col-md-10">
-    
     <article class="modal" id="ajax">
         <input id="idUser" type="hidden" value="<?php echo $user->getId(); ?>" >
         <div class="modal-dialog">
@@ -39,14 +38,12 @@ include_once "../common/menu.php";
             </div>
         </div>
     </article>
-    
     <article id="users-list" class="col-xs-12">
         <h2>Winds accounts</h2>
         <div id="row-scroll-accounts">
             <?php AccountController::displayList($user); ?>
         </div>
     </article>
-    
     <article class="col-xs-12">
         <h2>Accounts waiting deletion <em style="font-size:12px">( click on an item to focus it in the previous list )</em></h2>
         <table id="deletions-list" class="table table-bordered">

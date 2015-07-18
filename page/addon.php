@@ -18,7 +18,6 @@ include_once "../common/menu.php";
 
 <script type="text/javascript" src="../js/addon.js" ></script>
 <section style="padding-bottom:20px" class="col-sm-8 col-md-9 col-lg-10">
-
     <article class="modal" id="ajax">
         <input id="idUser" type="hidden" value="<?php echo $user->getId(); ?>" >
         <div class="modal-dialog">
@@ -40,7 +39,6 @@ include_once "../common/menu.php";
             </div>
         </div>
     </article>
-    
     <article id="upload-addon" class="col-xs-12">
         <h2>Upload a new addon</h2>
         <form enctype="multipart/form-data">
@@ -81,7 +79,6 @@ include_once "../common/menu.php";
             <button id="btn-upload" style="margin-bottom: 20px;" class="pull-right btn btn-success" type="submit">Upload</button>
         </div>
     </article>
-        
     <article id="remove-addon" class="col-xs-12">
         <div class="row-scroll">
             <table class="table">

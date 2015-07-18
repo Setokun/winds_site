@@ -24,7 +24,6 @@ if($action === 'activate'){
 
 <script type="text/javascript" src="../js/login.js" ></script>
 <link type="text/css" rel="stylesheet" href="../css/login.css">
-
 <article class="modal" id="ajax">
     <div class="modal-dialog">
         <div class="modal-content">
