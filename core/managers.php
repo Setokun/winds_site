@@ -17,7 +17,7 @@ interface ManagerInit {
 /**
  * Abstract class which contains some common variables and methods between the final managers.
  */
-/*OK*/abstract class ManagerDB implements ManagerInit {
+abstract class ManagerDB implements ManagerInit {
     protected $PDO;			  
     
     // VARIABLES - MUST BE OVERRIDEN IN CONSTRUCTOR OF THE DERIVED CLASS
@@ -173,7 +173,7 @@ interface ManagerInit {
 /**
  * Class used to manage User objects into DB.
  */
-/*OK*/class UserManager extends ManagerDB {
+class UserManager extends ManagerDB {
     
     /**
      * Initializes a new manager of users.
@@ -192,7 +192,6 @@ interface ManagerInit {
      */
     public function insert(User $user){
         return $this->parent_insert($user);
-        
     }
     /**
      * Returns the success statement of the specified user update onto DB.
@@ -230,7 +229,7 @@ interface ManagerInit {
 /**
  * Class used to manage User objects into DB.
  */
-/*OK*/class ThemeManager extends ManagerDB {
+class ThemeManager extends ManagerDB {
     
     /**
      * Initializes a new manager of themes.
@@ -285,7 +284,7 @@ interface ManagerInit {
 /**
  * Class used to manage Level objects into DB.
  */
-/*OK*/class LevelManager extends ManagerDB {
+class LevelManager extends ManagerDB {
     
     /**
      * Initializes a new manager of levels.
@@ -382,7 +381,7 @@ interface ManagerInit {
 /**
  * Class used to manage Score objects into DB.
  */
-/*OK*/class ScoreManager extends ManagerDB {
+class ScoreManager extends ManagerDB {
     
     /**
      * Initializes a new manager of scores.
@@ -400,22 +399,12 @@ interface ManagerInit {
      * @return int
      */
     public function insert(Score $score){
-
         $query = "INSERT INTO score (time, nbClicks, nbItems, idPlayer, idLevel) VALUES (?,?,?,?,?)";
-		/*$query = "INSERT INTO score (time, nbClicks, nbItems, idPlayer, idLevel) VALUES (:time,:nbclicks,:nbitems,:idplayer,:idlevel)";
-		$request = $this->PDO->prepare($query);
-		$request->bindValue('time', $score->getTime(), PDO::PARAM_INT);
-		$request->bindValue('nbclicks', $score->getNbClicks(), PDO::PARAM_INT);
-		$request->bindValue('nbitems', $score->getNbItems(), PDO::PARAM_INT);
-		$request->bindValue('idplayer', $score->getIdPlayer(), PDO::PARAM_STR);
-		$request->bindValue('idlevel', $score->getIdLevel(), PDO::PARAM_INT);
+        $values = array($score->getTime(), $score->getNbClicks(), $score->getNbItems(), $score->getIdPlayer(), $score->getIdLevel());
+        $request = $this->PDO->prepare($query);
 
-		$request->execute();*/
-		$values = array($score->getTime(), $score->getNbClicks(), $score->getNbItems(), $score->getIdPlayer(), $score->getIdLevel());
-		$request = $this->PDO->prepare($query);
-		
-		$request->execute($values);
-		return $request->rowCount();
+        $request->execute($values);
+        return $request->rowCount();
     }
     /**
      * Returns the success statement of the specified score update onto DB.
@@ -423,13 +412,12 @@ interface ManagerInit {
      * @return int
      */
     public function update(Score $score){
+        $query = "UPDATE $this->nameTable SET time=?, nbClicks=?, nbItems=? where idPlayer=? AND idLevel=?";
+        $values = array($score->getTime(), $score->getNbClicks(), $score->getNbItems(), $score->getIdPlayer(), $score->getIdLevel());
+        $request = $this->PDO->prepare($query);
 
-		$query = "UPDATE $this->nameTable SET time=?, nbClicks=?, nbItems=? where idPlayer=? AND idLevel=?";
-		$values = array($score->getTime(), $score->getNbClicks(), $score->getNbItems(), $score->getIdPlayer(), $score->getIdLevel());
-		$request = $this->PDO->prepare($query);
-		
-		$request->execute($values);
-		return $request->rowCount();
+        $request->execute($values);
+        return $request->rowCount();
     }
     /**
      * Returns the success statement of the specified score deletion from DB.
@@ -439,9 +427,9 @@ interface ManagerInit {
     public function delete(Score $score){
         if(is_null($score->getIdPlayer()) || is_null($score->getIdLevel())){  return FALSE;  }
         $query = "DELETE FROM $this->nameTable where idPlayer=? AND idLevel=?";
-		$values = array($score->getIdPlayer(), $score->getIdLevel());
-		$request->execute($values);
-		return $request->rowCount();
+        $values = array($score->getIdPlayer(), $score->getIdLevel());
+        $request->execute($values);
+        return $request->rowCount();
     }
     /**
      * Returns the success statement of the specified score deletions from DB.
@@ -461,11 +449,11 @@ interface ManagerInit {
      * @return Score
      */
     public function getScoreById($idPlayer, $idLevel){
-		$query = "SELECT * from score WHERE idPLayer=$idPlayer AND idLevel=$idLevel";
-		$dataDB = $this->get($query)[0];
-		if(!$dataDB) return null;
-		return Score::init((int)$dataDB['idPlayer'],(int)$dataDB['idLevel'],(int)$dataDB['time'],(int)$dataDB['nbClicks'],(int)$dataDB['nbItems']);
-	}
+        $query = "SELECT * from score WHERE idPLayer=$idPlayer AND idLevel=$idLevel";
+        $dataDB = $this->get($query)[0];
+        if(!$dataDB) return null;
+        return Score::init((int)$dataDB['idPlayer'],(int)$dataDB['idLevel'],(int)$dataDB['time'],(int)$dataDB['nbClicks'],(int)$dataDB['nbItems']);
+    }
 
     /**
      * Get all scores which matches with the specified user ID.
@@ -473,8 +461,9 @@ interface ManagerInit {
      * @return Score
      */
     public function getAllByPlayer($idPlayer){
-		return $this->get("SELECT idLevel, nbClicks, nbItems, time, name "
-                        . "AS levelName FROM `score` JOIN `level` ON idLevel = level.id WHERE idPlayer = $idPlayer ORDER BY idLevel");
+        return $this->get("SELECT idLevel, nbClicks, nbItems, time, name "
+                    . "AS levelName FROM `score` JOIN `level` ON idLevel = "
+                    . "level.id WHERE idPlayer = $idPlayer ORDER BY idLevel");
     }
     /**
      * Get all level rankings which matches with the specified user ID.
@@ -552,7 +541,7 @@ interface ManagerInit {
 /**
  * Class used to manage forum Subject objects into DB.
  */
-/*OK*/class SubjectManager extends ManagerDB {
+class SubjectManager extends ManagerDB {
     
     /**
      * Initializes a new manager of subjects.
@@ -609,7 +598,7 @@ interface ManagerInit {
 /**
  * Class used to manage forum Post objects into DB.
  */
-/*OK*/class PostManager extends ManagerDB {
+class PostManager extends ManagerDB {
     
     /**
      * Initializes a new manager of posts.

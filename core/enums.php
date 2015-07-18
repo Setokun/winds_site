@@ -76,7 +76,7 @@ abstract class SUBJECT_STATUS extends Enumeration {
  */
 abstract class API_ACTION extends Enumeration {
     const GET_THEMES                 = 'getThemes',
-		  GET_LEVEL_INFOS            = 'getLevelInfos',
+          GET_LEVEL_INFOS            = 'getLevelInfos',
           GET_BASIC_LEVELS           = 'getBasicLevels',
           GET_CUSTOM_LEVELS          = 'getCustomLevels',
           GET_LEVELS_TO_MODERATE     = 'getLevelsToModerate',

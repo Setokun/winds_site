@@ -36,7 +36,7 @@ interface Winds_Update {
 interface Winds_News {
     /**
      * Formates the current item in a News.
-     * @
+     * @return News
      */
     public function formateAsNews();
 }
@@ -46,7 +46,7 @@ interface Winds_News {
 /**
  * Abstract class used as default class which contains some common variables and methods.
  */
-/*OK*/abstract class WindsClass {
+abstract class WindsClass {
     protected $id;                                      // int : ID used in DB as PK
     static public $columns;                             // must be in same order like in DB - DON'T FORGET "id" COLUMN
     // static public function init();                   // use this constructor to instanciate an object
@@ -67,7 +67,7 @@ interface Winds_News {
 /**
  * Abstract class used as default addon class which contains some common variables and methods.
  */
-/*OK*/abstract class Addon extends WindsClass
+abstract class Addon extends WindsClass
         implements Winds_Insert, Winds_News, JsonSerializable {
     
     static public $columns = ['id','name','description','creationDate','filePath','idCreator'];
@@ -142,7 +142,7 @@ interface Winds_News {
 /**
  * Class representing a Winds user.
  */
-/*OK*/class User extends WindsClass
+class User extends WindsClass
         implements Winds_Insert, Winds_Update, JsonSerializable {
     static public $columns = ['id','email','password','pseudo','registrationDate','forgotPassword','token','userType','userStatus'];
     private $email,                 // text : 64 chars, unique
@@ -359,7 +359,7 @@ interface Winds_News {
 /**
  * Class representing a Winds theme.
  */
-/*OK*/class Theme extends Addon {
+class Theme extends Addon {
     static public $columns = ['id','name','description','creationDate','filePath','imagePath','idCreator'];
     private $imagePath;         // text : 255 chars, unique
     
@@ -413,7 +413,7 @@ interface Winds_News {
 /**
  * Class representing a Winds level.
  */
-/*OK*/class Level extends Addon
+class Level extends Addon
         implements Winds_Update {
     static public $columns = ['id','name','description','creationDate','filePath','timeMax',
                               'levelType','levelStatus','levelMode','idCreator','idTheme'];
@@ -615,7 +615,7 @@ interface Winds_News {
 /**
  * Class representing a Winds score.
  */
-/*OK*/class Score extends WindsClass
+class Score extends WindsClass
         implements Winds_Insert, Winds_Update, JsonSerializable {
     static public $columns = ['id','idPlayer','idLevel','time','nbClicks','nbItems'];
     private $idPlayer,              // int : user ID
@@ -763,7 +763,7 @@ interface Winds_News {
 /**
  * Class representing a Winds subject.
  */
-/*OK*/class Subject extends WindsClass
+class Subject extends WindsClass
         implements Winds_Insert, Winds_Update, Winds_News {
     static public $columns = ['id','title','message','date','subjectStatus','idAuthor'];
     private $title,                 // text : 64 chars
@@ -875,7 +875,7 @@ interface Winds_News {
 /**
  * Class representing a Winds post.
  */
-/*OK*/class Post extends WindsClass
+class Post extends WindsClass
         implements Winds_Insert, Winds_News {
     static public $columns = ['id','date','message','idAuthor','idSubject'];
     private $date,                  // datetime
@@ -957,7 +957,7 @@ interface Winds_News {
 /**
  * Class representing a news.
  */
-/*OK*/class News {
+class News {
     private $date,
             $object,
             $url,
@@ -993,12 +993,13 @@ interface Winds_News {
     public function setAuthor($author) {
         $this->author = $author;
     }
+    
 }
 
 /**
  * Class used to update a Winds level file.
  */
-/*OK*/class LevelManipulator {
+class LevelManipulator {
     const filename = 'level.src';
     private $file, $lvl, $output=['result'=>NULL, 'error'=>NULL];
     
@@ -1106,7 +1107,7 @@ interface Winds_News {
 /**
  * Class used to insert a Winds theme file.
  */
-/*OK*/class ThemeManipulator {
+class ThemeManipulator {
     private $zipPath, $name;
     
     // -- CONSTRUCTORS --

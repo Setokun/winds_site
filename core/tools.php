@@ -7,7 +7,7 @@
 /**
  * Class which contains utility methods.
  */
-/*OK*/abstract class Tools {
+abstract class Tools {
     
     /**
      * Get the current date in "Y-m-d" format.
@@ -123,39 +123,31 @@
         $message_html .= "<p><em>The Winds Team</em></p>";
         $message_html .= "</body></html>";
         
-        
         $passage_ligne = "\r\n";
 
-        //=====Création de la boundary
+        // Création de la boundary
         $boundary = "-----=".md5(rand());
-        //==========
 
-        //=====Définition du sujet.
+        // Définition du sujet.
         $subject = "Winds - Account activation";
-        //=========
 
-        //=====Création du header de l'e-mail.
+        // Création du header de l'e-mail.
         $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
         $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
         $header.= "MIME-Version: 1.0".$passage_ligne;
         $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
 
-        //=====Création du message.
+        // Création du message.
         $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
+            // Ajout du message au format HTML
+            $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+            $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+            $message.= $passage_ligne.$message_html.$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
 
-        //=====Envoi de l'e-mail.
+        // Envoi de l'e-mail.
         return mail($mail,$subject,$message,$header);
-        //==========
-        
     }
     /**
      * Sends an email with a link to reset the password
@@ -174,39 +166,31 @@
         $message_html .= "<br><p>Thank you !</p>";
         $message_html .= "</body></html>";
         
-        
         $passage_ligne = "\r\n";
 
-        //=====Création de la boundary
+        // Création de la boundary
         $boundary = "-----=".md5(rand());
-        //==========
 
-        //=====Définition du sujet.
+        // Définition du sujet.
         $subject = "Winds - Password reset";
-        //=========
 
-        //=====Création du header de l'e-mail.
+        // Création du header de l'e-mail.
         $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
         $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
         $header.= "MIME-Version: 1.0".$passage_ligne;
         $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
 
-        //=====Création du message.
+        // Création du message.
         $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
+            // Ajout du message au format HTML
+            $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+            $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+            $message.= $passage_ligne.$message_html.$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
 
-        //=====Envoi de l'e-mail.
+        // Envoi de l'e-mail.
         return mail($mail,$subject,$message,$header);
-        //==========
-        
     }
     /**
      * Sends an email to confirm the account was successfully activated
@@ -227,40 +211,32 @@
         $message_html .= "<p>And again, welcome !</p>";
         $message_html .= "<p><em>The Winds Team</em></p>";
         $message_html .= "</body></html>";
-        
-        
+                
         $passage_ligne = "\r\n";
 
-        //=====Création de la boundary
+        // Création de la boundary
         $boundary = "-----=".md5(rand());
-        //==========
 
-        //=====Définition du sujet.
+        // Définition du sujet.
         $subject = "Winds - Account activated";
-        //=========
 
-        //=====Création du header de l'e-mail.
+        // Création du header de l'e-mail.
         $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
         $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
         $header.= "MIME-Version: 1.0".$passage_ligne;
         $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
 
-        //=====Création du message.
+        // Création du message.
         $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
+            // Ajout du message au format HTML
+            $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+            $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+            $message.= $passage_ligne.$message_html.$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
 
-        //=====Envoi de l'e-mail.
+        // Envoi de l'e-mail.
         return mail($mail,$subject,$message,$header);
-        //==========
-        
     }
     /**
      * Sends an email to inform the user his account has been promoted
@@ -281,39 +257,31 @@
         $message_html .= "<p><em>The Winds Team</em></p>";
         $message_html .= "</body></html>";
         
-        
         $passage_ligne = "\r\n";
 
-        //=====Création de la boundary
+        // Création de la boundary
         $boundary = "-----=".md5(rand());
-        //==========
 
-        //=====Définition du sujet.
+        // Définition du sujet.
         $subject = "Winds - Rights updated";
-        //=========
 
-        //=====Création du header de l'e-mail.
+        // Création du header de l'e-mail.
         $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
         $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
         $header.= "MIME-Version: 1.0".$passage_ligne;
         $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
 
-        //=====Création du message.
+        // Création du message.
         $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
+            // Ajout du message au format HTML
+            $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+            $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+            $message.= $passage_ligne.$message_html.$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
 
-        //=====Envoi de l'e-mail.
+        // Envoi de l'e-mail.
         return mail($mail,$subject,$message,$header);
-        //==========
-        
     }
     /**
      * Sends an email to inform the user his account has been banished
@@ -331,39 +299,31 @@
         $message_html .= "<br><p><em>The Winds Team</em></p>";
         $message_html .= "</body></html>";
         
-        
         $passage_ligne = "\r\n";
 
-        //=====Création de la boundary
+        // Création de la boundary
         $boundary = "-----=".md5(rand());
-        //==========
 
-        //=====Définition du sujet.
+        // Définition du sujet.
         $subject = "Winds - Bashishment";
-        //=========
 
-        //=====Création du header de l'e-mail.
+        // Création du header de l'e-mail.
         $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
         $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
         $header.= "MIME-Version: 1.0".$passage_ligne;
         $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
 
-        //=====Création du message.
+        // Création du message.
         $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
+            // Ajout du message au format HTML
+            $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+            $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+            $message.= $passage_ligne.$message_html.$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
 
-        //=====Envoi de l'e-mail.
+        // Envoi de l'e-mail.
         return mail($mail,$subject,$message,$header);
-        //==========
-        
     }
     /**
      * Sends an email to inform the user his account has been deleted
@@ -380,38 +340,31 @@
         $message_html .= "<br><p><em>The Winds Team</em></p>";
         $message_html .= "</body></html>";
         
-        
         $passage_ligne = "\r\n";
 
-        //=====Création de la boundary
+        // Création de la boundary
         $boundary = "-----=".md5(rand());
-        //==========
 
-        //=====Définition du sujet.
+        // Définition du sujet.
         $subject = "Winds - Account deletion";
-        //=========
 
-        //=====Création du header de l'e-mail.
+        // Création du header de l'e-mail.
         $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
         $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
         $header.= "MIME-Version: 1.0".$passage_ligne;
         $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
 
-        //=====Création du message.
+        // Création du message.
         $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
+            // Ajout du message au format HTML
+            $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+            $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+            $message.= $passage_ligne.$message_html.$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
 
-        //=====Envoi de l'e-mail.
+        // Envoi de l'e-mail.
         return mail($mail,$subject,$message,$header);
-        //==========
     }
     /**
      * Sends an email to inform the user his account has been unbanished
@@ -429,39 +382,31 @@
         $message_html .= "<br><p><em>The Winds Team</em></p>";
         $message_html .= "</body></html>";
         
-        
         $passage_ligne = "\r\n";
 
-        //=====Création de la boundary
+        // Création de la boundary
         $boundary = "-----=".md5(rand());
-        //==========
 
-        //=====Définition du sujet.
+        // Définition du sujet.
         $subject = "Winds - Unbashishment";
-        //=========
 
-        //=====Création du header de l'e-mail.
+        // Création du header de l'e-mail.
         $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
         $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
         $header.= "MIME-Version: 1.0".$passage_ligne;
         $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
 
-        //=====Création du message.
+        // Création du message.
         $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
+            // Ajout du message au format HTML
+            $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+            $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+            $message.= $passage_ligne.$message_html.$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
 
-        //=====Envoi de l'e-mail.
+        // Envoi de l'e-mail.
         return mail($mail,$subject,$message,$header);
-        //==========
-        
     }
     /**
      * Sends an email to inform the user a level he submited was accepted
@@ -483,38 +428,31 @@
         $message_html .= "<br><p><em>The Winds Team</em></p>";
         $message_html .= "</body></html>";
         
-        
         $passage_ligne = "\r\n";
 
-        //=====Création de la boundary
+        // Création de la boundary
         $boundary = "-----=".md5(rand());
-        //==========
 
-        //=====Définition du sujet.
+        // Définition du sujet.
         $subject = "Winds - Custom level accepted !";
-        //=========
 
-        //=====Création du header de l'e-mail.
+        // Création du header de l'e-mail.
         $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
         $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
         $header.= "MIME-Version: 1.0".$passage_ligne;
         $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
 
-        //=====Création du message.
+        // Création du message.
         $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
+            // Ajout du message au format HTML
+            $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+            $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+            $message.= $passage_ligne.$message_html.$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
 
-        //=====Envoi de l'e-mail.
+        // Envoi de l'e-mail.
         return mail($mail,$subject,$message,$header);
-        //==========
     }
     /**
      * Sends an email to inform the user a level he submited was refused
@@ -536,38 +474,31 @@
         $message_html .= "<br><p><em>The Winds Team</em></p>";
         $message_html .= "</body></html>";
         
-        
         $passage_ligne = "\r\n";
 
-        //=====Création de la boundary
+        // Création de la boundary
         $boundary = "-----=".md5(rand());
-        //==========
 
-        //=====Définition du sujet.
+        // Définition du sujet.
         $subject = "Winds - Custom level declined";
-        //=========
 
-        //=====Création du header de l'e-mail.
+        // Création du header de l'e-mail.
         $header = "From: \"Winds team\"<team@winds-game.com>".$passage_ligne;
         $header.= "Reply-to: \"Winds team\" <team@winds-game.com>".$passage_ligne;
         $header.= "MIME-Version: 1.0".$passage_ligne;
         $header.= "Content-Type: multipart/alternative;".$passage_ligne." boundary=\"$boundary\"".$passage_ligne;
-        //==========
 
-        //=====Création du message.
+        // Création du message.
         $message.= $passage_ligne."--".$boundary.$passage_ligne;
-        //=====Ajout du message au format HTML
-        $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
-        $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
-        $message.= $passage_ligne.$message_html.$passage_ligne;
-        //==========
+            // Ajout du message au format HTML
+            $message.= "Content-Type: text/html; charset=\"ISO-8859-1\"".$passage_ligne;
+            $message.= "Content-Transfer-Encoding: 8bit".$passage_ligne;
+            $message.= $passage_ligne.$message_html.$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
         $message.= $passage_ligne."--".$boundary."--".$passage_ligne;
-        //==========
 
-        //=====Envoi de l'e-mail.
+        // Envoi de l'e-mail.
         return mail($mail,$subject,$message,$header);
-        //==========
     }
     
     /**

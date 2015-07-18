@@ -10,7 +10,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
 /**
  * Class which manages the account interactions with GUI.
  */
-/*OK*/class AccountController {
+class AccountController {
     
     // -- API --
     /**
@@ -165,7 +165,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
 /**
  * Class which manages the add-on interactions with GUI.
  */
-/*OK*/class AddonController {
+class AddonController {
     
     // -- API --
     /**
@@ -320,7 +320,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
 /**
  * Class which manages the score interactions with GUI.
  */
-/*OK*/class ScoreController {
+class ScoreController {
     
     // -- WEBSITE --
     /**
@@ -419,7 +419,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
 /**
  * Class which manages the forum interactions with GUI.
  */
-/*OK*/class ForumController {
+class ForumController {
     
     // -- WEBSITE --
     /**
@@ -546,7 +546,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
 /**
  * Class which manages the API interactions with GUI.
  */
-/*OK*/class ApiController {
+class ApiController {
     
     // -- API --
     /**
@@ -689,8 +689,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         $t["ok"] = ($nbScores >= 10)?"ok":"no";
         $trophies[] = $t;
         
-        echo json_encode($trophies);
-        
+        echo json_encode($trophies);        
     }
     /**
      * Downloads the Winds profile of the user.
@@ -745,8 +744,7 @@ define("NB_NEWS_TO_DISPLAY", 5);
         header("Content-Length: " . filesize($name));
         // envoie le contenu du fichier, puis stoppe le script
         fpassthru($fp);
-        exit;
-		
+        exit;		
     }
     /**
      * Downloads a custom level.<br>
