@@ -675,17 +675,16 @@ class Score extends WindsClass
      * @return int
      */
     public function compareTo(Score $score, $timeMaxLevel){
-        return $this->calculate($timeMaxLevel) > $score->calculate($timeMaxLevel);
+        return $this->calculate() > $score->calculate();
     }
     /**
      * Calculates the score.
      * @param int $timeMaxLevel The level's maximum time
      * @return int
      */
-    public function calculate($timeMaxLevel){
-        $time   = $timeMaxLevel - $this->time;
+    public function calculate(){
         $points = 10000
-		+ $time           * self::$points['time']
+		- $this->time     * self::$points['time']
                 - $this->nbClicks * self::$points['nbClicks']
                 + $this->nbItems  * self::$points['nbItems'];
         return $points;

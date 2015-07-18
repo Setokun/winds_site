@@ -514,13 +514,12 @@ class ScoreManager extends ManagerDB {
      * @return array
      */
     private function formateRanking($dataDB, $nullIdLevel){
-        $times = LevelManager::init()->getLevelsTimeMax();
         $ranks = array();
         foreach($dataDB as $data){
             $idPlayer = $data['idPlayer'];
             $score    = Score::init($idPlayer, $data['idLevel'], $data['time'],
                                     $data['nbClicks'],$data['nbItems'] );
-            $points   = $score->calculate($times[ $data['idLevel'] ]);
+            $points   = $score->calculate();
             $exPoints = isset($ranks[$idPlayer]) ? $ranks[$idPlayer]['points'] : 0;
             $ranks[$idPlayer] = array("idPlayer" => $idPlayer,
                                       "player"   => $data['pseudo'],
